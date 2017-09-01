@@ -35,6 +35,7 @@ namespace ScarabolMods
     {
       ChatCommands.CommandManager.RegisterCommand (new TradeChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new TrashChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.starttimers")]
