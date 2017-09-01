@@ -76,11 +76,9 @@ namespace ScarabolMods
             Chat.Send (causedBy, string.Format ("Send {0} x {1} to '{2}'", amount, ItemTypes.IndexLookup.GetName (itemType), targetPlayer.Name));
           } else {
             Chat.Send (causedBy, "You don't have enough items");
-            return true;
           }
         } else {
           Chat.Send (causedBy, "Could not get stockpile for both players");
-          return true;
         }
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
