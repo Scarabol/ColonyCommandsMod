@@ -54,7 +54,7 @@ namespace ScarabolMods
         Players.Player targetPlayer = null;
         for (int c = 0; c < Players.CountConnected; c++) {
           Players.Player player = Players.GetConnectedByIndex (c);
-          if (player.Name.Equals (targetPlayerName)) {
+          if (player.Name != null && player.Name.ToLower ().Equals (targetPlayerName.ToLower ())) {
             if (targetPlayer == null) {
               targetPlayer = player;
             } else {
