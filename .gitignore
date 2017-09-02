@@ -6,4 +6,5 @@
 *.flv
 *.mtl
 *.mdb
+/announcements.json
 

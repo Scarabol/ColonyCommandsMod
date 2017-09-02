@@ -1,6 +1,6 @@
 # important variables
 modname = Commands
-version = 0.6.3
+version = 0.6.4
 
 moddir = Scarabol/$(modname)
 zipname = Colony$(modname)Mod-$(version)-mods.zip
@@ -23,7 +23,7 @@ all: clean default enable
 
 release: default
 	rm -f "$(zipname)"
-	cd ../../ && zip -r "$(moddir)/$(zipname)" "$(moddir)/modInfo.json" "$(moddir)/$(dllname)" "$(moddir)/announcements.json"
+	cd ../../ && zip -r "$(moddir)/$(zipname)" "$(moddir)/modInfo.json" "$(moddir)/$(dllname)" "$(moddir)/announcements.example.json"
 
 client: default enable
 	cd ../../../../ && ./colonyclient.x86_64
