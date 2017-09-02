@@ -40,7 +40,7 @@ namespace ScarabolMods
         }
         Stockpile playerStockpile;
         if (Stockpile.TryGetStockpile (causedBy, out playerStockpile)) {
-          int actualAmount = playerStockpile.AmountContained (itemType);
+          int actualAmount = System.Math.Min (playerStockpile.AmountContained (itemType), amount);
           playerStockpile.Remove (itemType, actualAmount);
           Chat.Send (causedBy, string.Format ("Trashed {0} x {1}", actualAmount, ItemTypes.IndexLookup.GetName (itemType)));
         } else {
