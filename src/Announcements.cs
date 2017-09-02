@@ -113,6 +113,18 @@ namespace ScarabolMods
       return result;
     }
 
+    public static string ListEnabledAnnouncements ()
+    {
+      string result = "";
+      for (int c = 0; c < Announcements.Messages.Count; c++) {
+        Announcements.ServerMessage Message = Announcements.Messages [c];
+        if (Message.Enabled) {
+          result += string.Format ("A{0} ({1}): {2}\n", c, Message.Enabled ? "Enabled" : "Disabled", Message.Text);
+        }
+      }
+      return result;
+    }
+
     public static void AddAnnouncement (string text)
     {
       Messages.Insert (Announcements.CurrentIndex, new ServerMessage (text));
@@ -253,14 +265,16 @@ namespace ScarabolMods
 
     public void ListCommand (Players.Player causedBy)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.list")) {
-        return;
+      string msg;
+      if (Permissions.PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.list")) {
+        msg = Announcements.ListAllAnnouncements ();
+      } else {
+        msg = Announcements.ListEnabledAnnouncements ();
       }
-      string msg = Announcements.ListAllAnnouncements ();
       if (msg.Length > 0) {
         Chat.Send (causedBy, string.Format ("Server Announcements:\n{0}", msg));
       } else {
-        Chat.Send (causedBy, "No announcements configured");
+        Chat.Send (causedBy, "No announcements");
       }
     }
 
