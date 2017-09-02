@@ -39,7 +39,7 @@ namespace ScarabolMods
         } else {
           List<Vector3Int> ToClean = new List<Vector3Int> ();
           List<Vector3Int> CurrentWaters = new List<Vector3Int> () { Origin };
-          while (CurrentWaters.Count > 0) {
+          while (CurrentWaters.Count > 0 && ToClean.Count < 100000) {
             Vector3Int CurrentOrigin = CurrentWaters [0];
             CurrentWaters.RemoveAt (0);
             ushort Type;
