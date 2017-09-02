@@ -37,6 +37,7 @@ namespace ScarabolMods
       ChatCommands.CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TrashChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new WarpChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new DrainChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.starttimers")]
