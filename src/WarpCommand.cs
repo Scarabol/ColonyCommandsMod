@@ -22,7 +22,7 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, "mods.scarabol.warp")) {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
           return true;
         }
         var m = Regex.Match (chattext, @"/warp (?<playername>.+)");

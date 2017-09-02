@@ -22,7 +22,7 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        if (causedBy == null || !Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, "mods.scarabol.commands.drain")) {
+        if (causedBy == null || !Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "drain")) {
           return true;
         }
         var m = Regex.Match (chattext, @"/drain( (?<startx>-?\d+) (?<starty>-?\d+) (?<startz>-?\d+))?");
