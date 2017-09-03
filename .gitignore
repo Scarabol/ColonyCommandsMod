@@ -7,4 +7,5 @@
 *.mtl
 *.mdb
 /announcements.json
+/travelpaths.json
 

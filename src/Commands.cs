@@ -27,17 +27,21 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterStartup, "scarabol.commands.registercallbacks")]
     public static void AfterStartup ()
     {
-      Pipliz.Log.Write ("Loaded Commands Mod 0.6.5 by Scarabol");
+      Pipliz.Log.Write ("Loaded Commands Mod 0.6.6 by Scarabol");
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.registertypes")]
     public static void AfterItemTypesServer ()
     {
+      WaypointManager.Load ();
       ChatCommands.CommandManager.RegisterCommand (new TradeChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TrashChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new WarpChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new DrainChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new TravelChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new TravelThereChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.starttimers")]
