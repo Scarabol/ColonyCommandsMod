@@ -27,7 +27,7 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterStartup, "scarabol.commands.registercallbacks")]
     public static void AfterStartup ()
     {
-      Pipliz.Log.Write ("Loaded Commands Mod 0.6.6 by Scarabol");
+      Pipliz.Log.Write ("Loaded Commands Mod 0.6.7 by Scarabol");
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.registertypes")]
@@ -42,6 +42,7 @@ namespace ScarabolMods
       ChatCommands.CommandManager.RegisterCommand (new TravelChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelThereChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new OnlineChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.starttimers")]

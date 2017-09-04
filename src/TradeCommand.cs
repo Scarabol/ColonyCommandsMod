@@ -73,7 +73,8 @@ namespace ScarabolMods
           InventoryItem tradeItem = new InventoryItem (itemType, amount);
           if (sourceStockpile.TryRemove (tradeItem)) {
             targetStockpile.Add (tradeItem);
-            Chat.Send (causedBy, string.Format ("Send {0} x {1} to '{2}'", amount, ItemTypes.IndexLookup.GetName (itemType), targetPlayer.Name));
+            Chat.Send (causedBy, string.Format ("Send {0} x {1} to '{2}'", amount, itemTypeName, targetPlayer.Name));
+            Chat.Send (targetPlayer, string.Format ("Received {0} x {1} from '{3}'", amount, itemTypeName, causedBy.Name));
           } else {
             Chat.Send (causedBy, "You don't have enough items");
           }
