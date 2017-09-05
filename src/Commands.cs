@@ -38,6 +38,7 @@ namespace ScarabolMods
       ChatCommands.CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TrashChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new WarpChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new WarpBannerChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new DrainChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
@@ -50,6 +51,57 @@ namespace ScarabolMods
     {
       Announcements.Load ();
       Announcements.StartAnnouncements ();
+    }
+  }
+
+  public static class PlayerHelper
+  {
+    public static bool TryGetPlayer (string identifier, out Players.Player targetPlayer, out string error)
+    {
+      targetPlayer = null;
+      if (identifier.StartsWith ("'")) {
+        if (identifier.EndsWith ("'")) {
+          identifier = identifier.Substring (1, identifier.Length - 2);
+        } else {
+          error = "missing ' after playername";
+          return false;
+        }
+      }
+      if (identifier.Length < 1) {
+        error = "no playername given";
+        return false;
+      }
+      ulong steamid;
+      if (ulong.TryParse (identifier, out steamid)) {
+        Steamworks.CSteamID csteamid = new Steamworks.CSteamID (steamid);
+        if (csteamid.IsValid ()) {
+          NetworkID networkId = new NetworkID (csteamid);
+          error = "";
+          if (Players.TryGetPlayer (networkId, out targetPlayer)) {
+            return true;
+          } else {
+            targetPlayer = null;
+          }
+        }
+      }
+      for (int c = 0; c < Players.CountConnected; c++) {
+        Players.Player player = Players.GetConnectedByIndex (c);
+        if (player.Name != null && player.Name.ToLower ().Equals (identifier.ToLower ())) {
+          if (targetPlayer == null) {
+            targetPlayer = player;
+          } else {
+            targetPlayer = null;
+            error = "duplicate player name, pls use SteamID";
+            return false;
+          }
+        }
+      }
+      if (targetPlayer != null) {
+        error = "";
+        return true;
+      }
+      error = "player not found";
+      return false;
     }
   }
 }

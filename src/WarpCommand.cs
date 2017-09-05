@@ -25,41 +25,77 @@ namespace ScarabolMods
         if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
           return true;
         }
-        var m = Regex.Match (chattext, @"/warp (?<playername>.+)");
+        var m = Regex.Match (chattext, @"/warp (?<targetplayername>['].+?[']|[^ ]+)( (?<teleportplayername>['].+?[']|[^ ]+))?");
         if (!m.Success) {
-          Chat.Send (causedBy, "Command didn't match, use /warp [playername]");
+          Chat.Send (causedBy, "Command didn't match, use /warp [targetplayername] or /warp [targetplayername] [teleportplayername]");
           return true;
         }
-        string targetPlayerName = m.Groups ["playername"].Value;
-        if (targetPlayerName.StartsWith ("\"")) {
-          if (targetPlayerName.EndsWith ("\"")) {
-            targetPlayerName = targetPlayerName.Substring (1, targetPlayerName.Length - 2);
-          } else {
-            Chat.Send (causedBy, "Command didn't match, missing \" after playername");
+        string TargetPlayerName = m.Groups ["targetplayername"].Value;
+        Players.Player TargetPlayer;
+        string Error;
+        if (!PlayerHelper.TryGetPlayer (TargetPlayerName, out TargetPlayer, out Error)) {
+          Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", TargetPlayerName, Error));
+          return true;
+        }
+        Players.Player TeleportPlayer = causedBy;
+        string TeleportPlayerName = m.Groups ["teleportplayername"].Value;
+        if (TeleportPlayerName.Length > 0) {
+          if (!PlayerHelper.TryGetPlayer (TeleportPlayerName, out TeleportPlayer, out Error)) {
+            Chat.Send (causedBy, string.Format ("Could not find teleport player '{0}'; {1}", TeleportPlayerName, Error));
             return true;
           }
         }
-        if (targetPlayerName.Length < 1) {
-          Chat.Send (causedBy, "Command didn't match, no playername given");
+        ChatCommands.Implementations.Teleport.TeleportTo (TeleportPlayer, TargetPlayer.Position);
+      } catch (Exception exception) {
+        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      }
+      return true;
+    }
+  }
+
+  public class WarpBannerChatCommand : ChatCommands.IChatCommand
+  {
+    public bool IsCommand (string chat)
+    {
+      return chat.Equals ("/warpbanner") || chat.StartsWith ("/warpbanner ");
+    }
+
+    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    {
+      try {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
           return true;
         }
-        Players.Player targetPlayer = null;
-        for (int c = 0; c < Players.CountConnected; c++) {
-          Players.Player player = Players.GetConnectedByIndex (c);
-          if (player.Name != null && player.Name.ToLower ().Equals (targetPlayerName.ToLower ())) {
-            if (targetPlayer == null) {
-              targetPlayer = player;
+        var m = Regex.Match (chattext, @"/warpbanner (?<targetplayername>['].+?[']|[^ ]+)( (?<teleportplayername>['].+?[']|[^ ]+))?");
+        if (!m.Success) {
+          Chat.Send (causedBy, "Command didn't match, use /warpbanner [targetplayername] or /warpbanner [targetplayername] [teleportplayername]");
+          return true;
+        }
+        string TargetPlayerName = m.Groups ["targetplayername"].Value;
+        Banner TargetBanner = null;
+        foreach (Banner banner in BannerTracker.GetBanners()) {
+          if (banner.Owner.Name.ToLower ().Equals (TargetPlayerName.ToLower ())) {
+            if (TargetBanner == null) {
+              TargetBanner = banner;
             } else {
-              Chat.Send (causedBy, "Duplicate target player name, pls use SteamID");
-              return true;
+              Chat.Send (causedBy, string.Format ("Duplicate player name", TargetPlayerName));
             }
           }
         }
-        if (targetPlayer == null) {
-          Chat.Send (causedBy, string.Format ("Could not find player '{0}'", targetPlayerName));
+        if (TargetBanner == null) {
+          Chat.Send (causedBy, string.Format ("Banner not found for '{0}'", TargetPlayerName));
           return true;
         }
-        ChatCommands.Implementations.Teleport.TeleportTo (causedBy, targetPlayer.Position);
+        Players.Player TeleportPlayer = causedBy;
+        string TeleportPlayerName = m.Groups ["teleportplayername"].Value;
+        if (TeleportPlayerName.Length > 0) {
+          string Error;
+          if (!PlayerHelper.TryGetPlayer (TeleportPlayerName, out TeleportPlayer, out Error)) {
+            Chat.Send (causedBy, string.Format ("Could not find teleport player '{0}'; {1}", TeleportPlayerName, Error));
+            return true;
+          }
+        }
+        ChatCommands.Implementations.Teleport.TeleportTo (TeleportPlayer, TargetBanner.KeyLocation.Vector);
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }
