@@ -44,6 +44,7 @@ namespace ScarabolMods
       ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelThereChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new OnlineChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new WhisperChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.starttimers")]
