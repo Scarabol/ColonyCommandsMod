@@ -102,4 +102,39 @@ namespace ScarabolMods
       return true;
     }
   }
+
+  public class WarpSpawnChatCommand : ChatCommands.IChatCommand
+  {
+    public bool IsCommand (string chat)
+    {
+      return chat.Equals ("/warpspawn") || chat.StartsWith ("/warpspawn ");
+    }
+
+    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    {
+      try {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
+          return true;
+        }
+        var m = Regex.Match (chattext, @"/warpspawn( ?<teleportplayername>['].+?[']|[^ ]+)?");
+        if (!m.Success) {
+          Chat.Send (causedBy, "Command didn't match, use /warpspawn [teleportplayername] or /warpspawn [teleportplayername]");
+          return true;
+        }
+        Players.Player TeleportPlayer = causedBy;
+        string TeleportPlayerName = m.Groups ["teleportplayername"].Value;
+        if (TeleportPlayerName.Length > 0) {
+          string Error;
+          if (!PlayerHelper.TryGetPlayer (TeleportPlayerName, out TeleportPlayer, out Error)) {
+            Chat.Send (causedBy, string.Format ("Could not find teleport player '{0}'; {1}", TeleportPlayerName, Error));
+            return true;
+          }
+        }
+        ChatCommands.Implementations.Teleport.TeleportTo (TeleportPlayer, TerrainGenerator.GetSpawnLocation ().Vector);
+      } catch (Exception exception) {
+        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      }
+      return true;
+    }
+  }
 }

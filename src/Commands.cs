@@ -39,6 +39,7 @@ namespace ScarabolMods
       ChatCommands.CommandManager.RegisterCommand (new TrashChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new WarpChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new WarpBannerChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new WarpSpawnChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new DrainChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
