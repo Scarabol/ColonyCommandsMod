@@ -1,0 +1,8 @@
+{
+  "SpawnProtectionRangeX" : 50,
+  "SpawnProtectionRangeX+" : 50, "note1" : "remove this line, if you want symmetric spawn protection on x-axis",
+  "SpawnProtectionRangeZ" : 50,
+  "SpawnProtectionRangeZ-" : 50, "note2" : "remove this line, if you want symmetric spawn protection on z-axis",
+  "BannerProtectionRangeX" : 50,
+  "BannerProtectionRangeZ" : 50
+}
