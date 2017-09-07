@@ -12,8 +12,15 @@ using NPC;
 
 namespace ScarabolMods
 {
+  [ModLoader.ModManager]
   public class WarpChatCommand : ChatCommands.IChatCommand
   {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.warp.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new WarpChatCommand ());
+    }
+
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/warp") || chat.StartsWith ("/warp ");
@@ -53,8 +60,15 @@ namespace ScarabolMods
     }
   }
 
+  [ModLoader.ModManager]
   public class WarpBannerChatCommand : ChatCommands.IChatCommand
   {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.warpbanner.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new WarpBannerChatCommand ());
+    }
+
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/warpbanner") || chat.StartsWith ("/warpbanner ");
@@ -103,8 +117,15 @@ namespace ScarabolMods
     }
   }
 
+  [ModLoader.ModManager]
   public class WarpSpawnChatCommand : ChatCommands.IChatCommand
   {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.warpspawn.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new WarpSpawnChatCommand ());
+    }
+
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/warpspawn") || chat.StartsWith ("/warpspawn ");

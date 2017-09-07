@@ -12,8 +12,15 @@ using NPC;
 
 namespace ScarabolMods
 {
+  [ModLoader.ModManager]
   public class OnlineChatCommand : ChatCommands.IChatCommand
   {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.online.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new OnlineChatCommand ());
+    }
+
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/online");

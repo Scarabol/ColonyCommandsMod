@@ -12,8 +12,15 @@ using NPC;
 
 namespace ScarabolMods
 {
+  [ModLoader.ModManager]
   public class TradeChatCommand : ChatCommands.IChatCommand
   {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.trade.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new TradeChatCommand ());
+    }
+
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/trade") || chat.StartsWith ("/trade ");
@@ -22,17 +29,17 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        var m = Regex.Match (chattext, @"/trade (?<playername>.+) (?<material>.+) (?<amount>\d+)");
+        var m = Regex.Match (chattext, @"/trade (?<playername>['].+?[']|[^ ]+) (?<material>.+) (?<amount>\d+)");
         if (!m.Success) {
           Chat.Send (causedBy, "Command didn't match, use /trade [playername] [material] [amount]");
           return true;
         }
         string targetPlayerName = m.Groups ["playername"].Value;
-        if (targetPlayerName.StartsWith ("\"")) {
-          if (targetPlayerName.EndsWith ("\"")) {
+        if (targetPlayerName.StartsWith ("'")) {
+          if (targetPlayerName.EndsWith ("'")) {
             targetPlayerName = targetPlayerName.Substring (1, targetPlayerName.Length - 2);
           } else {
-            Chat.Send (causedBy, "Command didn't match, missing \" after playername");
+            Chat.Send (causedBy, "Command didn't match, missing ' after playername");
             return true;
           }
         }

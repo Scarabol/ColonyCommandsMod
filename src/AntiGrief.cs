@@ -82,8 +82,6 @@ namespace ScarabolMods
     public static void OnPlayerConnectedLate (Players.Player player)
     {
       Chat.Send (player, "<color=yellow>Anti-Grief protection enabled</color>");
-      Chat.Send (player, string.Format ("Spawn grief protection x+: {0}, x-: {1}, z+: {2}, z-: {3}", SpawnProtectionRangeXPos, SpawnProtectionRangeXNeg, SpawnProtectionRangeZPos, SpawnProtectionRangeZNeg));
-      Chat.Send (player, string.Format ("Banner grief protection x-range: +/-{0}, z-range: +/-{1}", BannerProtectionRangeX, BannerProtectionRangeZ));
     }
 
     public static void LoadRangesFromJSON (string path)

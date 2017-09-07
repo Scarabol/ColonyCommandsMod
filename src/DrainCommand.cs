@@ -12,8 +12,15 @@ using NPC;
 
 namespace ScarabolMods
 {
+  [ModLoader.ModManager]
   public class DrainChatCommand : ChatCommands.IChatCommand
   {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.drain.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new DrainChatCommand ());
+    }
+
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/drain") || chat.StartsWith ("/drain ");
@@ -30,35 +37,35 @@ namespace ScarabolMods
           Chat.Send (causedBy, "Command didn't match, use /drain or /drain [startx] [starty] [startz]");
           return true;
         }
-        Vector3Int Origin = new Vector3Int (causedBy.Position);
-        ushort ActualType;
-        if (!World.TryGetTypeAt (Origin, out ActualType)) {
-          Chat.Send (causedBy, string.Format ("Could not get the item type at {0}", Origin));
-        } else if (ActualType != BlockTypes.Builtin.BuiltinBlocks.Water) {
-          Chat.Send (causedBy, string.Format ("No water found at {0}", Origin));
+        Vector3Int origin = new Vector3Int (causedBy.Position);
+        ushort actualType;
+        if (!World.TryGetTypeAt (origin, out actualType)) {
+          Chat.Send (causedBy, string.Format ("Could not get the item type at {0}", origin));
+        } else if (actualType != BlockTypes.Builtin.BuiltinBlocks.Water) {
+          Chat.Send (causedBy, string.Format ("No water found at {0}", origin));
         } else {
-          List<Vector3Int> ToClean = new List<Vector3Int> ();
-          List<Vector3Int> CurrentWaters = new List<Vector3Int> () { Origin };
-          while (CurrentWaters.Count > 0 && ToClean.Count < 100000) {
-            Vector3Int CurrentOrigin = CurrentWaters [0];
-            CurrentWaters.RemoveAt (0);
-            ushort Type;
-            foreach (Vector3Int ToCheck in new List<Vector3Int> {
+          List<Vector3Int> toClean = new List<Vector3Int> ();
+          List<Vector3Int> currentWaters = new List<Vector3Int> () { origin };
+          while (currentWaters.Count > 0 && toClean.Count < 100000) {
+            Vector3Int currentOrigin = currentWaters [0];
+            currentWaters.RemoveAt (0);
+            foreach (Vector3Int toCheck in new List<Vector3Int> {
               new Vector3Int (-1, 0, 0), new Vector3Int (1, 0, 0),
               new Vector3Int (0, -1, 0) , new Vector3Int (0, 1, 0),
               new Vector3Int (0, 0, -1), new Vector3Int (0, 0, 1)
             }) {
-              Vector3Int AbsCheck = CurrentOrigin + ToCheck;
-              if (World.TryGetTypeAt (AbsCheck, out Type) && Type == BlockTypes.Builtin.BuiltinBlocks.Water) {
-                ServerManager.TryChangeBlock (AbsCheck, BlockTypes.Builtin.BuiltinBlocks.LeavesTemperate);
-                CurrentWaters.Add (AbsCheck);
-                ToClean.Add (AbsCheck);
+              Vector3Int absCheck = currentOrigin + toCheck;
+              ushort type;
+              if (World.TryGetTypeAt (absCheck, out type) && type == BlockTypes.Builtin.BuiltinBlocks.Water) {
+                ServerManager.TryChangeBlock (absCheck, BlockTypes.Builtin.BuiltinBlocks.LeavesTemperate);
+                currentWaters.Add (absCheck);
+                toClean.Add (absCheck);
               }
             }
           }
-          Chat.Send (causedBy, string.Format ("Replaced {0} water blocks. Start cleaning up...", ToClean.Count));
-          ServerManager.TryChangeBlock (Origin, BlockTypes.Builtin.BuiltinBlocks.Air);
-          foreach (Vector3Int AbsRemove in ToClean) {
+          Chat.Send (causedBy, string.Format ("Replaced {0} water blocks. Start cleaning up...", toClean.Count));
+          ServerManager.TryChangeBlock (origin, BlockTypes.Builtin.BuiltinBlocks.Air);
+          foreach (Vector3Int AbsRemove in toClean) {
             ServerManager.TryChangeBlock (AbsRemove, BlockTypes.Builtin.BuiltinBlocks.Air);
           }
         }

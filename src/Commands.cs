@@ -29,31 +29,6 @@ namespace ScarabolMods
     {
       Pipliz.Log.Write ("Loaded Commands Mod 0.6.9 by Scarabol");
     }
-
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.registertypes")]
-    public static void AfterItemTypesServer ()
-    {
-      WaypointManager.Load ();
-      ChatCommands.CommandManager.RegisterCommand (new TradeChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new TrashChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new WarpChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new WarpBannerChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new WarpSpawnChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new DrainChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new TravelChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new TravelThereChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new OnlineChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new WhisperChatCommand ());
-    }
-
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.starttimers")]
-    public static void AfterWorldLoad ()
-    {
-      Announcements.Load ();
-      Announcements.StartAnnouncements ();
-    }
   }
 
   public static class PlayerHelper

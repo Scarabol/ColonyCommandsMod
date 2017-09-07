@@ -12,8 +12,15 @@ using NPC;
 
 namespace ScarabolMods
 {
+  [ModLoader.ModManager]
   public class WhisperChatCommand : ChatCommands.IChatCommand
   {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.whisper.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new WhisperChatCommand ());
+    }
+
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/w") || chat.StartsWith ("/w ") || chat.Equals ("/whisper") || chat.StartsWith ("/whisper ");
@@ -27,16 +34,16 @@ namespace ScarabolMods
           Chat.Send (causedBy, "Command didn't match, use /w [targetplayername] [message]");
           return true;
         }
-        string TargetPlayerName = m.Groups ["targetplayername"].Value;
-        Players.Player TargetPlayer;
-        string Error;
-        if (!PlayerHelper.TryGetPlayer (TargetPlayerName, out TargetPlayer, out Error)) {
-          Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", TargetPlayerName, Error));
+        string targetPlayerName = m.Groups ["targetplayername"].Value;
+        Players.Player targetPlayer;
+        string error;
+        if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error)) {
+          Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", targetPlayerName, error));
           return true;
         }
         string message = m.Groups ["message"].Value;
-        Chat.Send (TargetPlayer, string.Format ("<color=cyan>From [{0}]: {1}</color>", causedBy.Name, message));
-        Chat.Send (causedBy, string.Format ("<color=cyan>To [{0}]: {1}</color>", TargetPlayer, message));
+        Chat.Send (targetPlayer, string.Format ("<color=cyan>From [{0}]: {1}</color>", causedBy.Name, message));
+        Chat.Send (causedBy, string.Format ("<color=cyan>To [{0}]: {1}</color>", targetPlayer, message));
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }

@@ -12,8 +12,22 @@ using NPC;
 
 namespace ScarabolMods
 {
+  [ModLoader.ModManager]
   public static class Announcements
   {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.announcements.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.announcements.starttimers")]
+    public static void AfterWorldLoad ()
+    {
+      Load ();
+      SendNextAnnouncement ();
+    }
+
     public static int MIN_INTERVAL = 10;
     public static int CurrentIndex = 0;
     private static JSONNode JsonAnnouncements = new JSONNode ();
@@ -21,27 +35,24 @@ namespace ScarabolMods
     private static List<ServerMessage> Messages = new List<ServerMessage> ();
     private static int IntervalCounter;
 
-    public static void StartAnnouncements ()
-    {
-      Announcements.SendNextAnnouncement ();
-    }
-
     public static void SendNextAnnouncement ()
     {
       try {
         IntervalCounter += MIN_INTERVAL;
         if (IntervalCounter >= IntervalSeconds) {
           IntervalCounter = 0;
-          for (int c = CurrentIndex; c < CurrentIndex + Messages.Count; c++) {
-            int Index = c % Messages.Count;
-            ServerMessage Message = Messages [Index];
-            if (Message.Enabled && Message.Text.Length > 0) {
-              CurrentIndex = Index;
-              Chat.SendToAll (Message.Text);
-              break;
+          if (Messages.Count > 0) {
+            for (int c = CurrentIndex; c < CurrentIndex + Messages.Count; c++) {
+              int Index = c % Messages.Count;
+              ServerMessage Message = Messages [Index];
+              if (Message.Enabled && Message.Text.Length > 0) {
+                CurrentIndex = Index;
+                Chat.SendToAll (Message.Text);
+                break;
+              }
             }
+            CurrentIndex = (CurrentIndex + 1) % Messages.Count;
           }
-          CurrentIndex = (CurrentIndex + 1) % Messages.Count;
         }
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while sending announcement; {0}", exception.Message));
