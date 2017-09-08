@@ -87,6 +87,8 @@ namespace ScarabolMods
         }
         string TargetPlayerName = m.Groups ["targetplayername"].Value;
         Banner TargetBanner = null;
+        int closestDist = int.MaxValue;
+        Banner closestMatch = null;
         foreach (Banner banner in BannerTracker.GetBanners()) {
           if (banner.Owner.Name.ToLower ().Equals (TargetPlayerName.ToLower ())) {
             if (TargetBanner == null) {
@@ -94,11 +96,24 @@ namespace ScarabolMods
             } else {
               Chat.Send (causedBy, string.Format ("Duplicate player name", TargetPlayerName));
             }
+          } else {
+            int levDist = LevenshteinDistance.Compute (banner.Owner.Name.ToLower (), TargetPlayerName.ToLower ());
+            if (levDist < closestDist) {
+              closestDist = levDist;
+              closestMatch = banner;
+            } else if (levDist == closestDist) {
+              closestMatch = null;
+            }
           }
         }
         if (TargetBanner == null) {
-          Chat.Send (causedBy, string.Format ("Banner not found for '{0}'", TargetPlayerName));
-          return true;
+          if (closestMatch != null) {
+            TargetBanner = closestMatch;
+            Pipliz.Log.Write (string.Format ("Name '{0}' did not match, picked closest match '{1}' instead", TargetPlayerName, TargetBanner.Owner.Name));
+          } else {
+            Chat.Send (causedBy, string.Format ("Banner not found for '{0}'", TargetPlayerName));
+            return true;
+          }
         }
         Players.Player TeleportPlayer = causedBy;
         string TeleportPlayerName = m.Groups ["teleportplayername"].Value;

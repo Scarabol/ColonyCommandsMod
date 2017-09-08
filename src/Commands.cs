@@ -61,24 +61,71 @@ namespace ScarabolMods
           }
         }
       }
+      int closestDist = int.MaxValue;
+      Players.Player closestMatch = null;
       for (int c = 0; c < Players.CountConnected; c++) {
         Players.Player player = Players.GetConnectedByIndex (c);
-        if (player.Name != null && player.Name.ToLower ().Equals (identifier.ToLower ())) {
-          if (targetPlayer == null) {
-            targetPlayer = player;
+        if (player.Name != null) {
+          if (player.Name.ToLower ().Equals (identifier.ToLower ())) {
+            if (targetPlayer == null) {
+              targetPlayer = player;
+            } else {
+              targetPlayer = null;
+              error = "duplicate player name, pls use SteamID";
+              return false;
+            }
           } else {
-            targetPlayer = null;
-            error = "duplicate player name, pls use SteamID";
-            return false;
+            int levDist = LevenshteinDistance.Compute (player.Name.ToLower (), identifier.ToLower ());
+            if (levDist < closestDist) {
+              closestDist = levDist;
+              closestMatch = player;
+            } else if (levDist == closestDist) {
+              closestMatch = null;
+            }
           }
         }
       }
       if (targetPlayer != null) {
         error = "";
         return true;
+      } else if (closestMatch != null) {
+        error = "";
+        targetPlayer = closestMatch;
+        Pipliz.Log.Write (string.Format ("Name '{0}' did not match, picked closest match '{1}' instead", identifier, targetPlayer.Name));
+        return true;
       }
       error = "player not found";
       return false;
+    }
+  }
+
+  // src: https://www.dotnetperls.com/levenshtein
+  static class LevenshteinDistance
+  {
+    public static int Compute (string s, string t)
+    {
+      int n = s.Length;
+      int m = t.Length;
+      int[,] d = new int[n + 1, m + 1];
+      if (n == 0) {
+        return m;
+      }
+      if (m == 0) {
+        return n;
+      }
+      for (int i = 0; i <= n; d [i, 0] = i++) {
+      }
+      for (int j = 0; j <= m; d [0, j] = j++) {
+      }
+      for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+          int cost = (t [j - 1] == s [i - 1]) ? 0 : 1;
+          d [i, j] = System.Math.Min (
+            System.Math.Min (d [i - 1, j] + 1, d [i, j - 1] + 1),
+            d [i - 1, j - 1] + cost);
+        }
+      }
+      return d [n, m];
     }
   }
 }
