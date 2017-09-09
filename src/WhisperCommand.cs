@@ -29,9 +29,9 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        var m = Regex.Match (chattext, @"/[w|whisper] (?<targetplayername>['].+?[']|[^ ]+) (?<message>.+)");
+        var m = Regex.Match (chattext, @"/((w)|(whisper)) (?<targetplayername>['].+?[']|[^ ]+) (?<message>.+)");
         if (!m.Success) {
-          Chat.Send (causedBy, "Command didn't match, use /w [targetplayername] [message]");
+          Chat.Send (causedBy, "Command didn't match, use /w [targetplayername] [message] or /whisper [targetplayername] [message]");
           return true;
         }
         string targetPlayerName = m.Groups ["targetplayername"].Value;
