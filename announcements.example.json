@@ -1,16 +1,13 @@
 {
+  "welcomeMessage" : "Welcome on our server",
 	"intervalSeconds" : 120,
 	"messages" : [
-		{
-			"text" : "Welcome on our server!",
-			"enabled" : true
-		},
 		{
 			"text" : "Visit our homepage colonyempire.org",
 			"enabled" : true
 		},
 		{
-			"text" : "Server announcements with ColonyCommandsMod by Scarabol",
+			"text" : "Server announcements made with ColonyCommandsMod by Scarabol",
 			"enabled" : false
 		}
 	]

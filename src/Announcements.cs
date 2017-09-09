@@ -28,9 +28,18 @@ namespace ScarabolMods
       SendNextAnnouncement ();
     }
 
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerConnectedLate, "scarabol.commands.announcements.onplayerconnectedlate")]
+    public static void OnPlayerConnectedLate (Players.Player player)
+    {
+      if (welcomeMessage.Length > 0) {
+        Chat.Send (player, welcomeMessage);
+      }
+    }
+
     public static int MIN_INTERVAL = 10;
     public static int CurrentIndex = 0;
     private static JSONNode JsonAnnouncements = new JSONNode ();
+    private static string welcomeMessage = "";
     private static int IntervalSeconds = MIN_INTERVAL;
     private static List<ServerMessage> Messages = new List<ServerMessage> ();
     private static int IntervalCounter;
@@ -69,6 +78,9 @@ namespace ScarabolMods
         if (Pipliz.JSON.JSON.Deserialize (Path.Combine (CommandsModEntries.ModDirectory, "announcements.json"), out json, false)) {
           CurrentIndex = 0;
           JsonAnnouncements = json;
+          if (!JsonAnnouncements.TryGetAs ("welcomeMessage", out welcomeMessage)) {
+            welcomeMessage = "";
+          }
           int intervalSeconds;
           if (JsonAnnouncements.TryGetAs ("intervalSeconds", out intervalSeconds)) {
             IntervalSeconds = System.Math.Max (intervalSeconds, MIN_INTERVAL);
