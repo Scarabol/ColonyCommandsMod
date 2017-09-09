@@ -173,4 +173,60 @@ namespace ScarabolMods
       return true;
     }
   }
+
+  [ModLoader.ModManager]
+  public class WarpPlaceChatCommand : ChatCommands.IChatCommand
+  {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.warpplace.registercommand")]
+    public static void AfterItemTypesServer ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new WarpPlaceChatCommand ());
+    }
+
+    public bool IsCommand (string chat)
+    {
+      return chat.Equals ("/warpplace") || chat.StartsWith ("/warpplace ");
+    }
+
+    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    {
+      try {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
+          return true;
+        }
+        var m = Regex.Match (chattext, @"/warpplace (?<px>-?\d+) (?<py>-?\d+)( (?<pz>-?\d+))?");
+        if (!m.Success) {
+          Chat.Send (causedBy, "Command didn't match, use /warpplace [x] [y] [z] or /warpplace [x] [z]");
+          return true;
+        }
+        string xCoord = m.Groups ["px"].Value;
+        int vx;
+        if (!int.TryParse (xCoord, out vx)) {
+          Chat.Send (causedBy, string.Format ("Failure parsing first coordinate '{0}'", xCoord));
+          return true;
+        }
+        string yCoord = m.Groups ["py"].Value;
+        int vy;
+        if (!int.TryParse (yCoord, out vy)) {
+          Chat.Send (causedBy, string.Format ("Failure parsing second coordinate '{0}'", yCoord));
+          return true;
+        }
+        string zCoord = m.Groups ["pz"].Value;
+        int vz;
+        if (zCoord.Length > 0) {
+          if (!int.TryParse (zCoord, out vz)) {
+            Chat.Send (causedBy, string.Format ("Failure parsing third coordinate '{0}'", zCoord));
+            return true;
+          }
+        } else {
+          vz = vy;
+          vy = TerrainGenerator.GetHeight (vx, vz);
+        }
+        ChatCommands.Implementations.Teleport.TeleportTo (causedBy, new Vector3Int (vx, vy, vz).Vector);
+      } catch (Exception exception) {
+        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      }
+      return true;
+    }
+  }
 }
