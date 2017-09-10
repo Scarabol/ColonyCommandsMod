@@ -19,19 +19,7 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class BetterChatCommand : ChatCommands.IChatCommand
   {
-    private static ChatColorSpecification[] settings = new ChatColorSpecification[] {
-      new ChatColorSpecification ("name", "red", "redname"),
-      new ChatColorSpecification ("name", "green", "greenname"),
-      new ChatColorSpecification ("name", "blue", "bluename"),
-      new ChatColorSpecification ("name", "#a335ee", "epicname"),
-      new ChatColorSpecification ("name", "#00ccff", "heirloomname"),
-      new ChatColorSpecification ("text", "red", "redtext"),
-      new ChatColorSpecification ("text", "green", "greentext"),
-      new ChatColorSpecification ("text", "blue", "bluetext"),
-      new ChatColorSpecification ("text", "#a335ee", "epictext"),
-      new ChatColorSpecification ("text", "#00ccff", "heirloomtext")
-    };
-
+    private static List<ChatColorSpecification> colors = new List<ChatColorSpecification> ();
     private bool selfLookup = false;
 
     public bool IsCommand (string chat)
@@ -52,11 +40,11 @@ namespace ScarabolMods
         String name = causedBy != null ? causedBy.Name : "Server";
         Chat.SendToAll ($"[<color=red>{name}</color>]: {chat}");
       } else {
-        string nameColor = (from s in settings
-                                where s.ColorArea == "name" && Permissions.PermissionsManager.HasPermission (causedBy, s.Permission)
+        string nameColor = (from s in colors
+                                where Permissions.PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "betterchat.name." + s.Name)
                                 select s.Color).FirstOrDefault ();
-        string textColor = (from s in settings
-                                where s.ColorArea == "text" && Permissions.PermissionsManager.HasPermission (causedBy, s.Permission)
+        string textColor = (from s in colors
+                                where Permissions.PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "betterchat.text." + s.Name)
                                 select s.Color).FirstOrDefault ();
         Chat.SendToAll ($"[<color={nameColor}>{causedBy.Name}</color>]: <color={textColor}>{chat}</color>");
       }
@@ -66,23 +54,49 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "mods.scarabol.commands.betterchat.registercommand")]
     public static void AfterItemTypesServer ()
     {
+      Load ();
       ChatCommands.CommandManager.RegisterCommand (new BetterChatCommand ());
+    }
+
+    public static void Load ()
+    {
+      try {
+        JSONNode json;
+        if (Pipliz.JSON.JSON.Deserialize (Path.Combine (CommandsModEntries.ModDirectory, "chatcolors.json"), out json, false)) {
+          JSONNode jsonColors;
+          if (json.TryGetAs ("colors", out jsonColors) && jsonColors.NodeType == NodeType.Array) {
+            foreach (JSONNode jsonColorNode in jsonColors.LoopArray()) {
+              string colorName;
+              if (jsonColorNode.TryGetAs ("name", out colorName)) {
+                string hexcode;
+                if (!jsonColorNode.TryGetAs ("hexcode", out hexcode)) {
+                  hexcode = colorName;
+                }
+                colors.Add (new ChatColorSpecification (colorName, hexcode));
+              } else {
+                Pipliz.Log.WriteError ("Color entry has no name");
+              }
+            }
+          } else {
+            Pipliz.Log.WriteError ("No 'colors' array found in chatcolors.json");
+          }
+        }
+      } catch (Exception exception) {
+        Pipliz.Log.WriteError (string.Format ("Exception while loading chatcolors; {0}", exception.Message));
+      }
     }
   }
 
   internal class ChatColorSpecification
   {
-    public string ColorArea { get; set; }
+    public string Name { get; set; }
 
     public string Color { get; set; }
 
-    public string Permission { get; set; }
-
-    public ChatColorSpecification (string area, string color, string permission)
+    public ChatColorSpecification (string name, string color)
     {
-      this.ColorArea = area;
+      this.Name = name;
       this.Color = color;
-      this.Permission = CommandsModEntries.MOD_PREFIX + "betterchat." + permission;
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "hint_install" : "To enable and use this file, rename it to 'chatcolors.json'",
+  "hint1" : "To use a chat __name__ color for a specific person/group add permission 'mods.scarabol.commands.betterchat.name.red' to it",
+  "hint2" : "To use a chat __text__ color for a specific person/group add permission 'mods.scarabol.commands.betterchat.text.red' to it",
+  "colors" : [
+    { "name" : "red" },
+    { "name" : "green" },
+    { "name" : "blue" },
+    { "name" : "epic", "hexcode" : "#a335ee" },
+    { "name" : "heirloom", "hexcode" : "#00ccff" }
+  ]
+}

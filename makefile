@@ -23,7 +23,7 @@ all: clean default enable
 
 release: default
 	rm -f "$(zipname)"
-	cd ../../ && zip -r "$(moddir)/$(zipname)" "$(moddir)/modInfo.json" "$(moddir)/$(dllname)" "$(moddir)/announcements.example.json" "$(moddir)/protection-ranges.json"
+	cd ../../ && zip -r "$(moddir)/$(zipname)" "$(moddir)/modInfo.json" "$(moddir)/$(dllname)" "$(moddir)/announcements.example.json" "$(moddir)/protection-ranges.json" "$(moddir)/chatcolors.example.json"
 
 client: default enable
 	cd ../../../../ && ./colonyclient.x86_64
