@@ -32,7 +32,10 @@ namespace ScarabolMods
         String msg = "";
         for (int c = 0; c < Players.CountConnected; c++) {
           Players.Player player = Players.GetConnectedByIndex (c);
-          msg += player.Name + "\n";
+          msg += player.Name;
+          if (c < Players.CountConnected - 1) {
+            msg += ", ";
+          }
         }
         msg += string.Format ("Total {0} players online", Players.CountConnected);
         Chat.Send (causedBy, msg);
