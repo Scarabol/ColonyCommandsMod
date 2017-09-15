@@ -17,6 +17,7 @@ namespace ScarabolMods
     public static string PERMISSION_SUPER = "mods.scarabol.antigrief";
     public static string PERMISSION_SPAWN_CHANGE = PERMISSION_SUPER + ".spawnchange";
     public static string PERMISSION_BANNER_PREFIX = PERMISSION_SUPER + ".banner.";
+    private static string ConfigFilepath;
     private static int SpawnProtectionRangeXPos = 50;
     private static int SpawnProtectionRangeXNeg = 50;
     private static int SpawnProtectionRangeZPos = 50;
@@ -28,7 +29,8 @@ namespace ScarabolMods
     public static void OnAssemblyLoaded (string path)
     {
       Pipliz.Log.Write ("Loaded AntiGrief by Scarabol");
-      LoadRangesFromJSON (path);
+      ConfigFilepath = Path.Combine (Path.GetDirectoryName (path), "protection-ranges.json");
+      LoadRangesFromJSON ();
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlockUser, "scarabol.antigrief.trychangeblock")]
@@ -84,10 +86,10 @@ namespace ScarabolMods
       Chat.Send (player, "<color=yellow>Anti-Grief protection enabled</color>");
     }
 
-    public static void LoadRangesFromJSON (string path)
+    public static void LoadRangesFromJSON ()
     {
       JSONNode jsonConfig;
-      if (Pipliz.JSON.JSON.Deserialize (Path.Combine (Path.GetDirectoryName (path), "protection-ranges.json"), out jsonConfig, false)) {
+      if (JSON.Deserialize (ConfigFilepath, out jsonConfig, false)) {
         int rx;
         if (jsonConfig.TryGetAs ("SpawnProtectionRangeX+", out rx)) {
           SpawnProtectionRangeXPos = rx;
@@ -151,42 +153,42 @@ namespace ScarabolMods
         return true;
       }
       string accesslevel = matched.Groups ["accesslevel"].Value;
-      string TargetPlayerName = matched.Groups ["playername"].Value;
-      Players.Player TargetPlayer;
-      string Error;
-      if (!PlayerHelper.TryGetPlayer (TargetPlayerName, out TargetPlayer, out Error)) {
-        Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", TargetPlayerName, Error));
+      string targetPlayerName = matched.Groups ["playername"].Value;
+      Players.Player targetPlayer;
+      string error;
+      if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error)) {
+        Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", targetPlayerName, error));
         return true;
       }
       if (accesslevel.Equals ("spawn")) {
         if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGriefModEntries.PERMISSION_SUPER)) {
           return true;
         }
-        PermissionsManager.AddPermissionToUser (causedBy, TargetPlayer, AntiGriefModEntries.PERMISSION_SPAWN_CHANGE);
-        Chat.Send (causedBy, string.Format ("You granted [{0}] permission to change the spawn area", TargetPlayer.Name));
-        Chat.Send (TargetPlayer, "You got permission to change the spawn area");
+        PermissionsManager.AddPermissionToUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_SPAWN_CHANGE);
+        Chat.Send (causedBy, string.Format ("You granted [{0}] permission to change the spawn area", targetPlayer.Name));
+        Chat.Send (targetPlayer, "You got permission to change the spawn area");
       } else if (accesslevel.Equals ("nospawn")) {
         if (PermissionsManager.HasPermission (causedBy, AntiGriefModEntries.PERMISSION_SUPER)) {
-          PermissionsManager.RemovePermissionOfUser (causedBy, TargetPlayer, AntiGriefModEntries.PERMISSION_SPAWN_CHANGE);
-          Chat.Send (causedBy, string.Format ("You revoked permission for [{0}] to change the spawn area", TargetPlayer.Name));
-          Chat.Send (TargetPlayer, "You lost permission to change the spawn area");
+          PermissionsManager.RemovePermissionOfUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_SPAWN_CHANGE);
+          Chat.Send (causedBy, string.Format ("You revoked permission for [{0}] to change the spawn area", targetPlayer.Name));
+          Chat.Send (targetPlayer, "You lost permission to change the spawn area");
         }
       } else if (accesslevel.Equals ("banner")) {
-        if (causedBy.Equals (TargetPlayer)) {
+        if (causedBy.Equals (targetPlayer)) {
           Chat.Send (causedBy, "You already have this permission");
           return true;
         }
-        PermissionsManager.AddPermissionToUser (causedBy, TargetPlayer, AntiGriefModEntries.PERMISSION_BANNER_PREFIX + causedBy.ID.steamID);
-        Chat.Send (causedBy, string.Format ("You granted [{0}] permission to change your banner area", TargetPlayer.Name));
-        Chat.Send (TargetPlayer, string.Format ("You got permission to change banner area of [{0}]", causedBy.Name));
+        PermissionsManager.AddPermissionToUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_BANNER_PREFIX + causedBy.ID.steamID);
+        Chat.Send (causedBy, string.Format ("You granted [{0}] permission to change your banner area", targetPlayer.Name));
+        Chat.Send (targetPlayer, string.Format ("You got permission to change banner area of [{0}]", causedBy.Name));
       } else if (accesslevel.Equals ("deny")) {
-        if (causedBy.Equals (TargetPlayer)) {
+        if (causedBy.Equals (targetPlayer)) {
           Chat.Send (causedBy, "You can't revoke the permission for yourself");
           return true;
         }
-        PermissionsManager.RemovePermissionOfUser (causedBy, TargetPlayer, AntiGriefModEntries.PERMISSION_BANNER_PREFIX + causedBy.ID.steamID);
-        Chat.Send (causedBy, string.Format ("You revoked permission for [{0}] to change your banner area", TargetPlayer.Name));
-        Chat.Send (TargetPlayer, string.Format ("You lost permission to change banner area of [{0}]", causedBy.Name));
+        PermissionsManager.RemovePermissionOfUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_BANNER_PREFIX + causedBy.ID.steamID);
+        Chat.Send (causedBy, string.Format ("You revoked permission for [{0}] to change your banner area", targetPlayer.Name));
+        Chat.Send (targetPlayer, string.Format ("You lost permission to change banner area of [{0}]", causedBy.Name));
       } else {
         Chat.Send (causedBy, "Unknown access level, use /antigrief [spawn|nospawn|banner|deny] steamid");
       }
