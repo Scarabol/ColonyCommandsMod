@@ -1,0 +1,9 @@
+{
+  "installation-note" : "copy this file into your savegame folder as 'gamedata/savegame/{worldname}/protection-ranges.json' (remove 'example' from filename)",
+  "SpawnProtectionRangeX" : 50,
+  "SpawnProtectionRangeX+" : 75, "note1" : "use such a line, if you want asymmetric spawn protection on x-axis",
+  "SpawnProtectionRangeZ" : 50,
+  "SpawnProtectionRangeZ-" : 65, "note2" : "use such a line, if you want asymmetric spawn protection on z-axis",
+  "BannerProtectionRangeX" : 50,
+  "BannerProtectionRangeZ" : 50
+}

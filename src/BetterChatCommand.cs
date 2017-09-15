@@ -18,6 +18,12 @@ namespace ScarabolMods
     private static List<ChatColorSpecification> colors = new List<ChatColorSpecification> ();
     private bool selfLookup = false;
 
+    private static string ConfigFilepath {
+      get {
+        return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "chatcolors.json"));
+      }
+    }
+
     public bool IsCommand (string chat)
     {
       if (selfLookup) {
@@ -50,15 +56,20 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "mods.scarabol.commands.betterchat.registercommand")]
     public static void AfterItemTypesServer ()
     {
-      Load ();
       ChatCommands.CommandManager.RegisterCommand (new BetterChatCommand ());
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.betterchat.loadcolors")]
+    public static void AfterWorldLoad ()
+    {
+      Load ();
     }
 
     public static void Load ()
     {
       try {
         JSONNode json;
-        if (Pipliz.JSON.JSON.Deserialize (Path.Combine (CommandsModEntries.ModDirectory, "chatcolors.json"), out json, false)) {
+        if (JSON.Deserialize (ConfigFilepath, out json, false)) {
           JSONNode jsonColors;
           if (json.TryGetAs ("colors", out jsonColors) && jsonColors.NodeType == NodeType.Array) {
             foreach (JSONNode jsonColorNode in jsonColors.LoopArray()) {
@@ -74,7 +85,7 @@ namespace ScarabolMods
               }
             }
           } else {
-            Pipliz.Log.WriteError ("No 'colors' array found in chatcolors.json");
+            Pipliz.Log.WriteError ($"No 'colors' array found in {ConfigFilepath}");
           }
         }
       } catch (Exception exception) {

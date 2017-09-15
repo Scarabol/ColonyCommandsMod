@@ -14,10 +14,15 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.travel.registercommand")]
     public static void AfterItemTypesServer ()
     {
-      WaypointManager.Load ();
       ChatCommands.CommandManager.RegisterCommand (new TravelChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelThereChatCommand ());
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.travel.loadwaypoints")]
+    public static void AfterWorldLoad ()
+    {
+      WaypointManager.Load ();
     }
 
     public bool IsCommand (string chat)
@@ -98,17 +103,23 @@ namespace ScarabolMods
     public static Dictionary<Vector3Int, Vector3Int> travelPaths = new Dictionary<Vector3Int, Vector3Int> ();
     public static Dictionary<Players.Player, Vector3Int> startWaypoints = new Dictionary<Players.Player, Vector3Int> ();
 
+    private static string ConfigFilepath {
+      get {
+        return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "travelpaths.json"));
+      }
+    }
+
     public static void Load ()
     {
       JSONNode JsonWaypoints;
-      if (Pipliz.JSON.JSON.Deserialize (Path.Combine (CommandsModEntries.ModDirectory, "travelpaths.json"), out JsonWaypoints, false)) {
+      if (JSON.Deserialize (ConfigFilepath, out JsonWaypoints, false)) {
         travelPaths.Clear ();
         foreach (JSONNode JsonWaypoint in JsonWaypoints.LoopArray()) {
           travelPaths.Add ((Vector3Int)JsonWaypoint ["source"], (Vector3Int)JsonWaypoint ["target"]);
         }
         Pipliz.Log.Write (string.Format ("Loaded {0} travel paths from file", WaypointManager.travelPaths.Count));
       } else {
-        Pipliz.Log.Write ("No travel paths loaded. File travelpaths.json not found in mod directory");
+        Pipliz.Log.Write ($"No travel paths loaded. File {ConfigFilepath} not found");
       }
     }
 
@@ -118,7 +129,7 @@ namespace ScarabolMods
       foreach (KeyValuePair<Vector3Int, Vector3Int> Waypoint in travelPaths) {
         JsonWaypoints.AddToArray (new JSONNode ().SetAs ("source", (JSONNode)Waypoint.Key).SetAs ("target", (JSONNode)Waypoint.Value));
       }
-      Pipliz.JSON.JSON.Serialize (Path.Combine (CommandsModEntries.ModDirectory, "travelpaths.json"), JsonWaypoints, 1);
+      JSON.Serialize (ConfigFilepath, JsonWaypoints, 1);
     }
   }
 }

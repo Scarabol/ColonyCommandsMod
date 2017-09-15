@@ -15,6 +15,12 @@ namespace ScarabolMods
     private static int maxNumberOfColonistsPerColony = -1;
     private static int checkIntervalSeconds = 30;
 
+    private static string ConfigFilepath {
+      get {
+        return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "colonycap.json"));
+      }
+    }
+
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.colonycap.registercommand")]
     public static void AfterItemTypesServer ()
     {
@@ -103,7 +109,7 @@ namespace ScarabolMods
     {
       try {
         JSONNode json;
-        if (Pipliz.JSON.JSON.Deserialize (Path.Combine (CommandsModEntries.ModDirectory, "colonycap.json"), out json, false)) {
+        if (JSON.Deserialize (ConfigFilepath, out json, false)) {
           int maxNumber;
           if (json.TryGetAs ("maxNumberOfColonistsPerColony", out maxNumber)) {
             maxNumberOfColonistsPerColony = maxNumber;
@@ -124,7 +130,7 @@ namespace ScarabolMods
         JSONNode json = new JSONNode ();
         json.SetAs ("maxNumberOfColonistsPerColony", maxNumberOfColonistsPerColony);
         json.SetAs ("checkIntervalSeconds", checkIntervalSeconds);
-        Pipliz.JSON.JSON.Serialize (Path.Combine (CommandsModEntries.ModDirectory, "colonycap.json"), json, 3);
+        JSON.Serialize (ConfigFilepath, json, 3);
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while saving colonycap; {0}", exception.Message));
       }

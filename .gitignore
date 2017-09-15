@@ -6,8 +6,4 @@
 *.flv
 *.mtl
 *.mdb
-/announcements.json
-/travelpaths.json
-/colonycap.json
-/chatcolors.json
 

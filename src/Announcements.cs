@@ -12,6 +12,12 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public static class Announcements
   {
+    private static string ConfigFilepath {
+      get {
+        return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "announcements.json"));
+      }
+    }
+
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.announcements.registercommand")]
     public static void AfterItemTypesServer ()
     {
@@ -72,7 +78,7 @@ namespace ScarabolMods
     {
       try {
         JSONNode json;
-        if (Pipliz.JSON.JSON.Deserialize (Path.Combine (CommandsModEntries.ModDirectory, "announcements.json"), out json, false)) {
+        if (JSON.Deserialize (ConfigFilepath, out json, false)) {
           CurrentIndex = 0;
           JsonAnnouncements = json;
           if (!JsonAnnouncements.TryGetAs ("welcomeMessage", out welcomeMessage)) {
@@ -85,7 +91,7 @@ namespace ScarabolMods
           Pipliz.Log.Write (string.Format ("Using announcements interval {0} seconds", IntervalSeconds));
           JSONNode messages;
           if (!JsonAnnouncements.TryGetAs ("messages", out messages) || messages.NodeType != NodeType.Array) {
-            Pipliz.Log.WriteError (string.Format ("No 'messages' array defined in announcements.json"));
+            Pipliz.Log.WriteError ($"No 'messages' array defined in {ConfigFilepath}");
           } else {
             Messages.Clear ();
             foreach (JSONNode jsonMsg in messages.LoopArray()) {
@@ -111,7 +117,7 @@ namespace ScarabolMods
           JsonMessages.AddToArray ((JSONNode)msg);
         }
         JsonAnnouncements.SetAs ("messages", JsonMessages);
-        Pipliz.JSON.JSON.Serialize (Path.Combine (CommandsModEntries.ModDirectory, "announcements.json"), JsonAnnouncements, 3);
+        JSON.Serialize (ConfigFilepath, JsonAnnouncements, 3);
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while saving announcements; {0}", exception.Message));
       }

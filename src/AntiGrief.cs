@@ -15,7 +15,6 @@ namespace ScarabolMods
     public static string PERMISSION_SUPER = "mods.scarabol.antigrief";
     public static string PERMISSION_SPAWN_CHANGE = PERMISSION_SUPER + ".spawnchange";
     public static string PERMISSION_BANNER_PREFIX = PERMISSION_SUPER + ".banner.";
-    private static string ConfigFilepath;
     private static int SpawnProtectionRangeXPos;
     private static int SpawnProtectionRangeXNeg;
     private static int SpawnProtectionRangeZPos;
@@ -24,12 +23,16 @@ namespace ScarabolMods
     private static int BannerProtectionRangeZ;
     private static List<CustomProtectionArea> customAreas = new List<CustomProtectionArea> ();
 
+    private static string ConfigFilepath {
+      get {
+        return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "protection-ranges.json"));
+      }
+    }
+
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnAssemblyLoaded, "scarabol.antigrief.assemblyload")]
     public static void OnAssemblyLoaded (string path)
     {
       Pipliz.Log.Write ("Loaded AntiGrief by Scarabol");
-      ConfigFilepath = Path.Combine (Path.GetDirectoryName (path), "protection-ranges.json");
-      Load ();
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlockUser, "scarabol.antigrief.trychangeblock")]
@@ -83,6 +86,12 @@ namespace ScarabolMods
     public static void AfterItemTypesServer ()
     {
       ChatCommands.CommandManager.RegisterCommand (new AntiGriefChatCommand ());
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.antigrief.loadranges")]
+    public static void AfterWorldLoad ()
+    {
+      Load ();
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerConnectedLate, "scarabol.antigrief.onplayerconnected")]

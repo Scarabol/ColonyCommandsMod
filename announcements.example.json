@@ -1,11 +1,16 @@
 {
+  "installation-note" : "copy this file into your savegame folder as 'gamedata/savegame/{worldname}/announcements.json' (remove 'example' from filename)",
   "welcomeMessage" : "Welcome on our server",
 	"intervalSeconds" : 120,
 	"messages" : [
 		{
-			"text" : "Visit our homepage colonyempire.org",
+			"text" : "Visit our homepage",
 			"enabled" : true
 		},
+    {
+      "text" : "Download our modpack from colonyempire.org/download",
+      "enabled" : false
+    },
 		{
 			"text" : "Server announcements made with ColonyCommandsMod by Scarabol",
 			"enabled" : false

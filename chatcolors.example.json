@@ -1,5 +1,5 @@
 {
-  "hint_install" : "To enable and use this file, rename it to 'chatcolors.json'",
+  "installation-note" : "copy this file into your savegame folder as 'gamedata/savegame/{worldname}/chatcolors.json' (remove 'example' from filename)",
   "hint1" : "To use a chat __name__ color for a specific person/group add permission 'mods.scarabol.commands.betterchat.name.red' to it",
   "hint2" : "To use a chat __text__ color for a specific person/group add permission 'mods.scarabol.commands.betterchat.text.red' to it",
   "colors" : [
