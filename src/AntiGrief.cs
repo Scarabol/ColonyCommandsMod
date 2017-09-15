@@ -5,9 +5,7 @@ using System.Text.RegularExpressions;
 using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
-using Pipliz.Threading;
 using Permissions;
-using NPC;
 
 namespace ScarabolMods
 {
@@ -18,12 +16,12 @@ namespace ScarabolMods
     public static string PERMISSION_SPAWN_CHANGE = PERMISSION_SUPER + ".spawnchange";
     public static string PERMISSION_BANNER_PREFIX = PERMISSION_SUPER + ".banner.";
     private static string ConfigFilepath;
-    private static int SpawnProtectionRangeXPos = 50;
-    private static int SpawnProtectionRangeXNeg = 50;
-    private static int SpawnProtectionRangeZPos = 50;
-    private static int SpawnProtectionRangeZNeg = 50;
-    private static int BannerProtectionRangeX = 50;
-    private static int BannerProtectionRangeZ = 50;
+    private static int SpawnProtectionRangeXPos;
+    private static int SpawnProtectionRangeXNeg;
+    private static int SpawnProtectionRangeZPos;
+    private static int SpawnProtectionRangeZNeg;
+    private static int BannerProtectionRangeX;
+    private static int BannerProtectionRangeZ;
     private static List<CustomProtectionArea> customAreas = new List<CustomProtectionArea> ();
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnAssemblyLoaded, "scarabol.antigrief.assemblyload")]
@@ -31,7 +29,7 @@ namespace ScarabolMods
     {
       Pipliz.Log.Write ("Loaded AntiGrief by Scarabol");
       ConfigFilepath = Path.Combine (Path.GetDirectoryName (path), "protection-ranges.json");
-      LoadRangesFromJSON ();
+      Load ();
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlockUser, "scarabol.antigrief.trychangeblock")]
@@ -93,8 +91,15 @@ namespace ScarabolMods
       Chat.Send (player, "<color=yellow>Anti-Grief protection enabled</color>");
     }
 
-    public static void LoadRangesFromJSON ()
+    public static void Load ()
     {
+      SpawnProtectionRangeXPos = 50;
+      SpawnProtectionRangeXNeg = 50;
+      SpawnProtectionRangeZPos = 50;
+      SpawnProtectionRangeZNeg = 50;
+      BannerProtectionRangeX = 50;
+      BannerProtectionRangeZ = 50;
+      customAreas.Clear ();
       JSONNode jsonConfig;
       if (JSON.Deserialize (ConfigFilepath, out jsonConfig, false)) {
         int rx;
@@ -146,7 +151,7 @@ namespace ScarabolMods
         }
       } else {
         Save ();
-        Pipliz.Log.Write ("Could not find protection-ranges.json file, created default one");
+        Pipliz.Log.Write ($"Could not find {ConfigFilepath} file, created default one");
       }
       Pipliz.Log.Write (string.Format ("Using spawn protection with x+ range {0}", SpawnProtectionRangeXPos));
       Pipliz.Log.Write (string.Format ("Using spawn protection with x- range {0}", SpawnProtectionRangeXNeg));
@@ -168,6 +173,12 @@ namespace ScarabolMods
       if (!JSON.Deserialize (ConfigFilepath, out jsonConfig, false)) {
         jsonConfig = new JSONNode ();
       }
+      jsonConfig.SetAs ("SpawnProtectionRangeX+", SpawnProtectionRangeXPos);
+      jsonConfig.SetAs ("SpawnProtectionRangeX-", SpawnProtectionRangeXNeg);
+      jsonConfig.SetAs ("SpawnProtectionRangeZ+", SpawnProtectionRangeZPos);
+      jsonConfig.SetAs ("SpawnProtectionRangeZ-", SpawnProtectionRangeZNeg);
+      jsonConfig.SetAs ("BannerProtectionRangeX", BannerProtectionRangeX);
+      jsonConfig.SetAs ("BannerProtectionRangeZ", BannerProtectionRangeZ);
       JSONNode jsonCustomAreas = new JSONNode (NodeType.Array);
       foreach (CustomProtectionArea customArea in customAreas) {
         jsonCustomAreas.AddToArray (customArea.ToJSON ());

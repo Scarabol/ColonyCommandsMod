@@ -6,9 +6,6 @@ using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
 using Pipliz.Threading;
-using Pipliz.APIProvider.Recipes;
-using Pipliz.APIProvider.Jobs;
-using NPC;
 
 namespace ScarabolMods
 {

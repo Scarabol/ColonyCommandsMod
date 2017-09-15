@@ -1,14 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
-using Pipliz.Threading;
-using Pipliz.APIProvider.Recipes;
-using Pipliz.APIProvider.Jobs;
-using NPC;
 
 namespace ScarabolMods
 {
@@ -23,18 +18,13 @@ namespace ScarabolMods
 
     public bool IsCommand (string chat)
     {
-      return chat.Equals ("/drain") || chat.StartsWith ("/drain ");
+      return chat.Equals ("/drain");
     }
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        if (causedBy == null || !Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "drain")) {
-          return true;
-        }
-        var m = Regex.Match (chattext, @"/drain( (?<startx>-?\d+) (?<starty>-?\d+) (?<startz>-?\d+))?");
-        if (!m.Success) {
-          Chat.Send (causedBy, "Command didn't match, use /drain or /drain [startx] [starty] [startz]");
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "drain")) {
           return true;
         }
         Vector3Int origin = new Vector3Int (causedBy.Position);
