@@ -2,14 +2,15 @@
 using System.Text.RegularExpressions;
 using Pipliz;
 using Pipliz.Chatting;
+using Server.TerrainGeneration;
 
 namespace ScarabolMods
 {
   [ModLoader.ModManager]
   public class WarpChatCommand : ChatCommands.IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.warp.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.warp.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new WarpChatCommand ());
     }
@@ -56,8 +57,8 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class WarpBannerChatCommand : ChatCommands.IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.warpbanner.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.warpbanner.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new WarpBannerChatCommand ());
     }
@@ -82,7 +83,9 @@ namespace ScarabolMods
         Banner TargetBanner = null;
         int closestDist = int.MaxValue;
         Banner closestMatch = null;
-        foreach (Banner banner in BannerTracker.GetBanners()) {
+        var banners = BannerTracker.GetBanners ();
+        for (int c = 0; c < banners.Count; c++) {
+          Banner banner = banners.GetValueAtIndex (c);
           if (banner.Owner.Name.ToLower ().Equals (TargetPlayerName.ToLower ())) {
             if (TargetBanner == null) {
               TargetBanner = banner;
@@ -128,8 +131,8 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class WarpSpawnChatCommand : ChatCommands.IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.warpspawn.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.warpspawn.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new WarpSpawnChatCommand ());
     }
@@ -159,7 +162,7 @@ namespace ScarabolMods
             return true;
           }
         }
-        ChatCommands.Implementations.Teleport.TeleportTo (TeleportPlayer, TerrainGenerator.GetSpawnLocation ().Vector);
+        ChatCommands.Implementations.Teleport.TeleportTo (TeleportPlayer, TerrainGenerator.UsedGenerator.GetSpawnLocation (causedBy));
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }
@@ -170,8 +173,8 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class WarpPlaceChatCommand : ChatCommands.IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.warpplace.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.warpplace.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new WarpPlaceChatCommand ());
     }
@@ -193,29 +196,29 @@ namespace ScarabolMods
           return true;
         }
         string xCoord = m.Groups ["px"].Value;
-        int vx;
-        if (!int.TryParse (xCoord, out vx)) {
+        float vx;
+        if (!float.TryParse (xCoord, out vx)) {
           Chat.Send (causedBy, string.Format ("Failure parsing first coordinate '{0}'", xCoord));
           return true;
         }
         string yCoord = m.Groups ["py"].Value;
-        int vy;
-        if (!int.TryParse (yCoord, out vy)) {
+        float vy;
+        if (!float.TryParse (yCoord, out vy)) {
           Chat.Send (causedBy, string.Format ("Failure parsing second coordinate '{0}'", yCoord));
           return true;
         }
         string zCoord = m.Groups ["pz"].Value;
-        int vz;
+        float vz;
         if (zCoord.Length > 0) {
-          if (!int.TryParse (zCoord, out vz)) {
+          if (!float.TryParse (zCoord, out vz)) {
             Chat.Send (causedBy, string.Format ("Failure parsing third coordinate '{0}'", zCoord));
             return true;
           }
         } else {
           vz = vy;
-          vy = TerrainGenerator.GetHeight (vx, vz);
+          vy = TerrainGenerator.UsedGenerator.GetHeight (vx, vz);
         }
-        ChatCommands.Implementations.Teleport.TeleportTo (causedBy, new Vector3Int (vx, vy, vz).Vector);
+        ChatCommands.Implementations.Teleport.TeleportTo (causedBy, new UnityEngine.Vector3 (vx, vy, vz));
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }

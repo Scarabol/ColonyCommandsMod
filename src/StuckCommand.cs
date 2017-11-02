@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.Threading;
+using Server.TerrainGeneration;
 
 namespace ScarabolMods
 {
@@ -12,8 +13,8 @@ namespace ScarabolMods
     private static Dictionary<Players.Player, long> rescueOperations = new Dictionary<Players.Player, long> ();
     private static Dictionary<Players.Player, Vector3Int> stuckPositions = new Dictionary<Players.Player, Vector3Int> ();
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.stuck.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.stuck.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new StuckChatCommand ());
     }
@@ -49,7 +50,7 @@ namespace ScarabolMods
         ThreadManager.InvokeOnMainThread (delegate () {
           long actualId;
           if (rescueOperations.TryGetValue (causedBy, out actualId) && actualId == rescueId) {
-            ChatCommands.Implementations.Teleport.TeleportTo (causedBy, TerrainGenerator.GetSpawnLocation ().Vector);
+            ChatCommands.Implementations.Teleport.TeleportTo (causedBy, TerrainGenerator.UsedGenerator.GetSpawnLocation (causedBy));
             Chat.Send (causedBy, "Thank you for your patience. Have a nice day!");
           }
         }, 60.0f);

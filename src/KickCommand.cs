@@ -8,8 +8,8 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class KickChatCommand : ChatCommands.IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.kick.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.kick.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new KickChatCommand ());
     }

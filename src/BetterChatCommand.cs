@@ -53,8 +53,8 @@ namespace ScarabolMods
       return true;
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "mods.scarabol.commands.betterchat.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "mods.scarabol.commands.betterchat.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new BetterChatCommand ());
     }

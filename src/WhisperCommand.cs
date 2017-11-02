@@ -8,8 +8,8 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class WhisperChatCommand : ChatCommands.IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.whisper.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.whisper.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new WhisperChatCommand ());
     }

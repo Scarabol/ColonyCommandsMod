@@ -6,6 +6,7 @@ using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
 using Permissions;
+using Server.TerrainGeneration;
 
 namespace ScarabolMods
 {
@@ -40,9 +41,9 @@ namespace ScarabolMods
     {
       Players.Player requestedBy = userData.requestedBy;
       Vector3Int position = userData.VoxelToChange;
-      Vector3Int spawn = TerrainGenerator.GetSpawnLocation ();
-      int ox = position.x - spawn.x;
-      int oz = position.z - spawn.z;
+      UnityEngine.Vector3 spawn = TerrainGenerator.UsedGenerator.GetSpawnLocation (requestedBy);
+      int ox = position.x - (int)spawn.x;
+      int oz = position.z - (int)spawn.z;
       if (((ox >= 0 && ox <= SpawnProtectionRangeXPos) || (ox < 0 && ox >= -SpawnProtectionRangeXNeg)) && ((oz >= 0 && oz <= SpawnProtectionRangeZPos) || (oz < 0 && oz >= -SpawnProtectionRangeZNeg))) {
         if (!PermissionsManager.HasPermission (requestedBy, PERMISSION_SPAWN_CHANGE)) {
           Chat.Send (requestedBy, "<color=red>You don't have permission to change the spawn area!</color>");
@@ -62,7 +63,9 @@ namespace ScarabolMods
           checkRangeX *= 2;
           checkRangeZ *= 2;
         }
-        foreach (Banner b in BannerTracker.GetBanners()) {
+        var banners = BannerTracker.GetBanners ();
+        for (int c = 0; c < banners.Count; c++) {
+          Banner b = banners.GetValueAtIndex (c);
           Vector3Int bannerLocation = b.KeyLocation;
           if (System.Math.Abs (bannerLocation.x - position.x) <= checkRangeX && System.Math.Abs (bannerLocation.z - position.z) <= checkRangeZ) {
             if (b.Owner != requestedBy && !PermissionsManager.HasPermission (requestedBy, PERMISSION_BANNER_PREFIX + b.Owner.ID.steamID)) {
@@ -82,8 +85,8 @@ namespace ScarabolMods
       return true;
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.antigrief.registertypes")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new AntiGriefChatCommand ());
     }

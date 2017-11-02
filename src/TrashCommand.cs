@@ -8,8 +8,8 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class TrashChatCommand : ChatCommands.IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesServer, "scarabol.commands.trash.registercommand")]
-    public static void AfterItemTypesServer ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.trash.registercommand")]
+    public static void AfterItemTypesDefined ()
     {
       ChatCommands.CommandManager.RegisterCommand (new TrashChatCommand ());
     }
@@ -41,8 +41,11 @@ namespace ScarabolMods
         Stockpile playerStockpile;
         if (Stockpile.TryGetStockpile (causedBy, out playerStockpile)) {
           int actualAmount = System.Math.Min (playerStockpile.AmountContained (itemType), amount);
-          playerStockpile.Remove (itemType, actualAmount);
-          Chat.Send (causedBy, string.Format ("Trashed {0} x {1}", actualAmount, ItemTypes.IndexLookup.GetName (itemType)));
+          if (playerStockpile.TryRemove (itemType, actualAmount)) {
+            Chat.Send (causedBy, string.Format ("Trashed {0} x {1}", actualAmount, ItemTypes.IndexLookup.GetName (itemType)));
+          } else {
+            Chat.Send (causedBy, string.Format ("Not enough items in stockpile"));
+          }
         } else {
           Chat.Send (causedBy, "Could not get stockpile");
         }
