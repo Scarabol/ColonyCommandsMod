@@ -111,6 +111,7 @@ namespace ScarabolMods
     private static void Save ()
     {
       try {
+        JsonAnnouncements.SetAs ("welcomeMessage", welcomeMessage);
         JsonAnnouncements.SetAs ("intervalSeconds", Announcements.IntervalSeconds);
         JSONNode JsonMessages = new JSONNode (NodeType.Array);
         foreach (ServerMessage msg in Messages) {
@@ -205,6 +206,12 @@ namespace ScarabolMods
       Save ();
     }
 
+    public static void SetWelcomeMessage (string text)
+    {
+      welcomeMessage = text;
+      Save ();
+    }
+
     public class ServerMessage
     {
       public string Text = "";
@@ -254,6 +261,7 @@ namespace ScarabolMods
     private static string ENABLE_PREFIX = "/announcements enable";
     private static string DISABLE_PREFIX = "/announcements disable";
     private static string INTERVAL_PREFIX = "/announcements interval";
+    private static string WELCOME_PREFIX = "/announcements welcome";
 
     public bool IsCommand (string chat)
     {
@@ -279,6 +287,8 @@ namespace ScarabolMods
           DisableCommand (causedBy, chattext.Substring (DISABLE_PREFIX.Length).Trim ());
         } else if (chattext.Equals (INTERVAL_PREFIX) || chattext.StartsWith (INTERVAL_PREFIX + " ")) {
           IntervalCommand (causedBy, chattext.Substring (INTERVAL_PREFIX.Length).Trim ());
+        } else if (chattext.Equals (WELCOME_PREFIX) || chattext.StartsWith (WELCOME_PREFIX + " ")) {
+          WelcomeCommand (causedBy, chattext.Substring (WELCOME_PREFIX.Length).Trim ());
         } else {
           Chat.Send (causedBy, "Command didn't match, use /announcements [add|remove|edit|move|enable|disable|interval] [params...]");
         }
@@ -444,6 +454,18 @@ namespace ScarabolMods
       Announcements.SetIntervalSeconds (Interval);
       Chat.Send (causedBy, string.Format ("Set announcement interval to {0} seconds", Interval));
     }
+
+    public void WelcomeCommand (Players.Player causedBy, string param)
+    {
+      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.welcome")) {
+        return;
+      }
+      Announcements.SetWelcomeMessage (param);
+      if (param.Length > 0) {
+        Chat.Send (causedBy, string.Format ("Changed welcome message, see below\n{0}", param));
+      } else {
+        Chat.Send (causedBy, "Disabled welcome message");
+      }
+    }
   }
 }
-
