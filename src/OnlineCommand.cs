@@ -29,7 +29,7 @@ namespace ScarabolMods
             msg += ", ";
           }
         }
-        msg += string.Format ("Total {0} players online", Players.CountConnected);
+        msg += string.Format ("\nTotal {0} players online", Players.CountConnected);
         Chat.Send (causedBy, msg);
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
