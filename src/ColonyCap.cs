@@ -38,7 +38,7 @@ namespace ScarabolMods
         if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "colonycap")) {
           return true;
         }
-        var m = Regex.Match (chattext, @"/colonycap (?<colonistslimit>\d+)( (?<checkintervalseconds>\d+))?");
+        var m = Regex.Match (chattext, @"/colonycap (?<colonistslimit>-?\d+)( (?<checkintervalseconds>\d+))?");
         if (!m.Success) {
           Chat.Send (causedBy, "Command didn't match, use /colonycap [colonistslimit] [checkintervalseconds]");
           return true;
@@ -54,7 +54,11 @@ namespace ScarabolMods
           return true;
         }
         maxNumberOfColonistsPerColony = limit;
-        Chat.SendToAll (string.Format ("Colony population limit set to {0}", maxNumberOfColonistsPerColony));
+        if (maxNumberOfColonistsPerColony >= 0) {
+          Chat.SendToAll (string.Format ("Colony population limit set to {0}", maxNumberOfColonistsPerColony));
+        } else {
+          Chat.SendToAll (string.Format ("Colony population limit disabled"));
+        }
         string strInterval = m.Groups ["checkintervalseconds"].Value;
         if (strInterval.Length > 0) {
           int interval;
