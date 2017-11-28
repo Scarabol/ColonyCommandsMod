@@ -17,6 +17,7 @@ namespace ScarabolMods
       ChatCommands.CommandManager.RegisterCommand (new TravelChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
       ChatCommands.CommandManager.RegisterCommand (new TravelThereChatCommand ());
+      ChatCommands.CommandManager.RegisterCommand (new TravelRemoveChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.travel.loadwaypoints")]
@@ -90,6 +91,32 @@ namespace ScarabolMods
           Chat.Send (causedBy, string.Format ("Saved travel path from {0} to {1}", StartWaypoint, causedBy.VoxelPosition));
         } else {
           Chat.Send (causedBy, "You have no start waypoint set, use /travelhere at start point");
+        }
+      } catch (Exception exception) {
+        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      }
+      return true;
+    }
+  }
+
+  public class TravelRemoveChatCommand : ChatCommands.IChatCommand
+  {
+    public bool IsCommand (string chat)
+    {
+      return chat.Equals ("/travelremove");
+    }
+
+    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    {
+      try {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
+          return true;
+        }
+        if (WaypointManager.travelPaths.Remove (causedBy.VoxelPosition)) {
+          WaypointManager.Save ();
+          Chat.Send (causedBy, "Travel path removed");
+        } else {
+          Chat.Send (causedBy, "No start waypoint found at your position");
         }
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
