@@ -18,6 +18,10 @@ Use **/antigrief area 10 10** to restrict regular players from changing blocks i
 This mods adds a welcome message and automatic announcements to the game.
 See *announcements.example.json* and place it in your savegame folder, like */gamedata/savegames/mysavegamename/announcements.json* to activate them.
 
+## Events
+
+This mod adds a simple event system. Players with **mods.scarabol.commands.events** permission can start an event with **/eventstart** at any position. Then all players are allowed to join using **/eventjoin** or leave the event with **/eventleave**. On join the players are warped to the event position. On leave players are warped back to their original position before the event. Same applies if an event is stopped using **/eventstop**. Stopping an event also requires the **mods.scarabol.commands.events** permission. There can only be one event at a time.
+
 ## Colonists Cap
 
 This mod adds a max capacity for each players colonists number. Each colonist beyond the limit will be killed. By default there is no limitation.
