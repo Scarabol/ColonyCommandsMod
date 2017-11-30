@@ -1,0 +1,10 @@
+{
+  "installation-note" : "copy this file into your savegame folder as 'gamedata/savegame/{worldname}/events.json' (remove 'example' from filename)",
+	"msgAllStarted" : "{startername} started an event! Use \/eventjoin to participate",
+	"msgPrivJoined" : "You've joined the event",
+	"msgAllJoined" : "{playername} joined the event",
+	"msgPrivLeft" : "You left the event",
+	"msgAllLeft" : "{playername} left the event",
+	"msgPrivStopped" : "{stoppername} stopped the event! You've been warped back",
+	"msgAllStopped" : "{stoppername} stopped the event! Thanks for participating"
+}

@@ -1,16 +1,66 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
 using Pipliz.Chatting;
+using Pipliz.JSON;
 using BlockTypes.Builtin;
 
 namespace ScarabolMods
 {
+  [ModLoader.ModManager]
   public static class Events
   {
     public static Vector3Int currentLocation = Vector3Int.invalidPos;
     public static Dictionary<Players.Player, UnityEngine.Vector3> originPositions = new Dictionary<Players.Player, UnityEngine.Vector3> ();
+    public static string msgAllStarted = "{startername} started an event! Use /eventjoin to participate";
+    public static string msgPrivJoined = "You've joined the event";
+    public static string msgAllJoined = "{playername} joined the event";
+    public static string msgPrivLeft = "You left the event";
+    public static string msgAllLeft = "{playername} left the event";
+    public static string msgPrivStopped = "{stoppername} stopped the event! You've been warped back";
+    public static string msgAllStopped = "{stoppername} stopped the event! Thanks for participating";
+
+    private static string ConfigFilepath {
+      get {
+        return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "events.json"));
+      }
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.events.load")]
+    public static void Load ()
+    {
+      JSONNode jsonConfig;
+      if (JSON.Deserialize (ConfigFilepath, out jsonConfig, false)) {
+        msgAllStarted = jsonConfig.GetAsOrDefault ("msgAllStarted", "");
+        msgPrivJoined = jsonConfig.GetAsOrDefault ("msgPrivJoined", "");
+        msgAllJoined = jsonConfig.GetAsOrDefault ("msgAllJoined", "");
+        msgPrivLeft = jsonConfig.GetAsOrDefault ("msgPrivLeft", "");
+        msgAllLeft = jsonConfig.GetAsOrDefault ("msgAllLeft", "");
+        msgPrivStopped = jsonConfig.GetAsOrDefault ("msgPrivStopped", "");
+        msgAllStopped = jsonConfig.GetAsOrDefault ("msgAllStopped", "");
+      } else {
+        Save ();
+        Pipliz.Log.Write ($"Could not find {ConfigFilepath} file, created default one");
+      }
+    }
+
+    public static void Save ()
+    {
+      JSONNode jsonConfig;
+      if (!JSON.Deserialize (ConfigFilepath, out jsonConfig, false)) {
+        jsonConfig = new JSONNode ();
+      }
+      jsonConfig.SetAs ("msgAllStarted", msgAllStarted);
+      jsonConfig.SetAs ("msgPrivJoined", msgPrivJoined);
+      jsonConfig.SetAs ("msgAllJoined", msgAllJoined);
+      jsonConfig.SetAs ("msgPrivLeft", msgPrivLeft);
+      jsonConfig.SetAs ("msgAllLeft", msgAllLeft);
+      jsonConfig.SetAs ("msgPrivStopped", msgPrivStopped);
+      jsonConfig.SetAs ("msgAllStopped", msgAllStopped);
+      JSON.Serialize (ConfigFilepath, jsonConfig, 2);
+    }
   }
 
   [ModLoader.ModManager]
@@ -39,7 +89,9 @@ namespace ScarabolMods
         }
         Events.currentLocation = causedBy.VoxelPosition;
         Events.originPositions.Clear ();
-        Chat.SendToAll ($"{causedBy.Name} started an event! Use /eventjoin to participate");
+        if (Events.msgAllStarted.Length > 0) {
+          Chat.SendToAll (Events.msgAllStarted.Replace ("{startername}", causedBy.Name));
+        }
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }
@@ -70,7 +122,14 @@ namespace ScarabolMods
         }
         Events.originPositions.Add (causedBy, causedBy.Position);
         ChatCommands.Implementations.Teleport.TeleportTo (causedBy, Events.currentLocation.Vector);
-        Chat.Send (causedBy, "You've joined the event");
+        if (!string.IsNullOrEmpty (Events.msgPrivJoined)) {
+          Chat.Send (causedBy, Events.msgPrivJoined);
+          if (!string.IsNullOrEmpty (Events.msgAllJoined)) {
+            Chat.SendToAllBut (causedBy, Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
+          }
+        } else if (!string.IsNullOrEmpty (Events.msgAllJoined)) {
+          Chat.SendToAll (Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
+        }
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }
@@ -98,7 +157,14 @@ namespace ScarabolMods
         UnityEngine.Vector3 originPosition;
         if (Events.originPositions.TryGetValue (causedBy, out originPosition) && Events.originPositions.Remove (causedBy)) {
           ChatCommands.Implementations.Teleport.TeleportTo (causedBy, originPosition);
-          Chat.Send (causedBy, "You left the event");
+          if (!string.IsNullOrEmpty (Events.msgPrivLeft)) {
+            Chat.Send (causedBy, Events.msgPrivLeft);
+            if (!string.IsNullOrEmpty (Events.msgAllLeft)) {
+              Chat.SendToAllBut (causedBy, Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
+            }
+          } else if (!string.IsNullOrEmpty (Events.msgAllLeft)) {
+            Chat.SendToAll (Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
+          }
         } else {
           Chat.Send (causedBy, "You're not participating in an event");
         }
@@ -133,12 +199,17 @@ namespace ScarabolMods
           Chat.Send (causedBy, "There is currently no event ongoing");
           return true;
         }
+        Events.currentLocation = Vector3Int.invalidPos;
         foreach (KeyValuePair<Players.Player, UnityEngine.Vector3> participantEntry in Events.originPositions) {
           ChatCommands.Implementations.Teleport.TeleportTo (participantEntry.Key, participantEntry.Value);
-          Chat.Send (participantEntry.Key, $"{causedBy.Name} stopped the event! You've been warped back");
+          if (!string.IsNullOrEmpty (Events.msgPrivStopped)) {
+            Chat.Send (causedBy, Events.msgPrivStopped.Replace ("{stoppername}", causedBy.Name));
+          }
         }
-        Events.currentLocation = Vector3Int.invalidPos;
         Events.originPositions.Clear ();
+        if (!string.IsNullOrEmpty (Events.msgAllStopped)) {
+          Chat.SendToAll (Events.msgAllStopped.Replace ("{stoppername}", causedBy.Name));
+        }
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }
