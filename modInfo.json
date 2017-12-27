@@ -1,31 +1,11 @@
-{
-  "assemblies" : [
-    {
-      "name" : "scarabol.commands",
-      "path" : "Commands.dll",
-      "enabled" : true,
-      "compatibleversions" : [
-        {
-          "Major" : 0,
-          "Minor" : 4,
-          "Build" : 0
-        },
-        {
-          "Major" : 0,
-          "Minor" : 4,
-          "Build" : 1
-        },
-        {
-          "Major" : 0,
-          "Minor" : 4,
-          "Build" : 2
-        },
-        {
-          "Major" : 0,
-          "Minor" : 4,
-          "Build" : 3
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "name" : "scarabol.commands",
+    "version" : "0.8.0",
+    "dllpath" : "Commands.dll",
+    "enabled" : true,
+    "compatibleversions" : [
+      "0.5.0"
+    ]
+  }
+]
