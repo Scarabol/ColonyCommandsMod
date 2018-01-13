@@ -13,6 +13,14 @@ Players are also able to whitelist friends by writing **/antigrief banner [frien
 Last but not least players with master permission **mods.scarabol.antigrief** are able to define custom protected areas.
 Use **/antigrief area 10 10** to restrict regular players from changing blocks in an area 10 blocks around your current position.
 
+## Activity-Tracker
+
+This mod adds an player activity tracker. It updates a last seen timestamp for each player, on each player login, logout or world auto-save. Furthermore the total time played is tracked.
+
+Use **/lastseen [playername]** to view the timestamp for a player.
+
+Use **/top time** to view a top ranking with the most time played.
+
 ## Announcements
 
 This mods adds a welcome message and automatic announcements to the game.
