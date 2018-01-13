@@ -52,19 +52,9 @@ namespace ScarabolMods
           return true;
         }
         Players.Player targetPlayer = null;
-        for (int c = 0; c < Players.CountConnected; c++) {
-          Players.Player player = Players.GetConnectedByIndex (c);
-          if (player.Name != null && player.Name.ToLower ().Equals (targetPlayerName.ToLower ())) {
-            if (targetPlayer == null) {
-              targetPlayer = player;
-            } else {
-              Chat.Send (causedBy, "Duplicate target player name, pls use SteamID");
-              return true;
-            }
-          }
-        }
-        if (targetPlayer == null) {
-          Chat.Send (causedBy, string.Format ("Could not find player '{0}'", targetPlayerName));
+        string error;
+        if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error)) {
+          Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", targetPlayerName, error));
           return true;
         }
         Stockpile sourceStockpile;
@@ -74,7 +64,7 @@ namespace ScarabolMods
           if (sourceStockpile.TryRemove (tradeItem)) {
             targetStockpile.Add (tradeItem);
             Chat.Send (causedBy, string.Format ("Send {0} x {1} to '{2}'", amount, itemTypeName, targetPlayer.Name));
-            Chat.Send (targetPlayer, string.Format ("Received {0} x {1} from '{3}'", amount, itemTypeName, causedBy.Name));
+            Chat.Send (targetPlayer, string.Format ("Received {0} x {1} from '{2}'", amount, itemTypeName, causedBy.Name));
           } else {
             Chat.Send (causedBy, "You don't have enough items");
           }
