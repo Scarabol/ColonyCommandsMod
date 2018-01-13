@@ -123,6 +123,19 @@ namespace ScarabolMods
       }
     }
 
+    public static Dictionary<Players.Player, long> GetInactivePlayers (int days)
+    {
+      var result = new Dictionary<Players.Player, long> ();
+      foreach (Players.Player player in Players.PlayerDatabase.ValuesAsList) {
+        StatsDataEntry stats = ActivityTracker.GetOrCreateStats (player.IDString);
+        double inactiveDays = DateTime.Now.Subtract (DateTime.Parse (stats.lastSeen)).TotalDays;
+        if (inactiveDays >= days) {
+          result.Add (player, (long)inactiveDays);
+        }
+      }
+      return result;
+    }
+
     public class StatsDataEntry
     {
       public string lastSeen = "";

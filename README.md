@@ -87,6 +87,10 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dd>Requires permission: <b>mods.scarabol.commands.cleanbanners</b><br>Removes all banners from banner-tracker, which have no banner block in the world. Useful after server crashes.</dd>
 <dt>/killnpcs [playername]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.killnpcs</b><br>Kills all npcs of the given playername. Useful to reduce lag on crowded servers.</dd>
+<dt>/inactive [days]</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.inactive</b><br>Lists all players, who have not logged in or out since the last number of days.</dd>
+<dt>/purgeall [days]</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.purgeall</b><br>Kills all NPCs and removes banner for each player, which has not logged in or out since the last number of days.</dd>
 </dl>
 
 ## Installation
