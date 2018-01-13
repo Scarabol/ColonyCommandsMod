@@ -80,7 +80,7 @@ namespace ScarabolMods
       if (targetPlayer != null) {
         error = "";
         return true;
-      } else if (closestMatch != null) {
+      } else if (closestMatch != null && (closestDist < closestMatch.Name.Length * 0.2)) {
         error = "";
         targetPlayer = closestMatch;
         Pipliz.Log.Write (string.Format ("Name '{0}' did not match, picked closest match '{1}' instead", identifier, targetPlayer.Name));
