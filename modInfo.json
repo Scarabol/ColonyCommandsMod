@@ -1,7 +1,7 @@
 [
   {
     "name" : "scarabol.commands",
-    "version" : "0.8.1",
+    "version" : "0.9.0",
     "dllpath" : "Commands.dll",
     "enabled" : true,
     "compatibleversions" : [

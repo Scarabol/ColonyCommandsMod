@@ -1,6 +1,6 @@
 # important variables
 modname = Commands
-version = 0.8.1
+version = 0.9.0
 
 moddir = Scarabol/$(modname)
 zipname = Colony$(modname)Mod-$(version)-mods.zip
