@@ -82,6 +82,7 @@ namespace ScarabolMods
       Load ();
       new Thread (() => {
         Thread.CurrentThread.IsBackground = true;
+        System.Random rnd = new System.Random ();
         while (true) {
           try {
             int cachedLimit = maxNumberOfColonistsPerColony;
@@ -91,11 +92,9 @@ namespace ScarabolMods
                 while (colony.FollowerCount > cachedLimit) {
                   Chat.Send (player, string.Format ("<color=red>Colonists are dieing, because of overpopulation. Limit is {0}</color>", cachedLimit));
                   if (colony.LaborerCount > 0) {
-                    colony.RemoveNPC (colony.FindLaborer ());
+                    colony.FindLaborer ().OnDeath ();
                   } else {
-                    for (int c = 0; c < 8; c++) { // colony takes 8 hits to kill a colonist
-                      colony.TakeMonsterHit (0, int.MaxValue);
-                    }
+                    colony.Followers [rnd.Next (colony.Followers.Count)].OnDeath ();
                   }
                   Thread.Sleep (1000);
                 }

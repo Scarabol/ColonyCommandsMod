@@ -2,11 +2,11 @@
 
 **Special thanks to Tjohei for most of the ideas and feature requests.**
 
-**Special thanks to Crone for the chat coloring system.**
+**Special thanks to Crone for the chat coloring system and score system.**
 
 ## Anti-Grief
 
-This mods adds a anti-griefing mechanism to the server. Regular players can't change 50 blocks around the spawn point and 50 blocks around other player banners. Both values can be adjusted.
+This mods adds an anti-griefing mechanism to the server. Regular players can't change 50 blocks around the spawn point and 50 blocks around other player banners. Both values can be adjusted.
 
 Players are also able to whitelist friends by writing **/antigrief banner [friendly-player-name]** in chat. 
 

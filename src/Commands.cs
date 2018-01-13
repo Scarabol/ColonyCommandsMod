@@ -27,6 +27,11 @@ namespace ScarabolMods
   {
     public static bool TryGetPlayer (string identifier, out Players.Player targetPlayer, out string error)
     {
+      return TryGetPlayer (identifier, out targetPlayer, out error, false);
+    }
+
+    public static bool TryGetPlayer (string identifier, out Players.Player targetPlayer, out string error, bool includeOffline)
+    {
       targetPlayer = null;
       if (identifier.StartsWith ("'")) {
         if (identifier.EndsWith ("'")) {
@@ -55,10 +60,12 @@ namespace ScarabolMods
       }
       int closestDist = int.MaxValue;
       Players.Player closestMatch = null;
-      for (int c = 0; c < Players.CountConnected; c++) {
-        Players.Player player = Players.GetConnectedByIndex (c);
+      foreach (Players.Player player in Players.PlayerDatabase.ValuesAsList) {
+        if (!player.IsConnected && !includeOffline) {
+          continue;
+        }
         if (player.Name != null) {
-          if (player.Name.ToLower ().Equals (identifier.ToLower ())) {
+          if (string.Equals (player.Name, identifier, StringComparison.InvariantCultureIgnoreCase)) {
             if (targetPlayer == null) {
               targetPlayer = player;
             } else {
