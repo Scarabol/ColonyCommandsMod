@@ -28,7 +28,7 @@ namespace ScarabolMods
       try {
         var m = Regex.Match (chattext, @"/top (?<typename>.+)");
         if (!m.Success) {
-          Chat.Send (causedBy, "Command didn't match, use /top [score|food|colonists|itemtypename]");
+          Chat.Send (causedBy, "Command didn't match, use /top [score|food|colonists|time|itemtypename]");
           return true;
         }
         string typename = m.Groups ["typename"].Value;
@@ -93,6 +93,28 @@ namespace ScarabolMods
             foreach (var currentPlayer in players) {
               var colonists = Colony.Get (currentPlayer).FollowerCount;
               Chat.Send (causedBy, $"{count++}: {currentPlayer.Name} Colonists: {colonists}");
+            }
+          }
+        } else if (typename.Equals ("time")) {
+          players.Sort (delegate (Players.Player c1, Players.Player c2) {
+            long c1Time = ActivityTracker.GetOrCreateStats (c1.IDString).secondsPlayed;
+            long c2Time = ActivityTracker.GetOrCreateStats (c2.IDString).secondsPlayed;
+            return c2Time.CompareTo (c1Time);
+          });
+          Chat.Send (causedBy, "##### Top Time Played #####");
+          int count = 1;
+          if (players.Count > 10) {
+            for (int i = 0; i < 10; i++) {
+              Players.Player currentPlayer = players [i];
+              var seconds = ActivityTracker.GetOrCreateStats (currentPlayer.IDString).secondsPlayed;
+              var time = string.Format ("{0:00}:{1:00}:{2:00}", seconds / 3600f, System.Math.Truncate ((seconds / 60f)) % 60f, seconds % 60f);
+              Chat.Send (causedBy, $"{i + 1}: {currentPlayer.Name} Time: {time}");
+            }
+          } else {
+            foreach (var currentPlayer in players) {
+              var seconds = ActivityTracker.GetOrCreateStats (currentPlayer.IDString).secondsPlayed;
+              var time = string.Format ("{0:00}:{1:00}:{2:00}", seconds / 3600f, System.Math.Truncate ((seconds / 60f)) % 60f, seconds % 60f);
+              Chat.Send (causedBy, $"{count++}: {currentPlayer.Name} Time: {time}");
             }
           }
         } else if (!typename.Contains (" ")) {

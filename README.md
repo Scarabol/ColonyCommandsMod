@@ -57,7 +57,7 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dd>Requires no permission<br>Tells you the name of the owner of the closest banner.</dd>
 <dt>/online</dt>
 <dd>Requires no permission<br>Lists all online player names.</dd>
-<dt>/top [score|food|colonists|itemtypename]</dt>
+<dt>/top [score|food|colonists|time|itemtypename]</dt>
 <dd>Requires no permission<br>Shows a top 10 ranking for the given category or item type</dd>
 <dt>/stuck</dt>
 <dd>Requires no permission<br>If you don't move for 1 minute, you're warped back to spawn.</dd>
