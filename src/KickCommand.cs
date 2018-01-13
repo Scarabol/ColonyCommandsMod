@@ -25,23 +25,18 @@ namespace ScarabolMods
         if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "kick")) {
           return true;
         }
-        Log.Write ("some");
         var m = Regex.Match (chattext, @"/kick (?<targetplayername>['].+?[']|[^ ]+)");
-        Log.Write ("thing");
         if (!m.Success) {
           Chat.Send (causedBy, "Command didn't match, use /kick [targetplayername]");
           return true;
         }
-        Log.Write ("is");
         string targetPlayerName = m.Groups ["targetplayername"].Value;
-        Log.Write ("wrong");
         Players.Player targetPlayer;
         string error;
         if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error)) {
           Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", targetPlayerName, error));
           return true;
         }
-        Log.Write ("here");
         Chat.Send (targetPlayer, "<color=red>You were kicked from the server</color>");
         Chat.SendToAll (string.Format ("{0} is kicked by {1}", targetPlayer.Name, causedBy.Name));
         Players.Disconnect (targetPlayer);
