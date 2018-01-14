@@ -10,6 +10,8 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class PurgeAllChatCommand : ChatCommands.IChatCommand
   {
+    public static int MIN_DAYS_TO_PURGE = 7;
+
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.purgeall.registercommand")]
     public static void AfterItemTypesDefined ()
     {
@@ -33,8 +35,8 @@ namespace ScarabolMods
           return true;
         }
         int days = Int32.Parse (m.Groups ["days"].Value);
-        if (days <= 0) {
-          Chat.Send (causedBy, "Command didn't match, days too low");
+        if (days < MIN_DAYS_TO_PURGE) {
+          Chat.Send (causedBy, string.Format ("Command didn't match, days too low. Min is {0}", MIN_DAYS_TO_PURGE));
           return true;
         }
         String resultMsg = "";
