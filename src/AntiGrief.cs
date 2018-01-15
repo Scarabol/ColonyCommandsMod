@@ -247,7 +247,7 @@ namespace ScarabolMods
       } else {
         Players.Player targetPlayer;
         string error;
-        if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error)) {
+        if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error, true)) {
           Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", targetPlayerName, error));
           return true;
         }
