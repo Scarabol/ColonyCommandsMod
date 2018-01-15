@@ -29,11 +29,15 @@ namespace ScarabolMods
         }
         foreach (Players.Player player in Players.PlayerDatabase.ValuesAsList) {
           var values = player.GetTempValues ();
-          if (values.Remove ("pipliz.setflight")) {
+          if (!Permissions.PermissionsManager.HasPermission (player, "setflight") && values.Remove ("pipliz.setflight")) {
             player.SetTempValues (values);
-            if (!player.ID.IsInvalid) {
+            player.SavegameNode.RemoveChild ("pipliz.setflight");
+            player.ShouldSave = true;
+            if (player.IsConnected) {
               Chat.Send (player, "Please don't fly");
               Players.Disconnect (player);
+            } else {
+              Log.Write ($"Removed flight state from offline player {player.IDString}");
             }
           }
         }
