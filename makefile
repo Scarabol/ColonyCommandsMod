@@ -63,7 +63,7 @@ upload:
 incversion:
 	sed -i "s/ $(version) / $(nextversion) /" src/*
 	sed -i "s/versionminor = $(versionminor)/versionminor = $(nextversionminor)/" makefile
-	git add modInfo.json src/* makefile ; git commit -m "increase version to $(nextversion)"
+	git add src/* makefile ; git commit -m "increase version to $(nextversion)"
 
 client: default
 	cd ../../../../ && ./colonyclient.x86_64
