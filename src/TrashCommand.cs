@@ -55,4 +55,62 @@ namespace ScarabolMods
       return true;
     }
   }
+
+  [ModLoader.ModManager]
+  public class TrashAllChatCommand : ChatCommands.IChatCommand
+  {
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.trashall.registercommand")]
+    public static void AfterItemTypesDefined ()
+    {
+      ChatCommands.CommandManager.RegisterCommand (new TrashAllChatCommand ());
+    }
+
+    public bool IsCommand (string chat)
+    {
+      return chat.Equals ("/trashall") || chat.StartsWith ("/trashall ");
+    }
+
+    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    {
+      try {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "trashall")) {
+          return true;
+        }
+        var m = Regex.Match (chattext, @"/trashall (?<targetplayername>['].+?[']|[^ ]+)");
+        if (!m.Success) {
+          Chat.Send (causedBy, "Command didn't match, use /trashall [targetplayername]");
+          return true;
+        }
+        string targetPlayerName = m.Groups ["targetplayername"].Value;
+        Players.Player targetPlayer;
+        string error;
+        if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error, true)) {
+          Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", targetPlayerName, error));
+          return true;
+        }
+        Stockpile playerStockpile;
+        if (Stockpile.TryGetStockpile (targetPlayer, out playerStockpile)) {
+          InventoryItem item = playerStockpile.GetByIndex (0);
+          while (item != InventoryItem.Empty) {
+            playerStockpile.TryRemove (item);
+            item = playerStockpile.GetByIndex (0);
+          }
+          targetPlayer.ShouldSave = true;
+          Chat.Send (causedBy, $"You cleared the stockpile of {targetPlayer.IDString}");
+        } else {
+          Chat.Send (causedBy, $"Could not get the stockpile for {targetPlayer.IDString}");
+        }
+        Inventory playerInventory;
+        if (Inventory.TryGetInventory (targetPlayer, out playerInventory)) {
+          playerInventory.Clear ();
+          Chat.Send (causedBy, $"You cleared the inventory of {targetPlayer.IDString}");
+        } else {
+          Chat.Send (causedBy, $"Could not get the inventory for {targetPlayer.IDString}");
+        }
+      } catch (Exception exception) {
+        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      }
+      return true;
+    }
+  }
 }

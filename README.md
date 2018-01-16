@@ -93,6 +93,8 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dd>Requires permission: <b>mods.scarabol.commands.inactive</b><br>Lists all players, who have not logged in or out since the last number of days.</dd>
 <dt>/purgeall [days]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.purgeall</b><br>Kills all NPCs and removes banner for each player, who has not logged in or out since the last number of days.</dd>
+<dt>/trashall [playername]</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.trashall</b><br>Clears stockpile and inventory for the given playername.</dd>
 </dl>
 
 ## Installation
