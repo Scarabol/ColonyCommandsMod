@@ -59,6 +59,8 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dd>Requires no permission<br>Lists all online player names.</dd>
 <dt>/top [score|food|colonists|time|itemtypename]</dt>
 <dd>Requires no permission<br>Shows a top 10 ranking for the given category or item type</dd>
+<dt>/serverpop</dt>
+<dd>Requires no permission<br>Shows current server population.</dd>
 <dt>/stuck</dt>
 <dd>Requires no permission<br>If you don't move for 1 minute, you're warped back to spawn.</dd>
 <dt>/trade [playername] [itemname] [amount]</dt>
