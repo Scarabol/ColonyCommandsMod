@@ -154,7 +154,11 @@ namespace ScarabolMods
             player.ShouldSave = true;
           }
         }
-        Chat.Send (causedBy, $"Removed {totalnum} items of type {itemname} from {todoPlayers.Count} players");
+        string strnum = totalnum.ToString ();
+        if (amount.Equals ("all")) {
+          strnum = "all";
+        }
+        Chat.Send (causedBy, $"Removed {strnum} items of type {itemname} from {todoPlayers.Count} players");
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }

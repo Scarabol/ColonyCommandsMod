@@ -1,8 +1,8 @@
 # important variables
 modname = Commands
-versionmajor = 0.9
-versionminor = 4
-compatible_cs = "0.5.0", "0.5.1"
+versionmajor = 5.3
+versionminor = 0
+compatible_cs = "0.5.3"
 zip_files_extra = "$(moddir)/announcements.example.json" "$(moddir)/protection-ranges.example.json" "$(moddir)/chatcolors.example.json"
 
 fullname = Colony$(modname)Mod
@@ -45,20 +45,22 @@ all: clean default
 modinfo:
 	echo "$$MODINFO_JSON" > "modInfo.json"
 
-release: default modinfo
+zip: default modinfo
 	rm -f "$(zipname)"
 	cd ../../ && zip -r "$(moddir)/$(zipname)" "$(moddir)/modInfo.json" "$(moddir)/$(dllname)" $(zip_files_extra)
+
+release: zip
 	git push
 	git tag "$(version)" && git push --tags
 	make publish
+	make upload
+	make incversion
 
 publish:
 	curl --user "scarabol@gmail.com" --data $(release_notes) "https://api.github.com/repos/Scarabol/$(fullname)/releases"
-	make upload
 
 upload:
 	curl --user "scarabol@gmail.com" --data-binary @"$(zipname)" -H "Content-Type: application/octet-stream" "https://uploads.github.com/repos/Scarabol/$(fullname)/releases/$(shell curl -s "https://api.github.com/repos/Scarabol/$(fullname)/releases/tags/$(version)" | jq -r '.id')/assets?name=$(shell basename $(zipname))"
-	make incversion
 
 incversion:
 	sed -i "s/ $(version) / $(nextversion) /" src/*
