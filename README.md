@@ -87,6 +87,8 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dd>Requires permission: <b>mods.scarabol.commands.drain</b><br>Drys out a small lake or puddle with up to 5k blocks.</dd>
 <dt>/cleanbanners</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.cleanbanners</b><br>Removes all banners from banner-tracker, which have no banner block in the world. Useful after server crashes.</dd>
+<dt>/killplayer [playername]</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.killplayer</b><br>Kills the player with the given playername.</dd>
 <dt>/killnpcs [playername]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.killnpcs</b><br>Kills all npcs of the given playername. Useful to reduce lag on crowded servers.</dd>
 <dt>/inactive [days]</dt>
