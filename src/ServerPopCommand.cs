@@ -30,7 +30,9 @@ namespace ScarabolMods
         long onlinePlayers = Players.CountConnected;
         long allFollower = 0;
         Players.PlayerDatabase.ForeachValue (player => allFollower += Colony.Get (player).FollowerCount);
-        Chat.Send (causedBy, $"Players: {allPlayers}, Online: {onlinePlayers}, Colonists: {allFollower}");
+        long allMonsters = Server.Monsters.MonsterTracker.MonstersTotal;
+        long allUnits = allPlayers + allFollower + allMonsters;
+        Chat.Send (causedBy, $"Server Population: {allUnits}, Players: {allPlayers}, Online: {onlinePlayers}, Colonists: {allFollower}, Monsters: {allMonsters}");
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }
