@@ -32,9 +32,9 @@ This mod adds a simple event system. Players with **mods.scarabol.commands.event
 
 ## Colonists Cap
 
-This mod adds a max capacity for each players colonists number. Each colonist beyond the limit will be killed. By default there is no limitation.
+This mod can set a maximum for each players colonists number. Each colonist beyond the limit will be killed. By default the limitation is disabled.
 
-Players with **mods.scarabol.commands.colonycap** permission can use **/colonycap [max-number-of-colonists] [check-interval-delay]** to configure a limit.
+Players with **mods.scarabol.commands.colonycap** permission can use **/colonycap [max-number-of-colonists] [check-interval-delay]** to configure a limit or **/colonycap -1** to disable the limitation.
 
 ## Fast Travel System
 
@@ -66,7 +66,7 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dt>/trade [playername] [itemname] [amount]</dt>
 <dd>Requires no permission<br>Transfers the given amount of items from your stockpile to the other players stockpile.<br>Example: /trade MyFriend planks 100</dd>
 <dt>/trash [itemname] [amount]</dt>
-<dd>Requires no permission<br>Trashs the given amount of items.</dd>
+<dd>Requires no permission<br>Deletes number of items from your stockpile and inventory.</dd>
 
 <dt>/warp [targetplayername] [teleportplayername]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.warp</b><br>Warps to the first given playernames position. If two names are provided, the second player is warped to the firsts position.</dd>
@@ -82,7 +82,7 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dt>/ban [playername]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.ban</b><br>Adds a player to the blacklist and kicks him.</dd>
 <dt>/kick [playername]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.kick</b><br>Kicks a player from the server</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.kick</b><br>Kicks a player from the server.</dd>
 <dt>/drain</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.drain</b><br>Drys out a small lake or puddle with up to 5k blocks.</dd>
 <dt>/cleanbanners</dt>
@@ -94,7 +94,7 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dt>/purgeall [days]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.purgeall</b><br>Kills all NPCs and removes banner for each player, who has not logged in or out since the last number of days.</dd>
 <dt>/trashplayer [playername] [itemname] [amount]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.trashplayer</b><br>Removes the given amount and type of items from the given player. *playername* and *itemname* can be set to 'all', which is also the default value for *amount*.</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.trashplayer</b><br>Removes the given amount and type of items from the given players stockpile and inventory. The playername and itemname can be set to 'all', which is also the default value for amount.<br><b>Note: For safety reasons you can't use /trashplayer all all all</b></dd>
 </dl>
 
 ## Installation
