@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
+using BlockTypes.Builtin;
 
 namespace ScarabolMods
 {
@@ -27,37 +28,47 @@ namespace ScarabolMods
         if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "drain")) {
           return true;
         }
-        Vector3Int origin = new Vector3Int (causedBy.Position);
-        ushort actualType;
-        if (!World.TryGetTypeAt (origin, out actualType)) {
-          Chat.Send (causedBy, string.Format ("Could not get the item type at {0}", origin));
-        } else if (actualType != BlockTypes.Builtin.BuiltinBlocks.Water) {
-          Chat.Send (causedBy, string.Format ("No water found at {0}", origin));
-        } else {
-          List<Vector3Int> toClean = new List<Vector3Int> ();
-          List<Vector3Int> currentWaters = new List<Vector3Int> () { origin };
-          while (currentWaters.Count > 0 && toClean.Count < 100000) {
-            Vector3Int currentOrigin = currentWaters [0];
-            currentWaters.RemoveAt (0);
-            foreach (Vector3Int toCheck in new List<Vector3Int> {
+        List<Vector3Int> toCheckWaterBlocks = new List<Vector3Int> () { };
+        foreach (Vector3Int toCheckPosition in new Vector3Int[] {
+          new Vector3Int(causedBy.Position),
+          new Vector3Int(causedBy.Position).Add(0, 1, 0),
+          new Vector3Int(causedBy.Position).Add(0, 2, 0)
+        }) {
+          ushort actualType;
+          if (!World.TryGetTypeAt (toCheckPosition, out actualType)) {
+            Chat.Send (causedBy, $"Could not get the item type at {toCheckPosition}");
+          } else if (actualType == BuiltinBlocks.Water) {
+            toCheckWaterBlocks.Add (toCheckPosition);
+          }
+        }
+        if (toCheckWaterBlocks.Count < 1) {
+          Chat.Send (causedBy, $"No water found at {causedBy.Position}. Please get your feet wet!");
+          return true;
+        }
+        List<Vector3Int> toCleanBlocks = new List<Vector3Int> ();
+        while (toCheckWaterBlocks.Count > 0 && toCleanBlocks.Count < 100000) {
+          Vector3Int currentOrigin = toCheckWaterBlocks [0];
+          toCheckWaterBlocks.RemoveAt (0);
+          foreach (Vector3Int toCheckPosition in new List<Vector3Int> {
               new Vector3Int (-1, 0, 0), new Vector3Int (1, 0, 0),
               new Vector3Int (0, -1, 0) , new Vector3Int (0, 1, 0),
               new Vector3Int (0, 0, -1), new Vector3Int (0, 0, 1)
             }) {
-              Vector3Int absCheck = currentOrigin + toCheck;
-              ushort type;
-              if (World.TryGetTypeAt (absCheck, out type) && type == BlockTypes.Builtin.BuiltinBlocks.Water) {
-                ServerManager.TryChangeBlock (absCheck, BlockTypes.Builtin.BuiltinBlocks.LeavesTemperate);
-                currentWaters.Add (absCheck);
-                toClean.Add (absCheck);
-              }
+            Vector3Int absCheck = currentOrigin + toCheckPosition;
+            ushort type;
+            if (World.TryGetTypeAt (absCheck, out type) && type == BuiltinBlocks.Water) {
+              ServerManager.TryChangeBlock (absCheck, BuiltinBlocks.LeavesTemperate);
+              toCheckWaterBlocks.Add (absCheck);
+              toCleanBlocks.Add (absCheck);
             }
           }
-          Chat.Send (causedBy, string.Format ("Replaced {0} water blocks. Start cleaning up...", toClean.Count));
-          ServerManager.TryChangeBlock (origin, BlockTypes.Builtin.BuiltinBlocks.Air);
-          foreach (Vector3Int AbsRemove in toClean) {
-            ServerManager.TryChangeBlock (AbsRemove, BlockTypes.Builtin.BuiltinBlocks.Air);
-          }
+        }
+        Chat.Send (causedBy, string.Format ("Replaced {0} water blocks. Start cleaning up...", toCleanBlocks.Count));
+        foreach (Vector3Int AbsRemove in toCheckWaterBlocks) {
+          ServerManager.TryChangeBlock (AbsRemove, BuiltinBlocks.Air);
+        }
+        foreach (Vector3Int AbsRemove in toCleanBlocks) {
+          ServerManager.TryChangeBlock (AbsRemove, BuiltinBlocks.Air);
         }
       } catch (Exception exception) {
         Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
