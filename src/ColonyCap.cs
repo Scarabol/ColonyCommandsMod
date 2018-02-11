@@ -87,18 +87,23 @@ namespace ScarabolMods
           try {
             int cachedLimit = maxNumberOfColonistsPerColony;
             if (cachedLimit >= 0) {
-              Players.PlayerDatabase.ForeachValue (player => {
-                Colony colony = Colony.Get (player);
-                while (colony.FollowerCount > cachedLimit) {
-                  Chat.Send (player, string.Format ("<color=red>Colonists are dieing, because of overpopulation. Limit is {0}</color>", cachedLimit));
-                  if (colony.LaborerCount > 0) {
-                    colony.FindLaborer ().OnDeath ();
-                  } else {
-                    colony.Followers [rnd.Next (colony.Followers.Count)].OnDeath ();
+              bool killed;
+              do {
+                killed = false;
+                Players.PlayerDatabase.ForeachValue (player => {
+                  Colony colony = Colony.Get (player);
+                  if (colony.FollowerCount > cachedLimit) {
+                    Chat.Send (player, string.Format ("<color=red>Colonists are dieing, because of overpopulation. Limit is {0}</color>", cachedLimit));
+                    if (colony.LaborerCount > 0) {
+                      colony.FindLaborer ().OnDeath ();
+                    } else {
+                      colony.Followers [rnd.Next (colony.Followers.Count)].OnDeath ();
+                    }
+                    killed = true;
                   }
-                  Thread.Sleep (1000);
-                }
-              });
+                });
+                Thread.Sleep (1000);
+              } while (killed);
             }
           } catch (Exception exception) {
             Pipliz.Log.WriteError (string.Format ("Exception in cap loop; {0}", exception.Message));
