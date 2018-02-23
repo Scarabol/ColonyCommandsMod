@@ -1,7 +1,7 @@
 # important variables
 modname = Commands
 versionmajor = 5.3
-versionminor = 4
+versionminor = 5
 compatible_cs = "0.5.3"
 zip_files_extra = "$(moddir)/announcements.example.json" "$(moddir)/protection-ranges.example.json" "$(moddir)/chatcolors.example.json"
 
