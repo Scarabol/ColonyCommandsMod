@@ -36,53 +36,56 @@ namespace ScarabolMods
       Pipliz.Log.Write ("Loaded AntiGrief by Scarabol");
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlockUser, "scarabol.antigrief.trychangeblock")]
-    public static bool OnTryChangeBlockUser (ModLoader.OnTryChangeBlockUserData userData)
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlock, "scarabol.antigrief.trychangeblock")]
+    public static void OnTryChangeBlockUser (ModLoader.OnTryChangeBlockData userData)
     {
-      Players.Player requestedBy = userData.requestedBy;
-      Vector3Int position = userData.VoxelToChange;
+      Players.Player requestedBy = userData.RequestedByPlayer;
+      Vector3Int position = userData.Position;
       UnityEngine.Vector3 spawn = TerrainGenerator.UsedGenerator.GetSpawnLocation (requestedBy);
       int ox = position.x - (int)spawn.x;
       int oz = position.z - (int)spawn.z;
       if (((ox >= 0 && ox <= SpawnProtectionRangeXPos) || (ox < 0 && ox >= -SpawnProtectionRangeXNeg)) && ((oz >= 0 && oz <= SpawnProtectionRangeZPos) || (oz < 0 && oz >= -SpawnProtectionRangeZNeg))) {
         if (!PermissionsManager.HasPermission (requestedBy, PERMISSION_SPAWN_CHANGE)) {
           Chat.Send (requestedBy, "<color=red>You don't have permission to change the spawn area!</color>");
-          return false;
+          userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
+          return;
         }
       } else {
         Banner homeBanner = BannerTracker.Get (requestedBy);
         if (homeBanner != null) {
           Vector3Int homeBannerLocation = homeBanner.KeyLocation;
           if (System.Math.Abs (homeBannerLocation.x - position.x) <= BannerProtectionRangeX && System.Math.Abs (homeBannerLocation.z - position.z) <= BannerProtectionRangeZ) {
-            return true;
+            return;
           }
         }
         int checkRangeX = BannerProtectionRangeX;
         int checkRangeZ = BannerProtectionRangeZ;
-        if (userData.typeToBuild == BlockTypes.Builtin.BuiltinBlocks.Banner) {
+        if (userData.TypeNew == BlockTypes.Builtin.BuiltinBlocks.Banner) {
           checkRangeX *= 2;
           checkRangeZ *= 2;
         }
-        var banners = BannerTracker.GetBanners ();
-        for (int c = 0; c < banners.Count; c++) {
-          Banner b = banners.GetValueAtIndex (c);
-          Vector3Int bannerLocation = b.KeyLocation;
-          if (System.Math.Abs (bannerLocation.x - position.x) <= checkRangeX && System.Math.Abs (bannerLocation.z - position.z) <= checkRangeZ) {
-            if (b.Owner != requestedBy && !PermissionsManager.HasPermission (requestedBy, PERMISSION_BANNER_PREFIX + b.Owner.ID.steamID)) {
-              Chat.Send (requestedBy, "<color=red>You don't have permission to change blocks near this banner!</color>");
-              return false;
+        for (int c = 0; c < BannerTracker.GetCount (); c++) {
+          Banner banner;
+          if (BannerTracker.TryGetAtIndex (c, out banner)) {
+            Vector3Int bannerLocation = banner.KeyLocation;
+            if (System.Math.Abs (bannerLocation.x - position.x) <= checkRangeX && System.Math.Abs (bannerLocation.z - position.z) <= checkRangeZ) {
+              if (banner.Owner != requestedBy && !PermissionsManager.HasPermission (requestedBy, PERMISSION_BANNER_PREFIX + banner.Owner.ID.steamID)) {
+                Chat.Send (requestedBy, "<color=red>You don't have permission to change blocks near this banner!</color>");
+                userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
+                return;
+              }
+              break;
             }
-            break;
           }
         }
         foreach (CustomProtectionArea area in customAreas) {
           if (area.Contains (position) && !PermissionsManager.HasPermission (requestedBy, PERMISSION_SPAWN_CHANGE)) {
             Chat.Send (requestedBy, "<color=red>You don't have permission to change this protected area!</color>");
-            return false;
+            userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
+            return;
           }
         }
       }
-      return true;
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
@@ -152,7 +155,7 @@ namespace ScarabolMods
         }
         JSONNode jsonCustomAreas;
         if (jsonConfig.TryGetAs ("CustomAreas", out jsonCustomAreas) && jsonCustomAreas.NodeType == NodeType.Array) {
-          foreach (JSONNode jsonCustomArea in jsonCustomAreas.LoopArray()) {
+          foreach (JSONNode jsonCustomArea in jsonCustomAreas.LoopArray ()) {
             try {
               customAreas.Add (new CustomProtectionArea (jsonCustomArea));
             } catch (Exception exception) {

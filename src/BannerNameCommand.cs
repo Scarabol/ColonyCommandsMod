@@ -26,15 +26,16 @@ namespace ScarabolMods
         int minDist = 0;
         String ownerName = null;
         Vector3Int bannerPosition = Vector3Int.invalidPos;
-        var banners = BannerTracker.GetBanners ();
-        for (int c = 0; c < banners.Count; c++) {
-          ITrackableBlock banner = banners.GetValueAtIndex (c);
-          int dist = Pipliz.Math.ManhattanDistance (banner.KeyLocation, causedBy.VoxelPosition);
-          if (dist < minDist || !foundBanner) {
-            foundBanner = true;
-            minDist = dist;
-            ownerName = banner.Owner.Name;
-            bannerPosition = banner.KeyLocation;
+        for (int c = 0; c < BannerTracker.GetCount (); c++) {
+          Banner banner;
+          if (BannerTracker.TryGetAtIndex (c, out banner)) {
+            int dist = Pipliz.Math.ManhattanDistance (banner.KeyLocation, causedBy.VoxelPosition);
+            if (dist < minDist || !foundBanner) {
+              foundBanner = true;
+              minDist = dist;
+              ownerName = banner.Owner.Name;
+              bannerPosition = banner.KeyLocation;
+            }
           }
         }
         if (ownerName != null) {

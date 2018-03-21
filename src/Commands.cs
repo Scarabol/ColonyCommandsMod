@@ -19,7 +19,7 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterStartup, "scarabol.commands.registercallbacks")]
     public static void AfterStartup ()
     {
-      Pipliz.Log.Write ("Loaded Commands Mod 5.3.5 by Scarabol");
+      Pipliz.Log.Write ("Loaded Commands Mod 6.0.1 by Scarabol");
     }
   }
 
@@ -105,7 +105,7 @@ namespace ScarabolMods
     {
       int n = s.Length;
       int m = t.Length;
-      int[,] d = new int[n + 1, m + 1];
+      int [,] d = new int [n + 1, m + 1];
       if (n == 0) {
         return m;
       }

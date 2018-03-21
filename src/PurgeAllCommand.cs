@@ -40,7 +40,7 @@ namespace ScarabolMods
           return true;
         }
         String resultMsg = "";
-        foreach (KeyValuePair<Players.Player, long> entry in  ActivityTracker.GetInactivePlayers (days)) {
+        foreach (KeyValuePair<Players.Player, long> entry in ActivityTracker.GetInactivePlayers (days)) {
           var player = entry.Key;
           var inactiveDays = entry.Value;
           var banner = BannerTracker.Get (player);
@@ -49,7 +49,7 @@ namespace ScarabolMods
             foreach (NPC.NPCBase npc in cachedFollowers) {
               npc.OnDeath ();
             }
-            ServerManager.TryChangeBlock (banner.KeyLocation, BuiltinBlocks.Air, ServerManager.SetBlockFlags.Default);
+            ServerManager.TryChangeBlock (banner.KeyLocation, BuiltinBlocks.Air);
             BannerTracker.Remove (banner.KeyLocation, BuiltinBlocks.Banner, banner.Owner);
             if (resultMsg.Length > 0) {
               resultMsg += ", ";

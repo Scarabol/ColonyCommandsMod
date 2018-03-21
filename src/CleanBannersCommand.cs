@@ -29,17 +29,18 @@ namespace ScarabolMods
         }
         List<Banner> toClean = new List<Banner> ();
         Vector3Int bannerPosition = Vector3Int.invalidPos;
-        var banners = BannerTracker.GetBanners ();
-        for (int c = 0; c < banners.Count; c++) {
-          Banner banner = banners.GetValueAtIndex (c);
-          bannerPosition = banner.KeyLocation;
-          ushort actualType;
-          if (World.TryGetTypeAt (bannerPosition, out actualType)) {
-            if (actualType != BuiltinBlocks.Banner) {
-              toClean.Add (banner);
+        for (int c = 0; c < BannerTracker.GetCount (); c++) {
+          Banner banner;
+          if (BannerTracker.TryGetAtIndex (c, out banner)) {
+            bannerPosition = banner.KeyLocation;
+            ushort actualType;
+            if (World.TryGetTypeAt (bannerPosition, out actualType)) {
+              if (actualType != BuiltinBlocks.Banner) {
+                toClean.Add (banner);
+              }
+            } else {
+              Chat.Send (causedBy, string.Format ("Could not check block type for banner at {0}", bannerPosition));
             }
-          } else {
-            Chat.Send (causedBy, string.Format ("Could not check block type for banner at {0}", bannerPosition));
           }
         }
         foreach (Banner banner in toClean) {

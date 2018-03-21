@@ -83,22 +83,23 @@ namespace ScarabolMods
         Banner TargetBanner = null;
         int closestDist = int.MaxValue;
         Banner closestMatch = null;
-        var banners = BannerTracker.GetBanners ();
-        for (int c = 0; c < banners.Count; c++) {
-          Banner banner = banners.GetValueAtIndex (c);
-          if (banner.Owner.Name.ToLower ().Equals (TargetPlayerName.ToLower ())) {
-            if (TargetBanner == null) {
-              TargetBanner = banner;
+        for (int c = 0; c < BannerTracker.GetCount (); c++) {
+          Banner banner;
+          if (BannerTracker.TryGetAtIndex (c, out banner)) {
+            if (banner.Owner.Name.ToLower ().Equals (TargetPlayerName.ToLower ())) {
+              if (TargetBanner == null) {
+                TargetBanner = banner;
+              } else {
+                Chat.Send (causedBy, string.Format ("Duplicate player name", TargetPlayerName));
+              }
             } else {
-              Chat.Send (causedBy, string.Format ("Duplicate player name", TargetPlayerName));
-            }
-          } else {
-            int levDist = LevenshteinDistance.Compute (banner.Owner.Name.ToLower (), TargetPlayerName.ToLower ());
-            if (levDist < closestDist) {
-              closestDist = levDist;
-              closestMatch = banner;
-            } else if (levDist == closestDist) {
-              closestMatch = null;
+              int levDist = LevenshteinDistance.Compute (banner.Owner.Name.ToLower (), TargetPlayerName.ToLower ());
+              if (levDist < closestDist) {
+                closestDist = levDist;
+                closestMatch = banner;
+              } else if (levDist == closestDist) {
+                closestMatch = null;
+              }
             }
           }
         }
