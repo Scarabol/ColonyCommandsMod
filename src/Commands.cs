@@ -19,7 +19,7 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterStartup, "scarabol.commands.registercallbacks")]
     public static void AfterStartup ()
     {
-      Pipliz.Log.Write ("Loaded Commands Mod 6.0.1 by Scarabol");
+      Pipliz.Log.Write ("Loaded Commands Mod 6.0.2 by Scarabol");
     }
   }
 
