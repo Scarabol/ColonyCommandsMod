@@ -40,6 +40,9 @@ namespace ScarabolMods
     public static void OnTryChangeBlockUser (ModLoader.OnTryChangeBlockData userData)
     {
       Players.Player requestedBy = userData.RequestedByPlayer;
+      if (requestedBy == null) {
+        return;
+      }
       Vector3Int position = userData.Position;
       UnityEngine.Vector3 spawn = TerrainGenerator.UsedGenerator.GetSpawnLocation (requestedBy);
       int ox = position.x - (int)spawn.x;
