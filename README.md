@@ -63,6 +63,8 @@ Use **/whisper [playername] hello friend** or **/w [playername] hello friend** t
 <dd>Requires no permission<br>Shows current server population.</dd>
 <dt>/stuck</dt>
 <dd>Requires no permission<br>If you don't move for 1 minute, you're warped back to spawn.</dd>
+<dt>/itemid</dt>
+<dd>Requires no permission<br>Prints all items and their key currently stored in the players inventory. Useful for trade and trash.</dd>
 <dt>/trade [playername] [itemname] [amount]</dt>
 <dd>Requires no permission<br>Transfers the given amount of items from your stockpile to the other players stockpile.<br>Example: /trade MyFriend planks 100</dd>
 <dt>/trash [itemname] [amount]</dt>
