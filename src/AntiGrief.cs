@@ -37,7 +37,7 @@ namespace ScarabolMods
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlock, "scarabol.antigrief.trychangeblock")]
-    public static void OnTryChangeBlockUser (ModLoader.OnTryChangeBlockData userData)
+    public static void OnTryChangeBlock (ModLoader.OnTryChangeBlockData userData)
     {
       Players.Player requestedBy = userData.RequestedByPlayer;
       if (requestedBy == null) {
@@ -49,7 +49,9 @@ namespace ScarabolMods
       int oz = position.z - (int)spawn.z;
       if (((ox >= 0 && ox <= SpawnProtectionRangeXPos) || (ox < 0 && ox >= -SpawnProtectionRangeXNeg)) && ((oz >= 0 && oz <= SpawnProtectionRangeZPos) || (oz < 0 && oz >= -SpawnProtectionRangeZNeg))) {
         if (!PermissionsManager.HasPermission (requestedBy, PERMISSION_SPAWN_CHANGE)) {
-          Chat.Send (requestedBy, "<color=red>You don't have permission to change the spawn area!</color>");
+          if (requestedBy.IsConnected) {
+            Chat.Send (requestedBy, "<color=red>You don't have permission to change the spawn area!</color>");
+          }
           userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
           return;
         }
@@ -73,7 +75,9 @@ namespace ScarabolMods
             Vector3Int bannerLocation = banner.KeyLocation;
             if (System.Math.Abs (bannerLocation.x - position.x) <= checkRangeX && System.Math.Abs (bannerLocation.z - position.z) <= checkRangeZ) {
               if (banner.Owner != requestedBy && !PermissionsManager.HasPermission (requestedBy, PERMISSION_BANNER_PREFIX + banner.Owner.ID.steamID)) {
-                Chat.Send (requestedBy, "<color=red>You don't have permission to change blocks near this banner!</color>");
+                if (requestedBy.IsConnected) {
+                  Chat.Send (requestedBy, "<color=red>You don't have permission to change blocks near this banner!</color>");
+                }
                 userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
                 return;
               }
@@ -83,7 +87,9 @@ namespace ScarabolMods
         }
         foreach (CustomProtectionArea area in customAreas) {
           if (area.Contains (position) && !PermissionsManager.HasPermission (requestedBy, PERMISSION_SPAWN_CHANGE)) {
-            Chat.Send (requestedBy, "<color=red>You don't have permission to change this protected area!</color>");
+            if (requestedBy.IsConnected) {
+              Chat.Send (requestedBy, "<color=red>You don't have permission to change this protected area!</color>");
+            }
             userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
             return;
           }
