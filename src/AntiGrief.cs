@@ -52,7 +52,7 @@ namespace ScarabolMods
           if (requestedBy.IsConnected) {
             Chat.Send (requestedBy, "<color=red>You don't have permission to change the spawn area!</color>");
           }
-          userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
+          BlockCallback (userData);
           return;
         }
       } else {
@@ -78,7 +78,7 @@ namespace ScarabolMods
                 if (requestedBy.IsConnected) {
                   Chat.Send (requestedBy, "<color=red>You don't have permission to change blocks near this banner!</color>");
                 }
-                userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
+                BlockCallback (userData);
                 return;
               }
               break;
@@ -90,11 +90,17 @@ namespace ScarabolMods
             if (requestedBy.IsConnected) {
               Chat.Send (requestedBy, "<color=red>You don't have permission to change this protected area!</color>");
             }
-            userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
+            BlockCallback (userData);
             return;
           }
         }
       }
+    }
+
+    static void BlockCallback (ModLoader.OnTryChangeBlockData userData)
+    {
+      userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
+      userData.InventoryItemResults.Clear ();
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
