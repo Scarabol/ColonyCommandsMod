@@ -13,6 +13,8 @@ Players are also able to whitelist friends by writing **/antigrief banner [frien
 Last but not least players with master permission **mods.scarabol.antigrief** are able to define custom protected areas.
 Use **/antigrief area 10 10** to restrict regular players from changing blocks in an area 10 blocks around your current position.
 
+To **disable anti-grief** in case you play with friends only, just set the protection ranges in the *protection-ranges.json* file in your savegame folder to *-1* each. The message on joining the server will still show up, but it has no effect then.
+
 ## Activity-Tracker
 
 This mod adds an player activity tracker. It updates a last seen timestamp for each player, on each player login, logout or world auto-save. Furthermore the total time played is tracked.
