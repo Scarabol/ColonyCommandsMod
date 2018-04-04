@@ -79,14 +79,16 @@ Muting and Unmuting players requires the **mods.scarabol.commands.mute** permiss
 <dt>/trash [itemname] [amount]</dt>
 <dd>Requires no permission<br>Deletes number of items from your stockpile and inventory.</dd>
 
+<dt>/warp [targetplayername]</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.warp.self</b><br>Warps to the given playernames position.</dd>
 <dt>/warp [targetplayername] [teleportplayername]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.warp</b><br>Warps to the first given playernames position. If two names are provided, the second player is warped to the firsts position.</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.warp.player</b><br>Warps the second given player to the first given playernames position.</dd>
 <dt>/warpbanner [targetplayername] [teleportplayername]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.warp</b><br>Warps to the first given playernames banner position. If two names are provided, the second player is warped to the firsts banner position.</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.warp.banner</b><br>Warps to the first given playernames banner position. If two names are provided, the second player is warped to the firsts banner position.</dd>
 <dt>/warpspawn [teleportplayername]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.warp</b><br>Warps the given player to the spawn point. If no playername is provided, warps the calling player.</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.warp.spawn</b><br>Warps the given player to the spawn point. If no playername is provided, warps the calling player.</dd>
 <dt>/warpplace [x] [y] [z]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.warp</b><br>Warps the calling player to the given position.</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.warp.place</b><br>Warps the calling player to the given position.</dd>
 
 <dt>/god</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.god</b><br>Grants or revokes the calling players super permission. This is handy for admins, who want to try a regular peasants gaming experience.</dd>

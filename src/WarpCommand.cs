@@ -23,7 +23,8 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.player") ||
+            !Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.self")) {
           return true;
         }
         var m = Regex.Match (chattext, @"/warp (?<targetplayername>['].+?[']|[^ ]+)( (?<teleportplayername>['].+?[']|[^ ]+))?");
@@ -41,8 +42,13 @@ namespace ScarabolMods
         Players.Player TeleportPlayer = causedBy;
         string TeleportPlayerName = m.Groups ["teleportplayername"].Value;
         if (TeleportPlayerName.Length > 0) {
-          if (!PlayerHelper.TryGetPlayer (TeleportPlayerName, out TeleportPlayer, out Error)) {
-            Chat.Send (causedBy, string.Format ("Could not find teleport player '{0}'; {1}", TeleportPlayerName, Error));
+          if (Permissions.PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.player")) {
+            if (!PlayerHelper.TryGetPlayer (TeleportPlayerName, out TeleportPlayer, out Error)) {
+              Chat.Send (causedBy, string.Format ("Could not find teleport player '{0}'; {1}", TeleportPlayerName, Error));
+              return true;
+            }
+          } else {
+            Chat.Send (causedBy, "You don't have permission to warp other players");
             return true;
           }
         }
@@ -71,7 +77,7 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.banner")) {
           return true;
         }
         var m = Regex.Match (chattext, @"/warpbanner (?<targetplayername>['].+?[']|[^ ]+)( (?<teleportplayername>['].+?[']|[^ ]+))?");
@@ -146,7 +152,7 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.spawn")) {
           return true;
         }
         var m = Regex.Match (chattext, @"/warpspawn( ?<teleportplayername>['].+?[']|[^ ]+)?");
@@ -188,7 +194,7 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp")) {
+        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.place")) {
           return true;
         }
         var m = Regex.Match (chattext, @"/warpplace (?<px>-?\d+) (?<py>-?\d+)( (?<pz>-?\d+))?");
