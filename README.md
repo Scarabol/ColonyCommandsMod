@@ -52,6 +52,13 @@ Use **/travethere** to set the end-point of a travel path.
 
 Use **/whisper [playername] hello friend** or **/w [playername] hello friend** to send a chat message to a specific player instead of the complete server.
 
+## Spam-Protect
+
+Use **/mute [playername] [minutes]** to block a player from EVERY chatting for certain minutes.
+After timeout the player is automatically unblocked or one can use **/unmute [playername]** to remove the blocking manually.
+
+Muting and Unmuting players requires the **mods.scarabol.commands.mute** permission.
+
 ## Further Commands
 
 <dl>
