@@ -22,8 +22,9 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.player") ||
-          !PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.self")) {
+      if (!PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.player") &&
+          !PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.self")) {
+        Chat.Send (causedBy, "<color=red>You don't have permission to warp</color>");
         return true;
       }
       var m = Regex.Match (chattext, @"/warp (?<targetplayername>['].+?[']|[^ ]+)( (?<teleportplayername>['].+?[']|[^ ]+))?");
@@ -47,7 +48,7 @@ namespace ScarabolMods
             return true;
           }
         } else {
-          Chat.Send (causedBy, "You don't have permission to warp other players");
+          Chat.Send (causedBy, "<color=red>You don't have permission to warp other players</color>");
           return true;
         }
       }
