@@ -5,5 +5,7 @@
   "SpawnProtectionRangeZ" : 50,
   "SpawnProtectionRangeZ-" : 65, "note2" : "use such a line, if you want asymmetric spawn protection on z-axis",
   "BannerProtectionRangeX" : 50,
-  "BannerProtectionRangeZ" : 50
+  "BannerProtectionRangeZ" : 50,
+  "NpcKillsKickThreshold" : 10,
+  "NpcKillsBanThreshold" : 50
 }

@@ -24,6 +24,9 @@ namespace ScarabolMods
     static int BannerProtectionRangeX;
     static int BannerProtectionRangeZ;
     static List<CustomProtectionArea> CustomAreas = new List<CustomProtectionArea> ();
+    static int NpcKillsKickThreshold;
+    static int NpcKillsBanThreshold;
+    static Dictionary<Players.Player, int> KillCounter = new Dictionary<Players.Player, int> ();
 
     static string ConfigFilepath {
       get {
@@ -180,6 +183,8 @@ namespace ScarabolMods
           }
           Log.Write ($"Loaded {CustomAreas.Count} from file");
         }
+        jsonConfig.TryGetAsOrDefault ("NpcKillsKickThreshold", out NpcKillsKickThreshold, 10);
+        jsonConfig.TryGetAsOrDefault ("NpcKillsBanThreshold", out NpcKillsBanThreshold, 50);
       } else {
         Save ();
         Log.Write ($"Could not find {ConfigFilepath} file, created default one");
@@ -210,12 +215,49 @@ namespace ScarabolMods
       jsonConfig.SetAs ("SpawnProtectionRangeZ-", SpawnProtectionRangeZNeg);
       jsonConfig.SetAs ("BannerProtectionRangeX", BannerProtectionRangeX);
       jsonConfig.SetAs ("BannerProtectionRangeZ", BannerProtectionRangeZ);
+      jsonConfig.SetAs ("NpcKillsKickThreshold", NpcKillsKickThreshold);
+      jsonConfig.SetAs ("NpcKillsBanThreshold", NpcKillsBanThreshold);
       var jsonCustomAreas = new JSONNode (NodeType.Array);
       foreach (var customArea in CustomAreas) {
         jsonCustomAreas.AddToArray (customArea.ToJSON ());
       }
       jsonConfig.SetAs ("CustomAreas", jsonCustomAreas);
       JSON.Serialize (ConfigFilepath, jsonConfig, 2);
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnNPCHit, "scarabol.antigrief.onnpchit")]
+    public static void OnNPCHit (NPC.NPCBase npc, ModLoader.OnHitData data)
+    {
+      if (IsKilled (npc, data) && IsHitByPlayer (data.HitSourceType) && data.HitSourceObject is Players.Player) {
+        var killer = (Players.Player)data.HitSourceObject;
+        if (npc.Colony.Owner != killer) {
+          int kills;
+          if (!KillCounter.TryGetValue (killer, out kills)) {
+            kills = 0;
+          }
+          kills++;
+          KillCounter [killer] = kills;
+          if (kills >= NpcKillsKickThreshold) {
+            Chat.SendToAll ($"{killer.Name} kicked for killing too many colonists");
+            Players.Disconnect (killer);
+          } else if (kills >= NpcKillsBanThreshold) {
+            Chat.SendToAll ($"{killer.Name} banned for killing too many colonists");
+            BlackAndWhitelisting.AddBlackList (killer.ID.steamID.m_SteamID);
+            Players.Disconnect (killer);
+          }
+          Log.Write ($"{killer.Name} killed a colonist of {npc.Colony.Owner.Name} at {npc.Position}");
+        }
+      }
+    }
+
+    static bool IsKilled (NPC.NPCBase npc, ModLoader.OnHitData data)
+    {
+      return npc.health - data.ResultDamage <= 0;
+    }
+
+    static bool IsHitByPlayer (ModLoader.OnHitData.EHitSourceType hitSourceType)
+    {
+      return hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerClick || hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerProjectile;
     }
   }
 
