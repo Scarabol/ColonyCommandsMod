@@ -257,7 +257,9 @@ namespace ScarabolMods
 
     static bool IsHitByPlayer (ModLoader.OnHitData.EHitSourceType hitSourceType)
     {
-      return hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerClick || hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerProjectile;
+      return hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerClick ||
+             hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerProjectile ||
+             hitSourceType == ModLoader.OnHitData.EHitSourceType.Misc;
     }
   }
 
