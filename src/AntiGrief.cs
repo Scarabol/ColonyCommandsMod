@@ -246,6 +246,9 @@ namespace ScarabolMods
             Players.Disconnect (killer);
           }
           Log.Write ($"{killer.Name} killed a colonist of {npc.Colony.Owner.Name} at {npc.Position}");
+          var remainingKick = NpcKillsKickThreshold - kills;
+          var remainingBan = NpcKillsBanThreshold - kills;
+          Chat.Send (killer, $"You killed [{npc.Colony.Owner.Name}]'s colonist, remaining strikes until kick: {remainingKick}, remaining strikes until Ban: {remainingBan}");
         }
       }
     }
