@@ -1,17 +1,15 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Pipliz;
-using Pipliz.Chatting;
+﻿using Pipliz.Chatting;
+using ChatCommands;
 
 namespace ScarabolMods
 {
   [ModLoader.ModManager]
-  public class BannerNameChatCommand : ChatCommands.IChatCommand
+  public class BannerNameChatCommand : IChatCommand
   {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.bannername.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new BannerNameChatCommand ());
+      CommandManager.RegisterCommand (new BannerNameChatCommand ());
     }
 
     public bool IsCommand (string chat)
@@ -21,28 +19,12 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        bool foundBanner = false;
-        int minDist = 0;
-        String ownerName = null;
-        Vector3Int bannerPosition = Vector3Int.invalidPos;
-        for (int c = 0; c < BannerTracker.GetCount (); c++) {
-          Banner banner;
-          if (BannerTracker.TryGetAtIndex (c, out banner)) {
-            int dist = Pipliz.Math.ManhattanDistance (banner.KeyLocation, causedBy.VoxelPosition);
-            if (dist < minDist || !foundBanner) {
-              foundBanner = true;
-              minDist = dist;
-              ownerName = banner.Owner.Name;
-              bannerPosition = banner.KeyLocation;
-            }
-          }
-        }
+      var closestBanner = BannerTracker.GetClosest (causedBy, causedBy.VoxelPosition);
+      if (closestBanner != null) {
+        var ownerName = closestBanner.Owner.Name;
         if (ownerName != null) {
-          Chat.Send (causedBy, string.Format ("Closest banner at {0} is owned by {1}", bannerPosition, ownerName));
+          Chat.Send (causedBy, $"Closest banner at {closestBanner.KeyLocation} is owned by {ownerName}");
         }
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }
       return true;
     }

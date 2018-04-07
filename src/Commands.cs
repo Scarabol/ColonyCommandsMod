@@ -19,7 +19,7 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterStartup, "scarabol.commands.registercallbacks")]
     public static void AfterStartup ()
     {
-      Pipliz.Log.Write ("Loaded Commands Mod 6.0.7 by Scarabol");
+      Log.Write ("Loaded Commands Mod 6.0.7 by Scarabol");
     }
   }
 
@@ -60,7 +60,7 @@ namespace ScarabolMods
       }
       int closestDist = int.MaxValue;
       Players.Player closestMatch = null;
-      foreach (Players.Player player in Players.PlayerDatabase.ValuesAsList) {
+      foreach (var player in Players.PlayerDatabase.ValuesAsList) {
         if (!player.IsConnected && !includeOffline) {
           continue;
         }
@@ -90,7 +90,7 @@ namespace ScarabolMods
       } else if (closestMatch != null && (closestDist < closestMatch.Name.Length * 0.2)) {
         error = "";
         targetPlayer = closestMatch;
-        Pipliz.Log.Write (string.Format ("Name '{0}' did not match, picked closest match '{1}' instead", identifier, targetPlayer.Name));
+        Log.Write ($"Name '{identifier}' did not match, picked closest match '{targetPlayer.Name}' instead");
         return true;
       }
       error = "player not found";
@@ -103,8 +103,8 @@ namespace ScarabolMods
   {
     public static int Compute (string s, string t)
     {
-      int n = s.Length;
-      int m = t.Length;
+      var n = s.Length;
+      var m = t.Length;
       int [,] d = new int [n + 1, m + 1];
       if (n == 0) {
         return m;
@@ -112,13 +112,13 @@ namespace ScarabolMods
       if (m == 0) {
         return n;
       }
-      for (int i = 0; i <= n; d [i, 0] = i++) {
+      for (var i = 0; i <= n; d [i, 0] = i++) {
       }
-      for (int j = 0; j <= m; d [0, j] = j++) {
+      for (var j = 0; j <= m; d [0, j] = j++) {
       }
-      for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-          int cost = (t [j - 1] == s [i - 1]) ? 0 : 1;
+      for (var i = 1; i <= n; i++) {
+        for (var j = 1; j <= m; j++) {
+          var cost = (t [j - 1] == s [i - 1]) ? 0 : 1;
           d [i, j] = System.Math.Min (
             System.Math.Min (d [i - 1, j] + 1, d [i, j - 1] + 1),
             d [i - 1, j - 1] + cost);

@@ -1,16 +1,15 @@
-﻿using System;
-using Pipliz;
-using Pipliz.Chatting;
+﻿using Pipliz.Chatting;
+using ChatCommands;
 
 namespace ScarabolMods
 {
   [ModLoader.ModManager]
-  public class ItemIdChatCommand : ChatCommands.IChatCommand
+  public class ItemIdChatCommand : IChatCommand
   {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.itemid.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new ItemIdChatCommand ());
+      CommandManager.RegisterCommand (new ItemIdChatCommand ());
     }
 
     public bool IsCommand (string chat)
@@ -20,23 +19,19 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        var inventory = Inventory.GetInventory (causedBy);
-        string reply = "";
-        for (int c = 0; c < inventory.Items.Length; c++) {
-          var item = inventory.Items [c];
-          string typename;
-          if (ItemTypes.TryGetType (item.Type, out ItemTypes.ItemType itemType)) {
-            typename = itemType.Name;
-          } else {
-            typename = "unknown";
-          }
-          reply += $"slot {c + 1} contains: '{typename}'\n";
+      var inventory = Inventory.GetInventory (causedBy);
+      var reply = "";
+      for (var slot = 0; slot < inventory.Items.Length; slot++) {
+        var item = inventory.Items [slot];
+        string typename;
+        if (ItemTypes.TryGetType (item.Type, out ItemTypes.ItemType itemType)) {
+          typename = itemType.Name;
+        } else {
+          typename = "unknown";
         }
-        Chat.Send (causedBy, reply);
-      } catch (Exception exception) {
-        Log.WriteError (string.Format ("Exception while parsing command; {0} - {1}", exception.Message, exception.StackTrace));
+        reply += $"slot {slot + 1} contains: '{typename}'\n";
       }
+      Chat.Send (causedBy, reply);
       return true;
     }
   }

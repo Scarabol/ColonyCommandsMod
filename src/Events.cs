@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
-using BlockTypes.Builtin;
+using ChatCommands;
+using Permissions;
+using ChatCommands.Implementations;
 
 namespace ScarabolMods
 {
@@ -22,7 +22,7 @@ namespace ScarabolMods
     public static string msgPrivStopped = "{stoppername} stopped the event! You've been warped back";
     public static string msgAllStopped = "{stoppername} stopped the event! Thanks for participating";
 
-    private static string ConfigFilepath {
+    static string ConfigFilepath {
       get {
         return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "events.json"));
       }
@@ -42,7 +42,7 @@ namespace ScarabolMods
         msgAllStopped = jsonConfig.GetAsOrDefault ("msgAllStopped", "");
       } else {
         Save ();
-        Pipliz.Log.Write ($"Could not find {ConfigFilepath} file, created default one");
+        Log.Write ($"Could not find {ConfigFilepath} file, created default one");
       }
     }
 
@@ -64,12 +64,12 @@ namespace ScarabolMods
   }
 
   [ModLoader.ModManager]
-  public class EventStartChatCommand : ChatCommands.IChatCommand
+  public class EventStartChatCommand : IChatCommand
   {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.eventstart.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new EventStartChatCommand ());
+      CommandManager.RegisterCommand (new EventStartChatCommand ());
     }
 
     public bool IsCommand (string chat)
@@ -79,33 +79,29 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "events")) {
-          return true;
-        }
-        if (Events.currentLocation != Vector3Int.invalidPos) {
-          Chat.Send (causedBy, "There is already an ongoing event");
-          return true;
-        }
-        Events.currentLocation = causedBy.VoxelPosition;
-        Events.originPositions.Clear ();
-        if (Events.msgAllStarted.Length > 0) {
-          Chat.SendToAll (Events.msgAllStarted.Replace ("{startername}", causedBy.Name));
-        }
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "events")) {
+        return true;
+      }
+      if (Events.currentLocation != Vector3Int.invalidPos) {
+        Chat.Send (causedBy, "There is already an ongoing event");
+        return true;
+      }
+      Events.currentLocation = causedBy.VoxelPosition;
+      Events.originPositions.Clear ();
+      if (Events.msgAllStarted.Length > 0) {
+        Chat.SendToAll (Events.msgAllStarted.Replace ("{startername}", causedBy.Name));
       }
       return true;
     }
   }
 
   [ModLoader.ModManager]
-  public class EventJoinChatCommand : ChatCommands.IChatCommand
+  public class EventJoinChatCommand : IChatCommand
   {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.eventjoin.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new EventJoinChatCommand ());
+      CommandManager.RegisterCommand (new EventJoinChatCommand ());
     }
 
     public bool IsCommand (string chat)
@@ -115,35 +111,31 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        if (Events.currentLocation == Vector3Int.invalidPos) {
-          Chat.Send (causedBy, "There is currently no event ongoing");
-          return true;
+      if (Events.currentLocation == Vector3Int.invalidPos) {
+        Chat.Send (causedBy, "There is currently no event ongoing");
+        return true;
+      }
+      Events.originPositions.Add (causedBy, causedBy.Position);
+      Teleport.TeleportTo (causedBy, Events.currentLocation.Vector);
+      if (!string.IsNullOrEmpty (Events.msgPrivJoined)) {
+        Chat.Send (causedBy, Events.msgPrivJoined);
+        if (!string.IsNullOrEmpty (Events.msgAllJoined)) {
+          Chat.SendToAllBut (causedBy, Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
         }
-        Events.originPositions.Add (causedBy, causedBy.Position);
-        ChatCommands.Implementations.Teleport.TeleportTo (causedBy, Events.currentLocation.Vector);
-        if (!string.IsNullOrEmpty (Events.msgPrivJoined)) {
-          Chat.Send (causedBy, Events.msgPrivJoined);
-          if (!string.IsNullOrEmpty (Events.msgAllJoined)) {
-            Chat.SendToAllBut (causedBy, Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
-          }
-        } else if (!string.IsNullOrEmpty (Events.msgAllJoined)) {
-          Chat.SendToAll (Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
-        }
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      } else if (!string.IsNullOrEmpty (Events.msgAllJoined)) {
+        Chat.SendToAll (Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
       }
       return true;
     }
   }
 
   [ModLoader.ModManager]
-  public class EventLeaveChatCommand : ChatCommands.IChatCommand
+  public class EventLeaveChatCommand : IChatCommand
   {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.eventleave.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new EventLeaveChatCommand ());
+      CommandManager.RegisterCommand (new EventLeaveChatCommand ());
     }
 
     public bool IsCommand (string chat)
@@ -153,35 +145,31 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        UnityEngine.Vector3 originPosition;
-        if (Events.originPositions.TryGetValue (causedBy, out originPosition) && Events.originPositions.Remove (causedBy)) {
-          ChatCommands.Implementations.Teleport.TeleportTo (causedBy, originPosition);
-          if (!string.IsNullOrEmpty (Events.msgPrivLeft)) {
-            Chat.Send (causedBy, Events.msgPrivLeft);
-            if (!string.IsNullOrEmpty (Events.msgAllLeft)) {
-              Chat.SendToAllBut (causedBy, Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
-            }
-          } else if (!string.IsNullOrEmpty (Events.msgAllLeft)) {
-            Chat.SendToAll (Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
+      UnityEngine.Vector3 originPosition;
+      if (Events.originPositions.TryGetValue (causedBy, out originPosition) && Events.originPositions.Remove (causedBy)) {
+        Teleport.TeleportTo (causedBy, originPosition);
+        if (!string.IsNullOrEmpty (Events.msgPrivLeft)) {
+          Chat.Send (causedBy, Events.msgPrivLeft);
+          if (!string.IsNullOrEmpty (Events.msgAllLeft)) {
+            Chat.SendToAllBut (causedBy, Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
           }
-        } else {
-          Chat.Send (causedBy, "You're not participating in an event");
+        } else if (!string.IsNullOrEmpty (Events.msgAllLeft)) {
+          Chat.SendToAll (Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
         }
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      } else {
+        Chat.Send (causedBy, "You're not participating in an event");
       }
       return true;
     }
   }
 
   [ModLoader.ModManager]
-  public class EventEndChatCommand : ChatCommands.IChatCommand
+  public class EventEndChatCommand : IChatCommand
   {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.eventend.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new EventEndChatCommand ());
+      CommandManager.RegisterCommand (new EventEndChatCommand ());
     }
 
     public bool IsCommand (string chat)
@@ -191,27 +179,23 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "events")) {
-          return true;
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "events")) {
+        return true;
+      }
+      if (Events.currentLocation == Vector3Int.invalidPos) {
+        Chat.Send (causedBy, "There is currently no event ongoing");
+        return true;
+      }
+      Events.currentLocation = Vector3Int.invalidPos;
+      foreach (var participantEntry in Events.originPositions) {
+        Teleport.TeleportTo (participantEntry.Key, participantEntry.Value);
+        if (!string.IsNullOrEmpty (Events.msgPrivStopped)) {
+          Chat.Send (causedBy, Events.msgPrivStopped.Replace ("{stoppername}", causedBy.Name));
         }
-        if (Events.currentLocation == Vector3Int.invalidPos) {
-          Chat.Send (causedBy, "There is currently no event ongoing");
-          return true;
-        }
-        Events.currentLocation = Vector3Int.invalidPos;
-        foreach (KeyValuePair<Players.Player, UnityEngine.Vector3> participantEntry in Events.originPositions) {
-          ChatCommands.Implementations.Teleport.TeleportTo (participantEntry.Key, participantEntry.Value);
-          if (!string.IsNullOrEmpty (Events.msgPrivStopped)) {
-            Chat.Send (causedBy, Events.msgPrivStopped.Replace ("{stoppername}", causedBy.Name));
-          }
-        }
-        Events.originPositions.Clear ();
-        if (!string.IsNullOrEmpty (Events.msgAllStopped)) {
-          Chat.SendToAll (Events.msgAllStopped.Replace ("{stoppername}", causedBy.Name));
-        }
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      }
+      Events.originPositions.Clear ();
+      if (!string.IsNullOrEmpty (Events.msgAllStopped)) {
+        Chat.SendToAll (Events.msgAllStopped.Replace ("{stoppername}", causedBy.Name));
       }
       return true;
     }

@@ -1,23 +1,24 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
+using ChatCommands;
+using Permissions;
+using ChatCommands.Implementations;
 
 namespace ScarabolMods
 {
   [ModLoader.ModManager]
-  public class TravelChatCommand : ChatCommands.IChatCommand
+  public class TravelChatCommand : IChatCommand
   {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.travel.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new TravelChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new TravelHereChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new TravelThereChatCommand ());
-      ChatCommands.CommandManager.RegisterCommand (new TravelRemoveChatCommand ());
+      CommandManager.RegisterCommand (new TravelChatCommand ());
+      CommandManager.RegisterCommand (new TravelHereChatCommand ());
+      CommandManager.RegisterCommand (new TravelThereChatCommand ());
+      CommandManager.RegisterCommand (new TravelRemoveChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.travel.loadwaypoints")]
@@ -33,22 +34,18 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        foreach (KeyValuePair<Vector3Int, Vector3Int> TravelPath in  WaypointManager.travelPaths) {
-          if (Pipliz.Math.ManhattanDistance (causedBy.VoxelPosition, TravelPath.Key) < 3) {
-            ChatCommands.Implementations.Teleport.TeleportTo (causedBy, TravelPath.Value.Vector);
-            return true;
-          }
+      foreach (var TravelPath in WaypointManager.travelPaths) {
+        if (Pipliz.Math.ManhattanDistance (causedBy.VoxelPosition, TravelPath.Key) < 3) {
+          Teleport.TeleportTo (causedBy, TravelPath.Value.Vector);
+          return true;
         }
-        Chat.Send (causedBy, "You must be close to a waypoint to travel");
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
       }
+      Chat.Send (causedBy, "You must be close to a waypoint to travel");
       return true;
     }
   }
 
-  public class TravelHereChatCommand : ChatCommands.IChatCommand
+  public class TravelHereChatCommand : IChatCommand
   {
     public bool IsCommand (string chat)
     {
@@ -57,20 +54,16 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
-          return true;
-        }
-        WaypointManager.startWaypoints.Add (causedBy, causedBy.VoxelPosition);
-        Chat.Send (causedBy, string.Format ("Added start waypoint at {0}, use /travelthere to set the endpoint", causedBy.VoxelPosition));
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
+        return true;
       }
+      WaypointManager.startWaypoints.Add (causedBy, causedBy.VoxelPosition);
+      Chat.Send (causedBy, $"Added start waypoint at {causedBy.VoxelPosition}, use /travelthere to set the endpoint");
       return true;
     }
   }
 
-  public class TravelThereChatCommand : ChatCommands.IChatCommand
+  public class TravelThereChatCommand : IChatCommand
   {
     public bool IsCommand (string chat)
     {
@@ -79,27 +72,23 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
-          return true;
-        }
-        Vector3Int StartWaypoint;
-        if (WaypointManager.startWaypoints.TryGetValue (causedBy, out StartWaypoint)) {
-          WaypointManager.travelPaths.Add (StartWaypoint, causedBy.VoxelPosition);
-          WaypointManager.startWaypoints.Remove (causedBy);
-          WaypointManager.Save ();
-          Chat.Send (causedBy, string.Format ("Saved travel path from {0} to {1}", StartWaypoint, causedBy.VoxelPosition));
-        } else {
-          Chat.Send (causedBy, "You have no start waypoint set, use /travelhere at start point");
-        }
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
+        return true;
+      }
+      Vector3Int StartWaypoint;
+      if (WaypointManager.startWaypoints.TryGetValue (causedBy, out StartWaypoint)) {
+        WaypointManager.travelPaths.Add (StartWaypoint, causedBy.VoxelPosition);
+        WaypointManager.startWaypoints.Remove (causedBy);
+        WaypointManager.Save ();
+        Chat.Send (causedBy, $"Saved travel path from {StartWaypoint} to {causedBy.VoxelPosition}");
+      } else {
+        Chat.Send (causedBy, "You have no start waypoint set, use /travelhere at start point");
       }
       return true;
     }
   }
 
-  public class TravelRemoveChatCommand : ChatCommands.IChatCommand
+  public class TravelRemoveChatCommand : IChatCommand
   {
     public bool IsCommand (string chat)
     {
@@ -108,18 +97,14 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
-          return true;
-        }
-        if (WaypointManager.travelPaths.Remove (causedBy.VoxelPosition)) {
-          WaypointManager.Save ();
-          Chat.Send (causedBy, "Travel path removed");
-        } else {
-          Chat.Send (causedBy, "No start waypoint found at your position");
-        }
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
+        return true;
+      }
+      if (WaypointManager.travelPaths.Remove (causedBy.VoxelPosition)) {
+        WaypointManager.Save ();
+        Chat.Send (causedBy, "Travel path removed");
+      } else {
+        Chat.Send (causedBy, "No start waypoint found at your position");
       }
       return true;
     }
@@ -130,7 +115,7 @@ namespace ScarabolMods
     public static Dictionary<Vector3Int, Vector3Int> travelPaths = new Dictionary<Vector3Int, Vector3Int> ();
     public static Dictionary<Players.Player, Vector3Int> startWaypoints = new Dictionary<Players.Player, Vector3Int> ();
 
-    private static string ConfigFilepath {
+    static string ConfigFilepath {
       get {
         return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "travelpaths.json"));
       }
@@ -141,19 +126,19 @@ namespace ScarabolMods
       JSONNode JsonWaypoints;
       if (JSON.Deserialize (ConfigFilepath, out JsonWaypoints, false)) {
         travelPaths.Clear ();
-        foreach (JSONNode JsonWaypoint in JsonWaypoints.LoopArray()) {
+        foreach (var JsonWaypoint in JsonWaypoints.LoopArray ()) {
           travelPaths.Add ((Vector3Int)JsonWaypoint ["source"], (Vector3Int)JsonWaypoint ["target"]);
         }
-        Pipliz.Log.Write (string.Format ("Loaded {0} travel paths from file", WaypointManager.travelPaths.Count));
+        Log.Write ($"Loaded {WaypointManager.travelPaths.Count} travel paths from file");
       } else {
-        Pipliz.Log.Write ($"No travel paths loaded. File {ConfigFilepath} not found");
+        Log.Write ($"No travel paths loaded. File {ConfigFilepath} not found");
       }
     }
 
     public static void Save ()
     {
       JSONNode JsonWaypoints = new JSONNode (NodeType.Array);
-      foreach (KeyValuePair<Vector3Int, Vector3Int> Waypoint in travelPaths) {
+      foreach (var Waypoint in travelPaths) {
         JsonWaypoints.AddToArray (new JSONNode ().SetAs ("source", (JSONNode)Waypoint.Key).SetAs ("target", (JSONNode)Waypoint.Value));
       }
       JSON.Serialize (ConfigFilepath, JsonWaypoints, 1);

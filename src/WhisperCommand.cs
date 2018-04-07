@@ -1,17 +1,16 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Pipliz;
+﻿using System.Text.RegularExpressions;
 using Pipliz.Chatting;
+using ChatCommands;
 
 namespace ScarabolMods
 {
   [ModLoader.ModManager]
-  public class WhisperChatCommand : ChatCommands.IChatCommand
+  public class WhisperChatCommand : IChatCommand
   {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.whisper.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new WhisperChatCommand ());
+      CommandManager.RegisterCommand (new WhisperChatCommand ());
     }
 
     public bool IsCommand (string chat)
@@ -21,25 +20,21 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        var m = Regex.Match (chattext, @"/((w)|(whisper)) (?<targetplayername>['].+?[']|[^ ]+) (?<message>.+)");
-        if (!m.Success) {
-          Chat.Send (causedBy, "Command didn't match, use /w [targetplayername] [message] or /whisper [targetplayername] [message]");
-          return true;
-        }
-        string targetPlayerName = m.Groups ["targetplayername"].Value;
-        Players.Player targetPlayer;
-        string error;
-        if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error)) {
-          Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", targetPlayerName, error));
-          return true;
-        }
-        string message = m.Groups ["message"].Value;
-        Chat.Send (targetPlayer, string.Format ("<color=cyan>From [{0}]: {1}</color>", causedBy.Name, message));
-        Chat.Send (causedBy, string.Format ("<color=cyan>To [{0}]: {1}</color>", targetPlayer, message));
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      var m = Regex.Match (chattext, @"/((w)|(whisper)) (?<targetplayername>['].+?[']|[^ ]+) (?<message>.+)");
+      if (!m.Success) {
+        Chat.Send (causedBy, "Command didn't match, use /w [targetplayername] [message] or /whisper [targetplayername] [message]");
+        return true;
       }
+      var targetPlayerName = m.Groups ["targetplayername"].Value;
+      Players.Player targetPlayer;
+      string error;
+      if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error)) {
+        Chat.Send (causedBy, $"Could not find target player '{targetPlayerName}'; {error}");
+        return true;
+      }
+      var message = m.Groups ["message"].Value;
+      Chat.Send (targetPlayer, $"<color=cyan>From [{causedBy.Name}]: {message}</color>");
+      Chat.Send (causedBy, $"<color=cyan>To [{targetPlayer}]: {message}</color>");
       return true;
     }
   }

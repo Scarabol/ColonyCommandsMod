@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
+using ChatCommands;
 using Permissions;
 using Server.TerrainGeneration;
 
@@ -16,15 +17,15 @@ namespace ScarabolMods
     public static string PERMISSION_SUPER = "mods.scarabol.antigrief";
     public static string PERMISSION_SPAWN_CHANGE = PERMISSION_SUPER + ".spawnchange";
     public static string PERMISSION_BANNER_PREFIX = PERMISSION_SUPER + ".banner.";
-    private static int SpawnProtectionRangeXPos;
-    private static int SpawnProtectionRangeXNeg;
-    private static int SpawnProtectionRangeZPos;
-    private static int SpawnProtectionRangeZNeg;
-    private static int BannerProtectionRangeX;
-    private static int BannerProtectionRangeZ;
-    private static List<CustomProtectionArea> customAreas = new List<CustomProtectionArea> ();
+    static int SpawnProtectionRangeXPos;
+    static int SpawnProtectionRangeXNeg;
+    static int SpawnProtectionRangeZPos;
+    static int SpawnProtectionRangeZNeg;
+    static int BannerProtectionRangeX;
+    static int BannerProtectionRangeZ;
+    static List<CustomProtectionArea> CustomAreas = new List<CustomProtectionArea> ();
 
-    private static string ConfigFilepath {
+    static string ConfigFilepath {
       get {
         return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "protection-ranges.json"));
       }
@@ -33,20 +34,20 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnAssemblyLoaded, "scarabol.antigrief.assemblyload")]
     public static void OnAssemblyLoaded (string path)
     {
-      Pipliz.Log.Write ("Loaded AntiGrief by Scarabol");
+      Log.Write ("Loaded AntiGrief by Scarabol");
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlock, "scarabol.antigrief.trychangeblock")]
     public static void OnTryChangeBlock (ModLoader.OnTryChangeBlockData userData)
     {
-      Players.Player requestedBy = userData.RequestedByPlayer;
+      var requestedBy = userData.RequestedByPlayer;
       if (requestedBy == null) {
         return;
       }
-      Vector3Int position = userData.Position;
-      UnityEngine.Vector3 spawn = TerrainGenerator.UsedGenerator.GetSpawnLocation (requestedBy);
-      int ox = position.x - (int)spawn.x;
-      int oz = position.z - (int)spawn.z;
+      var position = userData.Position;
+      var spawn = TerrainGenerator.UsedGenerator.GetSpawnLocation (requestedBy);
+      var ox = position.x - (int)spawn.x;
+      var oz = position.z - (int)spawn.z;
       if (((ox >= 0 && ox <= SpawnProtectionRangeXPos) || (ox < 0 && ox >= -SpawnProtectionRangeXNeg)) && ((oz >= 0 && oz <= SpawnProtectionRangeZPos) || (oz < 0 && oz >= -SpawnProtectionRangeZNeg))) {
         if (!PermissionsManager.HasPermission (requestedBy, PERMISSION_SPAWN_CHANGE)) {
           if (requestedBy.IsConnected) {
@@ -56,20 +57,20 @@ namespace ScarabolMods
           return;
         }
       } else {
-        Banner homeBanner = BannerTracker.Get (requestedBy);
+        var homeBanner = BannerTracker.Get (requestedBy);
         if (homeBanner != null) {
           Vector3Int homeBannerLocation = homeBanner.KeyLocation;
           if (System.Math.Abs (homeBannerLocation.x - position.x) <= BannerProtectionRangeX && System.Math.Abs (homeBannerLocation.z - position.z) <= BannerProtectionRangeZ) {
             return;
           }
         }
-        int checkRangeX = BannerProtectionRangeX;
-        int checkRangeZ = BannerProtectionRangeZ;
+        var checkRangeX = BannerProtectionRangeX;
+        var checkRangeZ = BannerProtectionRangeZ;
         if (userData.TypeNew == BlockTypes.Builtin.BuiltinBlocks.Banner) {
           checkRangeX *= 2;
           checkRangeZ *= 2;
         }
-        for (int c = 0; c < BannerTracker.GetCount (); c++) {
+        for (var c = 0; c < BannerTracker.GetCount (); c++) {
           Banner banner;
           if (BannerTracker.TryGetAtIndex (c, out banner)) {
             Vector3Int bannerLocation = banner.KeyLocation;
@@ -85,7 +86,7 @@ namespace ScarabolMods
             }
           }
         }
-        foreach (CustomProtectionArea area in customAreas) {
+        foreach (var area in CustomAreas) {
           if (area.Contains (position) && !PermissionsManager.HasPermission (requestedBy, PERMISSION_SPAWN_CHANGE)) {
             if (requestedBy.IsConnected) {
               Chat.Send (requestedBy, "<color=red>You don't have permission to change this protected area!</color>");
@@ -106,7 +107,7 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new AntiGriefChatCommand ());
+      CommandManager.RegisterCommand (new AntiGriefChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.antigrief.loadranges")]
@@ -129,7 +130,7 @@ namespace ScarabolMods
       SpawnProtectionRangeZNeg = 50;
       BannerProtectionRangeX = 50;
       BannerProtectionRangeZ = 50;
-      customAreas.Clear ();
+      CustomAreas.Clear ();
       JSONNode jsonConfig;
       if (JSON.Deserialize (ConfigFilepath, out jsonConfig, false)) {
         int rx;
@@ -138,14 +139,14 @@ namespace ScarabolMods
         } else if (jsonConfig.TryGetAs ("SpawnProtectionRangeX", out rx)) {
           SpawnProtectionRangeXPos = rx;
         } else {
-          Pipliz.Log.Write (string.Format ("Could not get SpawnProtectionRangeX+ or SpawnProtectionRangeX from json config, using default value {0}", SpawnProtectionRangeXPos));
+          Log.Write ($"Could not get SpawnProtectionRangeX+ or SpawnProtectionRangeX from json config, using default value {SpawnProtectionRangeXPos}");
         }
         if (jsonConfig.TryGetAs ("SpawnProtectionRangeX-", out rx)) {
           SpawnProtectionRangeXNeg = rx;
         } else if (jsonConfig.TryGetAs ("SpawnProtectionRangeX", out rx)) {
           SpawnProtectionRangeXNeg = rx;
         } else {
-          Pipliz.Log.Write (string.Format ("Could not get SpawnProtectionRangeX- or SpawnProtectionRangeX from json config, using default value {0}", SpawnProtectionRangeXNeg));
+          Log.Write ($"Could not get SpawnProtectionRangeX- or SpawnProtectionRangeX from json config, using default value {SpawnProtectionRangeXNeg}");
         }
         int rz;
         if (jsonConfig.TryGetAs ("SpawnProtectionRangeZ+", out rz)) {
@@ -153,47 +154,47 @@ namespace ScarabolMods
         } else if (jsonConfig.TryGetAs ("SpawnProtectionRangeZ", out rz)) {
           SpawnProtectionRangeZPos = rz;
         } else {
-          Pipliz.Log.Write (string.Format ("Could not get SpawnProtectionRangeZ+ or SpawnProtectionRangeZ from json config, using default value {0}", SpawnProtectionRangeZPos));
+          Log.Write ($"Could not get SpawnProtectionRangeZ+ or SpawnProtectionRangeZ from json config, using default value {SpawnProtectionRangeZPos}");
         }
         if (jsonConfig.TryGetAs ("SpawnProtectionRangeZ-", out rz)) {
           SpawnProtectionRangeZNeg = rz;
         } else if (jsonConfig.TryGetAs ("SpawnProtectionRangeZ", out rz)) {
           SpawnProtectionRangeZNeg = rz;
         } else {
-          Pipliz.Log.Write (string.Format ("Could not get SpawnProtectionRangeZ- or SpawnProtectionRangeZ from json config, using default value {0}", SpawnProtectionRangeZNeg));
+          Log.Write ($"Could not get SpawnProtectionRangeZ- or SpawnProtectionRangeZ from json config, using default value {SpawnProtectionRangeZNeg}");
         }
         if (!jsonConfig.TryGetAs ("BannerProtectionRangeX", out BannerProtectionRangeX)) {
-          Pipliz.Log.Write (string.Format ("Could not get banner protection x-range from json config, using default value {0}", BannerProtectionRangeX));
+          Log.Write ($"Could not get banner protection x-range from json config, using default value {BannerProtectionRangeX}");
         }
         if (!jsonConfig.TryGetAs ("BannerProtectionRangeZ", out BannerProtectionRangeZ)) {
-          Pipliz.Log.Write (string.Format ("Could not get banner protection z-range from json config, using default value {0}", BannerProtectionRangeZ));
+          Log.Write ($"Could not get banner protection z-range from json config, using default value {BannerProtectionRangeZ}");
         }
         JSONNode jsonCustomAreas;
         if (jsonConfig.TryGetAs ("CustomAreas", out jsonCustomAreas) && jsonCustomAreas.NodeType == NodeType.Array) {
-          foreach (JSONNode jsonCustomArea in jsonCustomAreas.LoopArray ()) {
+          foreach (var jsonCustomArea in jsonCustomAreas.LoopArray ()) {
             try {
-              customAreas.Add (new CustomProtectionArea (jsonCustomArea));
+              CustomAreas.Add (new CustomProtectionArea (jsonCustomArea));
             } catch (Exception exception) {
-              Pipliz.Log.WriteError ($"Exception loading custom area; {exception.Message}");
+              Log.WriteError ($"Exception loading custom area; {exception.Message}");
             }
           }
-          Pipliz.Log.Write ($"Loaded {customAreas.Count} from file");
+          Log.Write ($"Loaded {CustomAreas.Count} from file");
         }
       } else {
         Save ();
-        Pipliz.Log.Write ($"Could not find {ConfigFilepath} file, created default one");
+        Log.Write ($"Could not find {ConfigFilepath} file, created default one");
       }
-      Pipliz.Log.Write (string.Format ("Using spawn protection with x+ range {0}", SpawnProtectionRangeXPos));
-      Pipliz.Log.Write (string.Format ("Using spawn protection with x- range {0}", SpawnProtectionRangeXNeg));
-      Pipliz.Log.Write (string.Format ("Using spawn protection with z+ range {0}", SpawnProtectionRangeZPos));
-      Pipliz.Log.Write (string.Format ("Using spawn protection with z- range {0}", SpawnProtectionRangeZNeg));
-      Pipliz.Log.Write (string.Format ("Using banner protection with x-range {0}", BannerProtectionRangeX));
-      Pipliz.Log.Write (string.Format ("Using banner protection with z-range {0}", BannerProtectionRangeZ));
+      Log.Write ($"Using spawn protection with x+ range {SpawnProtectionRangeXPos}");
+      Log.Write ($"Using spawn protection with x- range {SpawnProtectionRangeXNeg}");
+      Log.Write ($"Using spawn protection with z+ range {SpawnProtectionRangeZPos}");
+      Log.Write ($"Using spawn protection with z- range {SpawnProtectionRangeZNeg}");
+      Log.Write ($"Using banner protection with x-range {BannerProtectionRangeX}");
+      Log.Write ($"Using banner protection with z-range {BannerProtectionRangeZ}");
     }
 
     public static void AddCustomArea (CustomProtectionArea area)
     {
-      customAreas.Add (area);
+      CustomAreas.Add (area);
       Save ();
     }
 
@@ -209,8 +210,8 @@ namespace ScarabolMods
       jsonConfig.SetAs ("SpawnProtectionRangeZ-", SpawnProtectionRangeZNeg);
       jsonConfig.SetAs ("BannerProtectionRangeX", BannerProtectionRangeX);
       jsonConfig.SetAs ("BannerProtectionRangeZ", BannerProtectionRangeZ);
-      JSONNode jsonCustomAreas = new JSONNode (NodeType.Array);
-      foreach (CustomProtectionArea customArea in customAreas) {
+      var jsonCustomAreas = new JSONNode (NodeType.Array);
+      foreach (var customArea in CustomAreas) {
         jsonCustomAreas.AddToArray (customArea.ToJSON ());
       }
       jsonConfig.SetAs ("CustomAreas", jsonCustomAreas);
@@ -218,7 +219,7 @@ namespace ScarabolMods
     }
   }
 
-  public class AntiGriefChatCommand : ChatCommands.IChatCommand
+  public class AntiGriefChatCommand : IChatCommand
   {
     public bool IsCommand (string chat)
     {
@@ -232,27 +233,23 @@ namespace ScarabolMods
         Chat.Send (causedBy, "Command didn't match, use /antigrief [spawn|nospawn|banner|deny] [playername] or /antigrief area [rangex rangez|rangexn rangexp rangezn rangezp]");
         return true;
       }
-      string accesslevel = matched.Groups ["accesslevel"].Value;
-      string targetPlayerName = matched.Groups ["playername"].Value;
+      var accesslevel = matched.Groups ["accesslevel"].Value;
+      var targetPlayerName = matched.Groups ["playername"].Value;
       if (accesslevel.Equals ("area")) {
         if (causedBy == null || causedBy.ID == NetworkID.Server) {
-          Pipliz.Log.WriteError ("You can't define custom protection areas as server (missing center)");
+          Log.WriteError ("You can't define custom protection areas as server (missing center)");
           return true;
         } else if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGriefModEntries.PERMISSION_SUPER)) {
           return true;
         }
-        string rangex = matched.Groups ["rangex"].Value;
-        string rangez = matched.Groups ["rangez"].Value;
-        int rx;
-        int rz;
-        string rangexn = matched.Groups ["rangexn"].Value;
-        string rangexp = matched.Groups ["rangexp"].Value;
-        string rangezn = matched.Groups ["rangezn"].Value;
-        string rangezp = matched.Groups ["rangezp"].Value;
-        int rxn;
-        int rxp;
-        int rzn;
-        int rzp;
+        var rangex = matched.Groups ["rangex"].Value;
+        var rangez = matched.Groups ["rangez"].Value;
+        int rx, rz;
+        var rangexn = matched.Groups ["rangexn"].Value;
+        var rangexp = matched.Groups ["rangexp"].Value;
+        var rangezn = matched.Groups ["rangezn"].Value;
+        var rangezp = matched.Groups ["rangezp"].Value;
+        int rxn, rxp, rzn, rzp;
         if (rangex.Length > 0 && int.TryParse (rangex, out rx) && rangez.Length > 0 && int.TryParse (rangez, out rz)) {
           AntiGriefModEntries.AddCustomArea (new CustomProtectionArea (causedBy.VoxelPosition, rx, rz));
           Chat.Send (causedBy, $"Added anti grief area at {causedBy.VoxelPosition} with x-range {rx} and z-range {rz}");
@@ -266,19 +263,19 @@ namespace ScarabolMods
         Players.Player targetPlayer;
         string error;
         if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error, true)) {
-          Chat.Send (causedBy, string.Format ("Could not find target player '{0}'; {1}", targetPlayerName, error));
+          Chat.Send (causedBy, $"Could not find target player '{targetPlayerName}'; {error}");
           return true;
         }
         if (accesslevel.Equals ("spawn")) {
           if (PermissionsManager.CheckAndWarnPermission (causedBy, AntiGriefModEntries.PERMISSION_SUPER)) {
             PermissionsManager.AddPermissionToUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_SPAWN_CHANGE);
-            Chat.Send (causedBy, string.Format ("You granted [{0}] permission to change the spawn area", targetPlayer.Name));
+            Chat.Send (causedBy, $"You granted [{targetPlayer.Name}] permission to change the spawn area");
             Chat.Send (targetPlayer, "You got permission to change the spawn area");
           }
         } else if (accesslevel.Equals ("nospawn")) {
           if (PermissionsManager.HasPermission (causedBy, AntiGriefModEntries.PERMISSION_SUPER)) {
             PermissionsManager.RemovePermissionOfUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_SPAWN_CHANGE);
-            Chat.Send (causedBy, string.Format ("You revoked permission for [{0}] to change the spawn area", targetPlayer.Name));
+            Chat.Send (causedBy, $"You revoked permission for [{targetPlayer.Name}] to change the spawn area");
             Chat.Send (targetPlayer, "You lost permission to change the spawn area");
           }
         } else if (accesslevel.Equals ("banner")) {
@@ -287,16 +284,16 @@ namespace ScarabolMods
             return true;
           }
           PermissionsManager.AddPermissionToUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_BANNER_PREFIX + causedBy.ID.steamID);
-          Chat.Send (causedBy, string.Format ("You granted [{0}] permission to change your banner area", targetPlayer.Name));
-          Chat.Send (targetPlayer, string.Format ("You got permission to change banner area of [{0}]", causedBy.Name));
+          Chat.Send (causedBy, $"You granted [{targetPlayer.Name}] permission to change your banner area");
+          Chat.Send (targetPlayer, $"You got permission to change banner area of [{causedBy.Name}]");
         } else if (accesslevel.Equals ("deny")) {
           if (causedBy.Equals (targetPlayer)) {
             Chat.Send (causedBy, "You can't revoke the permission for yourself");
             return true;
           }
           PermissionsManager.RemovePermissionOfUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_BANNER_PREFIX + causedBy.ID.steamID);
-          Chat.Send (causedBy, string.Format ("You revoked permission for [{0}] to change your banner area", targetPlayer.Name));
-          Chat.Send (targetPlayer, string.Format ("You lost permission to change banner area of [{0}]", causedBy.Name));
+          Chat.Send (causedBy, $"You revoked permission for [{targetPlayer.Name}] to change your banner area");
+          Chat.Send (targetPlayer, $"You lost permission to change banner area of [{causedBy.Name}]");
         } else {
           Chat.Send (causedBy, "Unknown access level, use /antigrief [spawn|nospawn|banner|deny] steamid");
         }
@@ -307,17 +304,17 @@ namespace ScarabolMods
 
   public class CustomProtectionArea
   {
-    private int startX;
-    private int endX;
-    private int startZ;
-    private int endZ;
+    readonly int StartX;
+    readonly int EndX;
+    readonly int StartZ;
+    readonly int EndZ;
 
     public CustomProtectionArea (int startX, int endX, int startZ, int endZ)
     {
-      this.startX = startX;
-      this.endX = endX;
-      this.startZ = startZ;
-      this.endZ = endZ;
+      StartX = startX;
+      EndX = endX;
+      StartZ = startZ;
+      EndZ = endZ;
     }
 
     public CustomProtectionArea (Vector3Int center, int rangeX, int rangeZ)
@@ -338,15 +335,15 @@ namespace ScarabolMods
     public JSONNode ToJSON ()
     {
       return new JSONNode ()
-        .SetAs ("startX", startX)
-        .SetAs ("endX", endX)
-        .SetAs ("startZ", startZ)
-        .SetAs ("endZ", endZ);
+        .SetAs ("startX", StartX)
+        .SetAs ("endX", EndX)
+        .SetAs ("startZ", StartZ)
+        .SetAs ("endZ", EndZ);
     }
 
     public bool Contains (Vector3Int point)
     {
-      return this.startX <= point.x && this.endX >= point.x && this.startZ <= point.z && this.endZ >= point.z;
+      return StartX <= point.x && EndX >= point.x && StartZ <= point.z && EndZ >= point.z;
     }
   }
 }

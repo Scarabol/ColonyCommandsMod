@@ -6,13 +6,15 @@ using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
 using Pipliz.Threading;
+using ChatCommands;
+using Permissions;
 
 namespace ScarabolMods
 {
   [ModLoader.ModManager]
   public static class Announcements
   {
-    private static string ConfigFilepath {
+    static string ConfigFilepath {
       get {
         return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "announcements.json"));
       }
@@ -21,7 +23,7 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.announcements.registercommand")]
     public static void AfterItemTypesDefined ()
     {
-      ChatCommands.CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
+      CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.announcements.starttimers")]
@@ -40,12 +42,12 @@ namespace ScarabolMods
     }
 
     public static int MIN_INTERVAL = 10;
-    public static int CurrentIndex = 0;
-    private static JSONNode JsonAnnouncements = new JSONNode ();
-    private static string welcomeMessage = "";
-    private static int IntervalSeconds = MIN_INTERVAL;
-    private static List<ServerMessage> Messages = new List<ServerMessage> ();
-    private static int IntervalCounter;
+    public static int CurrentIndex;
+    static JSONNode JsonAnnouncements = new JSONNode ();
+    static string welcomeMessage = "";
+    static int IntervalSeconds = MIN_INTERVAL;
+    static List<ServerMessage> Messages = new List<ServerMessage> ();
+    static int IntervalCounter;
 
     public static void SendNextAnnouncement ()
     {
@@ -54,7 +56,7 @@ namespace ScarabolMods
         if (IntervalCounter >= IntervalSeconds) {
           IntervalCounter = 0;
           if (Messages.Count > 0) {
-            for (int c = CurrentIndex; c < CurrentIndex + Messages.Count; c++) {
+            for (var c = CurrentIndex; c < CurrentIndex + Messages.Count; c++) {
               int Index = c % Messages.Count;
               ServerMessage Message = Messages [Index];
               if (Message.Enabled && Message.Text.Length > 0) {
@@ -67,10 +69,10 @@ namespace ScarabolMods
           }
         }
       } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while sending announcement; {0}", exception.Message));
+        Log.WriteError ($"Exception while sending announcement; {exception.Message}");
       }
       ThreadManager.InvokeOnMainThread (delegate () {
-        Announcements.SendNextAnnouncement ();
+        SendNextAnnouncement ();
       }, MIN_INTERVAL);
     }
 
@@ -88,39 +90,39 @@ namespace ScarabolMods
           if (JsonAnnouncements.TryGetAs ("intervalSeconds", out intervalSeconds)) {
             IntervalSeconds = System.Math.Max (intervalSeconds, MIN_INTERVAL);
           }
-          Pipliz.Log.Write (string.Format ("Using announcements interval {0} seconds", IntervalSeconds));
+          Log.Write ($"Using announcements interval {IntervalSeconds} seconds");
           JSONNode messages;
           if (!JsonAnnouncements.TryGetAs ("messages", out messages) || messages.NodeType != NodeType.Array) {
-            Pipliz.Log.WriteError ($"No 'messages' array defined in {ConfigFilepath}");
+            Log.WriteError ($"No 'messages' array defined in {ConfigFilepath}");
           } else {
             Messages.Clear ();
-            foreach (JSONNode jsonMsg in messages.LoopArray()) {
+            foreach (var jsonMsg in messages.LoopArray ()) {
               ServerMessage msg = (ServerMessage)jsonMsg;
               if (msg != null) {
                 Messages.Add (msg);
               }
             }
-            Pipliz.Log.Write (string.Format ("Loaded {0} announcments from file", Messages.Count));
+            Log.Write ($"Loaded {Messages.Count} announcments from file");
           }
         }
       } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while loading announcements; {0}", exception.Message));
+        Log.WriteError ($"Exception while loading announcements; {exception.Message}");
       }
     }
 
-    private static void Save ()
+    static void Save ()
     {
       try {
         JsonAnnouncements.SetAs ("welcomeMessage", welcomeMessage);
-        JsonAnnouncements.SetAs ("intervalSeconds", Announcements.IntervalSeconds);
+        JsonAnnouncements.SetAs ("intervalSeconds", IntervalSeconds);
         JSONNode JsonMessages = new JSONNode (NodeType.Array);
-        foreach (ServerMessage msg in Messages) {
+        foreach (var msg in Messages) {
           JsonMessages.AddToArray ((JSONNode)msg);
         }
         JsonAnnouncements.SetAs ("messages", JsonMessages);
         JSON.Serialize (ConfigFilepath, JsonAnnouncements, 3);
       } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while saving announcements; {0}", exception.Message));
+        Log.WriteError ($"Exception while saving announcements; {exception.Message}");
       }
     }
 
@@ -133,8 +135,8 @@ namespace ScarabolMods
     public static string ListAllAnnouncements ()
     {
       string result = "";
-      for (int c = 0; c < Announcements.Messages.Count; c++) {
-        Announcements.ServerMessage Message = Announcements.Messages [c];
+      for (var c = 0; c < Messages.Count; c++) {
+        ServerMessage Message = Messages [c];
         result += string.Format ("A{0} ({1}): {2}\n", c, Message.Enabled ? "Enabled" : "Disabled", Message.Text);
       }
       return result;
@@ -143,8 +145,8 @@ namespace ScarabolMods
     public static string ListEnabledAnnouncements ()
     {
       string result = "";
-      for (int c = 0; c < Announcements.Messages.Count; c++) {
-        Announcements.ServerMessage Message = Announcements.Messages [c];
+      for (var c = 0; c < Messages.Count; c++) {
+        ServerMessage Message = Messages [c];
         if (Message.Enabled) {
           result += string.Format ("A{0} ({1}): {2}\n", c, Message.Enabled ? "Enabled" : "Disabled", Message.Text);
         }
@@ -154,7 +156,7 @@ namespace ScarabolMods
 
     public static void AddAnnouncement (string text)
     {
-      Messages.Insert (Announcements.CurrentIndex, new ServerMessage (text));
+      Messages.Insert (CurrentIndex, new ServerMessage (text));
       Save ();
     }
 
@@ -186,9 +188,7 @@ namespace ScarabolMods
 
     public static void EnableAllAnnouncements ()
     {
-      foreach (ServerMessage msg in Messages) {
-        msg.Enabled = true;
-      }
+      Messages.ForEach (message => message.Enabled = true);
       Save ();
     }
 
@@ -200,9 +200,7 @@ namespace ScarabolMods
 
     public static void DisableAllAnnouncements ()
     {
-      foreach (ServerMessage msg in Messages) {
-        msg.Enabled = false;
-      }
+      Messages.ForEach (message => message.Enabled = false);
       Save ();
     }
 
@@ -224,8 +222,8 @@ namespace ScarabolMods
 
       public ServerMessage (string text, bool enabled)
       {
-        this.Text = text;
-        this.Enabled = enabled;
+        Text = text;
+        Enabled = enabled;
       }
 
       public static explicit operator JSONNode (ServerMessage msg)
@@ -252,16 +250,16 @@ namespace ScarabolMods
     }
   }
 
-  public class AnnouncementsChatCommand : ChatCommands.IChatCommand
+  public class AnnouncementsChatCommand : IChatCommand
   {
-    private static string ADD_PREFIX = "/announcements add";
-    private static string EDIT_PREFIX = "/announcements edit";
-    private static string REMOVE_PREFIX = "/announcements remove";
-    private static string MOVE_PREFIX = "/announcements move";
-    private static string ENABLE_PREFIX = "/announcements enable";
-    private static string DISABLE_PREFIX = "/announcements disable";
-    private static string INTERVAL_PREFIX = "/announcements interval";
-    private static string WELCOME_PREFIX = "/announcements welcome";
+    static string ADD_PREFIX = "/announcements add";
+    static string EDIT_PREFIX = "/announcements edit";
+    static string REMOVE_PREFIX = "/announcements remove";
+    static string MOVE_PREFIX = "/announcements move";
+    static string ENABLE_PREFIX = "/announcements enable";
+    static string DISABLE_PREFIX = "/announcements disable";
+    static string INTERVAL_PREFIX = "/announcements interval";
+    static string WELCOME_PREFIX = "/announcements welcome";
 
     public bool IsCommand (string chat)
     {
@@ -270,31 +268,26 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      try {
-        if (chattext.Equals ("/announcements") || chattext.Equals ("/announcements list")) {
-          ListCommand (causedBy);
-        } else if (chattext.Equals (ADD_PREFIX) || chattext.StartsWith (ADD_PREFIX + " ")) {
-          AddCommand (causedBy, chattext.Substring (ADD_PREFIX.Length).Trim ());
-        } else if (chattext.Equals (REMOVE_PREFIX) || chattext.StartsWith (REMOVE_PREFIX + " ")) {
-          RemoveCommand (causedBy, chattext.Substring (REMOVE_PREFIX.Length).Trim ());
-        } else if (chattext.Equals (EDIT_PREFIX) || chattext.StartsWith (EDIT_PREFIX)) {
-          EditCommand (causedBy, chattext.Substring (EDIT_PREFIX.Length).Trim ());
-        } else if (chattext.Equals (MOVE_PREFIX) || chattext.StartsWith (MOVE_PREFIX)) {
-          MoveCommand (causedBy, chattext.Substring (MOVE_PREFIX.Length).Trim ());
-        } else if (chattext.Equals (ENABLE_PREFIX) || chattext.StartsWith (ENABLE_PREFIX + " ")) {
-          EnableCommand (causedBy, chattext.Substring (ENABLE_PREFIX.Length).Trim ());
-        } else if (chattext.Equals (DISABLE_PREFIX) || chattext.StartsWith (DISABLE_PREFIX + " ")) {
-          DisableCommand (causedBy, chattext.Substring (DISABLE_PREFIX.Length).Trim ());
-        } else if (chattext.Equals (INTERVAL_PREFIX) || chattext.StartsWith (INTERVAL_PREFIX + " ")) {
-          IntervalCommand (causedBy, chattext.Substring (INTERVAL_PREFIX.Length).Trim ());
-        } else if (chattext.Equals (WELCOME_PREFIX) || chattext.StartsWith (WELCOME_PREFIX + " ")) {
-          WelcomeCommand (causedBy, chattext.Substring (WELCOME_PREFIX.Length).Trim ());
-        } else {
-          Chat.Send (causedBy, "Command didn't match, use /announcements [add|remove|edit|move|enable|disable|interval] [params...]");
-        }
-        return true;
-      } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while parsing command; {0}", exception.Message));
+      if (chattext.Equals ("/announcements") || chattext.Equals ("/announcements list")) {
+        ListCommand (causedBy);
+      } else if (chattext.Equals (ADD_PREFIX) || chattext.StartsWith (ADD_PREFIX + " ")) {
+        AddCommand (causedBy, chattext.Substring (ADD_PREFIX.Length).Trim ());
+      } else if (chattext.Equals (REMOVE_PREFIX) || chattext.StartsWith (REMOVE_PREFIX + " ")) {
+        RemoveCommand (causedBy, chattext.Substring (REMOVE_PREFIX.Length).Trim ());
+      } else if (chattext.Equals (EDIT_PREFIX) || chattext.StartsWith (EDIT_PREFIX)) {
+        EditCommand (causedBy, chattext.Substring (EDIT_PREFIX.Length).Trim ());
+      } else if (chattext.Equals (MOVE_PREFIX) || chattext.StartsWith (MOVE_PREFIX)) {
+        MoveCommand (causedBy, chattext.Substring (MOVE_PREFIX.Length).Trim ());
+      } else if (chattext.Equals (ENABLE_PREFIX) || chattext.StartsWith (ENABLE_PREFIX + " ")) {
+        EnableCommand (causedBy, chattext.Substring (ENABLE_PREFIX.Length).Trim ());
+      } else if (chattext.Equals (DISABLE_PREFIX) || chattext.StartsWith (DISABLE_PREFIX + " ")) {
+        DisableCommand (causedBy, chattext.Substring (DISABLE_PREFIX.Length).Trim ());
+      } else if (chattext.Equals (INTERVAL_PREFIX) || chattext.StartsWith (INTERVAL_PREFIX + " ")) {
+        IntervalCommand (causedBy, chattext.Substring (INTERVAL_PREFIX.Length).Trim ());
+      } else if (chattext.Equals (WELCOME_PREFIX) || chattext.StartsWith (WELCOME_PREFIX + " ")) {
+        WelcomeCommand (causedBy, chattext.Substring (WELCOME_PREFIX.Length).Trim ());
+      } else {
+        Chat.Send (causedBy, "Command didn't match, use /announcements [add|remove|edit|move|enable|disable|interval] [params...]");
       }
       return true;
     }
@@ -302,13 +295,13 @@ namespace ScarabolMods
     public void ListCommand (Players.Player causedBy)
     {
       string msg;
-      if (Permissions.PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.list")) {
+      if (PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.list")) {
         msg = Announcements.ListAllAnnouncements ();
       } else {
         msg = Announcements.ListEnabledAnnouncements ();
       }
       if (msg.Length > 0) {
-        Chat.Send (causedBy, string.Format ("Server Announcements:\n{0}", msg));
+        Chat.Send (causedBy, $"Server Announcements:\n{msg}");
       } else {
         Chat.Send (causedBy, "No announcements");
       }
@@ -316,7 +309,7 @@ namespace ScarabolMods
 
     public void AddCommand (Players.Player causedBy, string param)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.add")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.add")) {
         return;
       }
       Announcements.AddAnnouncement (param);
@@ -325,7 +318,7 @@ namespace ScarabolMods
 
     public void RemoveCommand (Players.Player causedBy, string param)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.remove")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.remove")) {
         return;
       }
       int Index;
@@ -333,59 +326,59 @@ namespace ScarabolMods
         return;
       }
       Announcements.RemoveAnnouncement (Index);
-      Chat.Send (causedBy, string.Format ("Removed announcement {0} from queue", Index));
+      Chat.Send (causedBy, $"Removed announcement {Index} from queue");
     }
 
     public void EditCommand (Players.Player causedBy, string param)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.edit")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.edit")) {
         return;
       }
       var m = Regex.Match (param, @"A?(?<index>\d+) (?<text>.+)");
       if (!m.Success) {
-        Chat.Send (causedBy, string.Format ("Params didn't match, use {0} A[index] [text]", EDIT_PREFIX));
+        Chat.Send (causedBy, $"Params didn't match, use {EDIT_PREFIX} A[index] [text]");
         return;
       }
       string StrIndex = m.Groups ["index"].Value;
       int Index;
       if (!int.TryParse (StrIndex, out Index)) {
-        Chat.Send (causedBy, string.Format ("Could not parse given parameter '{0}' as index number", StrIndex));
+        Chat.Send (causedBy, $"Could not parse given parameter '{StrIndex}' as index number");
         return;
       }
       string Text = m.Groups ["text"].Value;
       Announcements.ChangeAnnouncement (Index, Text);
-      Chat.Send (causedBy, string.Format ("Changed announcement {0}", Index));
+      Chat.Send (causedBy, $"Changed announcement {Index}");
     }
 
     public void MoveCommand (Players.Player causedBy, string param)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.move")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.move")) {
         return;
       }
       var m = Regex.Match (param, @"A?(?<index>\d+) A?(?<newindex>\d+)");
       if (!m.Success) {
-        Chat.Send (causedBy, string.Format ("Params didn't match, use {0} A[index] [newindex]", EDIT_PREFIX));
+        Chat.Send (causedBy, $"Params didn't match, use {EDIT_PREFIX} A[index] [newindex]");
         return;
       }
       string StrIndex = m.Groups ["index"].Value;
       int Index;
       if (!int.TryParse (StrIndex, out Index)) {
-        Chat.Send (causedBy, string.Format ("Could not parse given parameter '{0}' as index number", StrIndex));
+        Chat.Send (causedBy, $"Could not parse given parameter '{StrIndex}' as index number");
         return;
       }
       string StrNewIndex = m.Groups ["newindex"].Value;
       int NewIndex;
       if (!int.TryParse (StrNewIndex, out NewIndex)) {
-        Chat.Send (causedBy, string.Format ("Could not parse given parameter '{0}' as index number", StrNewIndex));
+        Chat.Send (causedBy, $"Could not parse given parameter '{StrNewIndex}' as index number");
         return;
       }
       Announcements.MoveAnnouncement (Index, NewIndex);
-      Chat.Send (causedBy, string.Format ("Moved announcement {0} to index {1}", Index, NewIndex));
+      Chat.Send (causedBy, $"Moved announcement {Index} to index {NewIndex}");
     }
 
     public void EnableCommand (Players.Player causedBy, string param)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.enable")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.enable")) {
         return;
       }
       if (param.Length > 0) {
@@ -394,7 +387,7 @@ namespace ScarabolMods
           return;
         }
         Announcements.EnableAnnouncement (Index);
-        Chat.Send (causedBy, string.Format ("Enabled announcement {0}", Index));
+        Chat.Send (causedBy, $"Enabled announcement {Index}");
       } else {
         Announcements.EnableAllAnnouncements ();
         Chat.Send (causedBy, "Enabled all announcements");
@@ -403,7 +396,7 @@ namespace ScarabolMods
 
     public void DisableCommand (Players.Player causedBy, string param)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.disable")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.disable")) {
         return;
       }
       if (param.Length > 0) {
@@ -412,7 +405,7 @@ namespace ScarabolMods
           return;
         }
         Announcements.DisableAnnouncement (Index);
-        Chat.Send (causedBy, string.Format ("Disabled announcement {0}", Index));
+        Chat.Send (causedBy, $"Disabled announcement {Index}");
       } else {
         Announcements.DisableAllAnnouncements ();
         Chat.Send (causedBy, "Disabled all announcements");
@@ -424,12 +417,12 @@ namespace ScarabolMods
       Index = -1;
       var m = Regex.Match (param, @"A?(?<index>\d+)");
       if (!m.Success) {
-        Chat.Send (causedBy, string.Format ("Params didn't match, use {0} A[index]", prefix));
+        Chat.Send (causedBy, $"Params didn't match, use {prefix} A[index]");
         return false;
       }
       string StrIndex = m.Groups ["index"].Value;
       if (!int.TryParse (StrIndex, out Index)) {
-        Chat.Send (causedBy, string.Format ("Could not parse given parameter '{0}' as index number", StrIndex));
+        Chat.Send (causedBy, $"Could not parse given parameter '{StrIndex}' as index number");
         return false;
       }
       return true;
@@ -437,32 +430,32 @@ namespace ScarabolMods
 
     public void IntervalCommand (Players.Player causedBy, string param)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.interval")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.interval")) {
         return;
       }
       var m = Regex.Match (param, @"(?<intervalSeconds>\d+)");
       if (!m.Success) {
-        Chat.Send (causedBy, string.Format ("Params didn't match, use {0} [intervalSeconds]", INTERVAL_PREFIX));
+        Chat.Send (causedBy, $"Params didn't match, use {INTERVAL_PREFIX} [intervalSeconds]");
         return;
       }
       int Interval;
       string StrInterval = m.Groups ["intervalSeconds"].Value;
       if (!int.TryParse (StrInterval, out Interval)) {
-        Chat.Send (causedBy, string.Format ("Could not parse given parameter '{0}' as index number", StrInterval));
+        Chat.Send (causedBy, $"Could not parse given parameter '{StrInterval}' as index number");
         return;
       }
       Announcements.SetIntervalSeconds (Interval);
-      Chat.Send (causedBy, string.Format ("Set announcement interval to {0} seconds", Interval));
+      Chat.Send (causedBy, $"Set announcement interval to {Interval} seconds");
     }
 
     public void WelcomeCommand (Players.Player causedBy, string param)
     {
-      if (!Permissions.PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.welcome")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.welcome")) {
         return;
       }
       Announcements.SetWelcomeMessage (param);
       if (param.Length > 0) {
-        Chat.Send (causedBy, string.Format ("Changed welcome message, see below\n{0}", param));
+        Chat.Send (causedBy, $"Changed welcome message, see below\n{param}");
       } else {
         Chat.Send (causedBy, "Disabled welcome message");
       }

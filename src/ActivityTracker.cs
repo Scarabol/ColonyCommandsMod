@@ -1,24 +1,21 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
 using Pipliz.JSON;
-using Pipliz.Threading;
 
 namespace ScarabolMods
 {
   [ModLoader.ModManager]
   public static class ActivityTracker
   {
-    private static string ConfigFilepath {
+    static string ConfigFilepath {
       get {
         return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "playeractivity.json"));
       }
     }
 
-    private static Dictionary<string, StatsDataEntry> PlayerStats = new Dictionary<string, StatsDataEntry> ();
+    static Dictionary<string, StatsDataEntry> PlayerStats = new Dictionary<string, StatsDataEntry> ();
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.activitytracker.starttimers")]
     public static void AfterWorldLoad ()
@@ -29,16 +26,16 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerConnectedLate, "scarabol.commands.activitytracker.onplayerconnectedlate")]
     public static void OnPlayerConnectedLate (Players.Player player)
     {
-      String now = DateTime.Now.ToString ();
-      StatsDataEntry stats = GetOrCreateStats (player.IDString);
+      var now = DateTime.Now.ToString ();
+      var stats = GetOrCreateStats (player.IDString);
       stats.lastSeen = now;
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerDisconnected, "scarabol.commands.activitytracker.onplayerdisconnected")]
     public static void OnPlayerDisconnected (Players.Player player)
     {
-      DateTime now = DateTime.Now;
-      StatsDataEntry stats = GetOrCreateStats (player.IDString);
+      var now = DateTime.Now;
+      var stats = GetOrCreateStats (player.IDString);
       stats.secondsPlayed += (long)now.Subtract (DateTime.Parse (stats.lastSeen)).TotalSeconds;
       stats.lastSeen = now.ToString ();
     }
@@ -46,10 +43,10 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnAutoSaveWorld, "scarabol.commands.activitytracker.onautosaveworld")]
     public static void OnAutoSaveWorld ()
     {
-      DateTime now = DateTime.Now;
-      for (int c = 0; c < Players.CountConnected; c++) {
-        Players.Player player = Players.GetConnectedByIndex (c);
-        StatsDataEntry stats = GetOrCreateStats (player.IDString);
+      var now = DateTime.Now;
+      for (var c = 0; c < Players.CountConnected; c++) {
+        var player = Players.GetConnectedByIndex (c);
+        var stats = GetOrCreateStats (player.IDString);
         stats.secondsPlayed += (long)now.Subtract (DateTime.Parse (stats.lastSeen)).TotalSeconds;
         stats.lastSeen = now.ToString ();
       }
@@ -65,41 +62,40 @@ namespace ScarabolMods
     public static void Load ()
     {
       try {
-        JSONNode json;
-        if (JSON.Deserialize (ConfigFilepath, out json, false)) {
-          JSONNode PlayerActivity = json;
+        JSONNode playerActivity;
+        if (JSON.Deserialize (ConfigFilepath, out playerActivity, false)) {
           JSONNode jsonStats;
-          if (!PlayerActivity.TryGetAs ("stats", out jsonStats) || jsonStats.NodeType != NodeType.Object) {
-            Pipliz.Log.WriteError ($"No player 'stats' defined in {ConfigFilepath}");
+          if (!playerActivity.TryGetAs ("stats", out jsonStats) || jsonStats.NodeType != NodeType.Object) {
+            Log.WriteError ($"No player 'stats' defined in {ConfigFilepath}");
           } else {
             PlayerStats.Clear ();
-            foreach (KeyValuePair<string, JSONNode> jsonPlayerStats in jsonStats.LoopObject()) {
-              string playerId = jsonPlayerStats.Key;
-              StatsDataEntry stats = (StatsDataEntry)jsonPlayerStats.Value;
+            foreach (var jsonPlayerStats in jsonStats.LoopObject ()) {
+              var playerId = jsonPlayerStats.Key;
+              var stats = (StatsDataEntry)jsonPlayerStats.Value;
               if (stats != null) {
                 PlayerStats.Add (playerId, stats);
               }
             }
-            Pipliz.Log.Write (string.Format ("Loaded {0} player stats from file", PlayerStats.Count));
+            Log.Write ($"Loaded {PlayerStats.Count} player stats from file");
           }
         }
       } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while loading player activity; {0}", exception.Message));
+        Log.WriteError ($"Exception while loading player activity; {exception.Message}");
       }
     }
 
-    private static void Save ()
+    static void Save ()
     {
       try {
         JSONNode JsonPlayerStats = new JSONNode ();
-        foreach (KeyValuePair<string, StatsDataEntry> playerStats in PlayerStats) {
+        foreach (var playerStats in PlayerStats) {
           JsonPlayerStats.SetAs (playerStats.Key, (JSONNode)playerStats.Value);
         }
         JSONNode JsonActivity = new JSONNode ();
         JsonActivity.SetAs ("stats", JsonPlayerStats);
         JSON.Serialize (ConfigFilepath, JsonActivity, 3);
       } catch (Exception exception) {
-        Pipliz.Log.WriteError (string.Format ("Exception while saving player activity; {0}", exception.Message));
+        Log.WriteError ($"Exception while saving player activity; {exception.Message}");
       }
     }
 
@@ -118,16 +114,15 @@ namespace ScarabolMods
       StatsDataEntry stats;
       if (!PlayerStats.TryGetValue (playerId, out stats)) {
         return "never";
-      } else {
-        return stats.lastSeen;
       }
+      return stats.lastSeen;
     }
 
     public static Dictionary<Players.Player, long> GetInactivePlayers (int days)
     {
       var result = new Dictionary<Players.Player, long> ();
-      foreach (Players.Player player in Players.PlayerDatabase.ValuesAsList) {
-        StatsDataEntry stats = ActivityTracker.GetOrCreateStats (player.IDString);
+      foreach (var player in Players.PlayerDatabase.ValuesAsList) {
+        StatsDataEntry stats = GetOrCreateStats (player.IDString);
         double inactiveDays = DateTime.Now.Subtract (DateTime.Parse (stats.lastSeen)).TotalDays;
         if (inactiveDays >= days) {
           result.Add (player, (long)inactiveDays);
@@ -139,7 +134,7 @@ namespace ScarabolMods
     public class StatsDataEntry
     {
       public string lastSeen = "";
-      public long secondsPlayed = 0;
+      public long secondsPlayed;
 
       public StatsDataEntry ()
         : this (DateTime.Now.ToString (), 0)
