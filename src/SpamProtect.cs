@@ -8,6 +8,7 @@ using Permissions;
 
 namespace ScarabolMods
 {
+  [ModLoader.ModManager]
   public static class MuteList
   {
     public static readonly Dictionary<Players.Player, long> MutedMinutes = new Dictionary<Players.Player, long> ();
@@ -22,17 +23,18 @@ namespace ScarabolMods
         }
       }
     }
-  }
 
-  [ModLoader.ModManager]
-  public class MuteChatCommand : IChatCommand
-  {
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.mute.registercommand")]
     public static void AfterItemTypesDefined ()
     {
       CommandManager.RegisterCommand (new MuteChatCommand ());
+      CommandManager.RegisterCommand (new UnmuteChatCommand ());
+      CommandManager.RegisterCommand (new SilenceChatCommand ());
     }
+  }
 
+  public class MuteChatCommand : IChatCommand
+  {
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/mute") || chat.StartsWith ("/mute ");
@@ -71,15 +73,8 @@ namespace ScarabolMods
     }
   }
 
-  [ModLoader.ModManager]
   public class UnmuteChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.unmute.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new UnmuteChatCommand ());
-    }
-
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/unmute") || chat.StartsWith ("/unmute ");
@@ -109,15 +104,8 @@ namespace ScarabolMods
     }
   }
 
-  [ModLoader.ModManager]
   public class SilenceChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.mute.silence.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new SilenceChatCommand ());
-    }
-
     public bool IsCommand (string chat)
     {
       return true;

@@ -17,7 +17,6 @@ namespace ScarabolMods
   public class BetterChatCommand : IChatCommand
   {
     static List<ChatColorSpecification> Colors = new List<ChatColorSpecification> ();
-    bool SelfLookup;
 
     static string ConfigFilepath {
       get {
@@ -27,13 +26,7 @@ namespace ScarabolMods
 
     public bool IsCommand (string chat)
     {
-      if (SelfLookup) {
-        return false;
-      }
-      SelfLookup = true;
-      bool result = CommandManager.GetCommand (chat) == null;
-      SelfLookup = false;
-      return result;
+      return !chat.StartsWith ("/");
     }
 
     public bool TryDoCommand (Players.Player causedBy, string chat)
