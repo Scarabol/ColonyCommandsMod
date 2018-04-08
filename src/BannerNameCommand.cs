@@ -19,7 +19,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      var closestBanner = BannerTracker.GetClosest (causedBy, causedBy.VoxelPosition);
+      var closestBanner = BannerTracker.GetClosest (causedBy.VoxelPosition, 5000);
       if (closestBanner != null) {
         var ownerName = closestBanner.Owner.Name;
         if (ownerName != null) {
