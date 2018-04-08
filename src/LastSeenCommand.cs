@@ -28,7 +28,7 @@ namespace ScarabolMods
       var targetPlayerName = m.Groups ["playername"].Value;
       Players.Player targetPlayer;
       string error;
-      if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error)) {
+      if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error, true)) {
         Chat.Send (causedBy, $"Could not find player '{targetPlayerName}'; {error}");
         return true;
       }
