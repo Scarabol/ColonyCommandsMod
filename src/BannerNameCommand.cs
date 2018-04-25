@@ -1,4 +1,5 @@
-﻿using Pipliz.Chatting;
+﻿using Pipliz;
+using Pipliz.Chatting;
 using ChatCommands;
 
 namespace ScarabolMods
@@ -19,9 +20,9 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      var position = causedBy.Position;
-      var closestBanner = null;
-      var shortestDistance = -1;
+      UnityEngine.Vector3 position = causedBy.Position;
+      Banner closestBanner = null;
+      int shortestDistance = -1;
       for (var c = 0; c < BannerTracker.GetCount(); c++) {
         Banner banner;
         if (BannerTracker.TryGetAtIndex(c, out banner)) {
@@ -29,9 +30,9 @@ namespace ScarabolMods
             continue;
           }
           Vector3Int bannerLocation = banner.KeyLocation;
-          var distX = position.x - bannerLocation.x;
-          var distZ = position.z - bannerLocation.z;
-          var distance = (int)System.Math.Sqrt(System.Math.Pow(distX, 2) + System.Math.Pow(distZ, 2));
+          double distX = position.x - bannerLocation.x;
+          double distZ = position.z - bannerLocation.z;
+          int distance = (int)System.Math.Sqrt(System.Math.Pow(distX, 2) + System.Math.Pow(distZ, 2));
           if (shortestDistance == -1 || distance < shortestDistance) {
             shortestDistance = distance;
             closestBanner = banner;
