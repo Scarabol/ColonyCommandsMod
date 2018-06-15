@@ -35,22 +35,42 @@ namespace ScarabolMods
         Chat.Send (causedBy, "Command didn't match, item type not found");
         return true;
       }
-      var amount = Int32.Parse (m.Groups ["amount"].Value);
-      if (amount <= 0) {
+      var removeAmount = Int32.Parse (m.Groups ["amount"].Value);
+      if (removeAmount <= 0) {
         Chat.Send (causedBy, "Command didn't match, amount too low");
         return true;
       }
+
+      // delete from the player's inventory first
+      int totalRemoved = 0;
+      Inventory playerInventory;
+      if (Inventory.TryGetInventory(causedBy, out playerInventory)) {
+        foreach (var item in playerInventory.Items) {
+          if (item.Type == itemType) {
+            int todoRemove = System.Math.Min(removeAmount, item.Amount);
+            if (playerInventory.TryRemove(item.Type, todoRemove)) {
+              removeAmount -= todoRemove;
+              totalRemoved += todoRemove;
+            }
+          }
+        }
+      }
+
+      // then delete from the stockpile
       Stockpile playerStockpile;
       if (Stockpile.TryGetStockpile (causedBy, out playerStockpile)) {
-        var actualAmount = System.Math.Min (playerStockpile.AmountContained (itemType), amount);
+        var actualAmount = System.Math.Min (playerStockpile.AmountContained (itemType), removeAmount);
         if (playerStockpile.TryRemove (itemType, actualAmount)) {
-          Chat.Send (causedBy, $"Trashed {actualAmount} x {ItemTypes.IndexLookup.GetName (itemType)}");
+          totalRemoved += actualAmount;
+          Chat.Send (causedBy, $"Trashed {totalRemoved} x {ItemTypes.IndexLookup.GetName (itemType)}");
         } else {
           Chat.Send (causedBy, $"Not enough items in stockpile");
         }
       } else {
         Chat.Send (causedBy, "Could not get stockpile");
       }
+
+      causedBy.ShouldSave = true;
       return true;
     }
   }
@@ -107,9 +127,36 @@ namespace ScarabolMods
         Chat.Send (causedBy, $"Could not parse amount '{amount}'");
         return true;
       }
-      var totalnum = 0;
+      int totalnum = 0;
       foreach (var player in todoPlayers) {
-        var numRemove = amountNum;
+        int removedPerPlayer = 0;
+        int numRemove = amountNum;
+
+        // inventory first
+        Inventory playerInventory;
+        if (Inventory.TryGetInventory (player, out playerInventory)) {
+          if (trashItemType == 0) {
+            playerInventory.Clear ();
+            Log.Write ($"Cleared the inventory of {player.IDString}");
+          } else {
+            int todoRemove = 0;
+            foreach (var item in playerInventory.Items) {
+              if (item.Type == trashItemType) {
+                todoRemove = System.Math.Min (numRemove, item.Amount);
+                if (playerInventory.TryRemove (trashItemType, todoRemove)) {
+                  numRemove -= todoRemove;
+                  totalnum += todoRemove;
+                  removedPerPlayer += todoRemove;
+                }
+              }
+            }
+            if (removedPerPlayer > 0) {
+              Log.Write ($"Removed {removedPerPlayer} items from inventory of {player.IDString}");
+            }
+          }
+        }
+
+        // then stockpile
         Stockpile playerStockpile;
         if (Stockpile.TryGetStockpile (player, out playerStockpile)) {
           if (trashItemType == 0) {
@@ -124,30 +171,13 @@ namespace ScarabolMods
             if (playerStockpile.TryRemove (trashItemType, todoRemove)) {
               numRemove -= todoRemove;
               totalnum += todoRemove;
+              removedPerPlayer += todoRemove;
               Log.Write ($"Removed {todoRemove} items from stockpile of {player.IDString}");
             }
           }
-          player.ShouldSave = true;
         }
-        Inventory playerInventory;
-        if (Inventory.TryGetInventory (player, out playerInventory)) {
-          if (trashItemType == 0) {
-            playerInventory.Clear ();
-            Log.Write ($"Cleared the inventory of {player.IDString}");
-          } else {
-            int todoRemove = 0;
-            foreach (var item in playerInventory.Items) {
-              if (item.Type == trashItemType) {
-                todoRemove = System.Math.Min (numRemove, item.Amount);
-                break;
-              }
-            }
-            if (playerInventory.TryRemove (trashItemType, todoRemove)) {
-              numRemove -= todoRemove;
-              totalnum += todoRemove;
-              Log.Write ($"Removed {todoRemove} items from inventory of {player.IDString}");
-            }
-          }
+
+        if (removedPerPlayer > 0) {
           player.ShouldSave = true;
         }
       }
