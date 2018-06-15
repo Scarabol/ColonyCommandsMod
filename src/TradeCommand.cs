@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using Pipliz.Chatting;
+using Pipliz;
 using ChatCommands;
 
 namespace ScarabolMods
@@ -56,19 +57,19 @@ namespace ScarabolMods
         Chat.Send (causedBy, $"Could not find target player '{targetPlayerName}'; {error}");
         return true;
       }
-      Stockpile sourceStockpile;
-      Stockpile targetStockpile;
-      if (Stockpile.TryGetStockpile (causedBy, out sourceStockpile) && Stockpile.TryGetStockpile (targetPlayer, out targetStockpile)) {
-        InventoryItem tradeItem = new InventoryItem (itemType, amount);
-        if (sourceStockpile.TryRemove (tradeItem)) {
-          targetStockpile.Add (tradeItem);
-          Chat.Send (causedBy, $"Send {amount} x {itemTypeName} to '{targetPlayer.Name}'");
-          Chat.Send (targetPlayer, $"Received {amount} x {itemTypeName} from '{causedBy.Name}'");
-        } else {
-          Chat.Send (causedBy, "You don't have enough items");
-        }
-      } else {
+      Stockpile sourceStockpile = Stockpile.GetStockPile(causedBy);
+      Stockpile targetStockpile = Stockpile.GetStockPile(targetPlayer);
+      if (sourceStockpile == null || targetStockpile == null) {
         Chat.Send (causedBy, "Could not get stockpile for both players");
+        return false;
+      }
+      InventoryItem tradeItem = new InventoryItem (itemType, amount);
+      if (sourceStockpile.TryRemove (tradeItem)) {
+        targetStockpile.Add (tradeItem);
+        Chat.Send (causedBy, $"Send {amount} x {itemTypeName} to '{targetPlayer.Name}'");
+        Chat.Send (targetPlayer, $"Received {amount} x {itemTypeName} from '{causedBy.Name}'");
+      } else {
+        Chat.Send (causedBy, "You don't have enough items");
       }
       return true;
     }
