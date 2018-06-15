@@ -57,8 +57,10 @@ namespace ScarabolMods
       }
 
       // then delete from the stockpile
-      Stockpile playerStockpile;
-      if (Stockpile.TryGetStockpile (causedBy, out playerStockpile)) {
+      Stockpile playerStockpile = Stockpile.GetStockPile(causedBy);
+      if (!playerStockpile) {
+        Chat.Send(causedBy, "Could not get stockpile");
+      } else {
         var actualAmount = System.Math.Min (playerStockpile.AmountContained (itemType), removeAmount);
         if (playerStockpile.TryRemove (itemType, actualAmount)) {
           totalRemoved += actualAmount;
@@ -66,11 +68,12 @@ namespace ScarabolMods
         } else {
           Chat.Send (causedBy, $"Not enough items in stockpile");
         }
-      } else {
-        Chat.Send (causedBy, "Could not get stockpile");
       }
 
-      causedBy.ShouldSave = true;
+      if (totalRemoved > 0) {
+        causedBy.ShouldSave = true;
+      }
+
       return true;
     }
   }
@@ -157,8 +160,8 @@ namespace ScarabolMods
         }
 
         // then stockpile
-        Stockpile playerStockpile;
-        if (Stockpile.TryGetStockpile (player, out playerStockpile)) {
+        Stockpile playerStockpile = Stockpile.GetStockPile(player);
+        if (playerStockpile) {
           if (trashItemType == 0) {
             var item = playerStockpile.GetByIndex (0);
             while (item != InventoryItem.Empty) {
