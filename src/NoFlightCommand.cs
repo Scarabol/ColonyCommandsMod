@@ -25,10 +25,9 @@ namespace ScarabolMods
         return true;
       }
       foreach (var player in Players.PlayerDatabase.ValuesAsList) {
-        var values = player.GetTempValues ();
-        if (!PermissionsManager.HasPermission (player, "setflight") && values.Remove ("pipliz.setflight")) {
-          player.SetTempValues (values);
-          player.SavegameNode.RemoveChild ("pipliz.setflight");
+        var flightState = player.GetTempValues(false).GetOrDefault("pipliz.setflight", false);
+        if (!PermissionsManager.HasPermission (player, "setflight") && flightState) {
+          player.GetTempValues(true).Set("pipliz.setflight", false);
           player.ShouldSave = true;
           if (player.IsConnected) {
             Chat.Send (player, "Please don't fly");
