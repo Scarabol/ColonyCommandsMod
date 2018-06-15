@@ -6,7 +6,7 @@ compatible_cs = "0.6.2"
 zip_files_extra = "$(moddir)/announcements.example.json" "$(moddir)/protection-ranges.example.json" "$(moddir)/chatcolors.example.json"
 
 fullname = Colony$(modname)Mod
-prettyname = Scarabol $(modname)
+namepretty = Scarabol $(modname)
 moddir = Scarabol/$(modname)
 zipname = $(fullname)-$(version)-mods.zip
 dllname = $(modname).dll
@@ -15,7 +15,7 @@ define MODINFO_JSON
 [
   {
     "name" : "scarabol.$(shell echo $(modname) | tr A-Z a-z)",
-    "prettyname" : "$(prettyname)",
+    "namepretty" : "$(namepretty)",
     "version" : "$(version)",
     "dllpath" : "$(dllname)",
     "enabled" : true,
