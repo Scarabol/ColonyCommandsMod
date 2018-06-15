@@ -58,7 +58,7 @@ namespace ScarabolMods
 
       // then delete from the stockpile
       Stockpile playerStockpile = Stockpile.GetStockPile(causedBy);
-      if (!playerStockpile) {
+      if (playerStockpile == null) {
         Chat.Send(causedBy, "Could not get stockpile");
       } else {
         var actualAmount = System.Math.Min (playerStockpile.AmountContained (itemType), removeAmount);
@@ -161,7 +161,7 @@ namespace ScarabolMods
 
         // then stockpile
         Stockpile playerStockpile = Stockpile.GetStockPile(player);
-        if (playerStockpile) {
+        if (playerStockpile != null) {
           if (trashItemType == 0) {
             var item = playerStockpile.GetByIndex (0);
             while (item != InventoryItem.Empty) {
