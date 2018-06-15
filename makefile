@@ -7,8 +7,8 @@ zip_files_extra = "$(moddir)/announcements.example.json" "$(moddir)/protection-r
 
 fullname = Colony$(modname)Mod
 namepretty = Scarabol $(modname)
-moddir = Scarabol/$(modname)
-zipname = $(fullname)-$(version)-mods.zip
+moddir = $(fullname)
+zipname = $(fullname)-$(version).zip
 dllname = $(modname).dll
 
 define MODINFO_JSON
@@ -49,7 +49,8 @@ modinfo:
 
 zip: default modinfo
 	rm -f "$(zipname)"
-	cd ../../ && zip -r "$(moddir)/$(zipname)" "$(moddir)/modInfo.json" "$(moddir)/$(dllname)" $(zip_files_extra)
+	cd ../ && zip -r "$(moddir)/$(zipname)" "$(moddir)/modInfo.json" "$(moddir)/$(dllname)" $(zip_files_extra)
+	cd -
 
 release: zip
 	git push
