@@ -1,11 +1,12 @@
 # important variables
 modname = Commands
-versionmajor = 6.0
-versionminor = 10
-compatible_cs = "0.6.0"
+versionmajor = 6.2
+versionminor = 11
+compatible_cs = "0.6.2"
 zip_files_extra = "$(moddir)/announcements.example.json" "$(moddir)/protection-ranges.example.json" "$(moddir)/chatcolors.example.json"
 
 fullname = Colony$(modname)Mod
+prettyname = Scarabol $(modname)
 moddir = Scarabol/$(modname)
 zipname = $(fullname)-$(version)-mods.zip
 dllname = $(modname).dll
@@ -14,6 +15,7 @@ define MODINFO_JSON
 [
   {
     "name" : "scarabol.$(shell echo $(modname) | tr A-Z a-z)",
+    "prettyname" : "$(prettyname)",
     "version" : "$(version)",
     "dllpath" : "$(dllname)",
     "enabled" : true,
@@ -35,7 +37,7 @@ nextversion = $(versionmajor).$(nextversionminor)
 #
 
 default:
-	mcs /target:library -r:../../../../colonyserver_Data/Managed/Assembly-CSharp.dll -r:../../Pipliz/APIProvider/APIProvider.dll -r:../../../../colonyserver_Data/Managed/UnityEngine.dll -out:"$(dllname)" -sdk:2 src/*.cs
+	mcs /target:library -r:../../../colonyserver_Data/Managed/Assembly-CSharp.dll -r:../Pipliz/APIProvider/APIProvider.dll -r:../../../colonyserver_Data/Managed/UnityEngine.dll -out:"$(dllname)" -sdk:2 src/*.cs
 
 clean:
 	rm -f "$(dllname)"
