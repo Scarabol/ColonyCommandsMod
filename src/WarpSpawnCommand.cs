@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Pipliz;
 using Pipliz.Chatting;
 using ChatCommands;
 using Permissions;
@@ -7,14 +8,9 @@ using ChatCommands.Implementations;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class WarpSpawnChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.warpspawn.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new WarpSpawnChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -23,23 +19,27 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.spawn")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.spawn.self")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/warpspawn( ?<teleportplayername>['].+?[']|[^ ]+)?");
+      var m = Regex.Match (chattext, @"/warpspawn ?(?<playername>.+)?");
       if (!m.Success) {
-        Chat.Send (causedBy, "Command didn't match, use /warpspawn [teleportplayername] or /warpspawn [teleportplayername]");
+        Chat.Send(causedBy, "use /warpspawn or /warpspawn <playername>");
         return true;
       }
       var TeleportPlayer = causedBy;
-      var TeleportPlayerName = m.Groups ["teleportplayername"].Value;
+      var TeleportPlayerName = m.Groups ["playername"].Value;
       if (TeleportPlayerName.Length > 0) {
+        if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "warp.spawn")) {
+          return true;
+        }
         string Error;
         if (!PlayerHelper.TryGetPlayer (TeleportPlayerName, out TeleportPlayer, out Error)) {
           Chat.Send (causedBy, $"Could not find teleport player '{TeleportPlayerName}'; {Error}");
           return true;
         }
       }
+
       Teleport.TeleportTo (TeleportPlayer, TerrainGenerator.UsedGenerator.GetSpawnLocation (causedBy));
       return true;
     }

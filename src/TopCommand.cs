@@ -8,14 +8,9 @@ using ChatCommands;
  */
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class TopChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.top.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new TopChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {

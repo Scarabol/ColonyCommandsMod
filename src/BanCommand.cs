@@ -5,14 +5,9 @@ using ChatCommands;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class BanChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.ban.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new BanChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -21,7 +16,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "ban")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "ban")) {
         return true;
       }
       var m = Regex.Match (chattext, @"/ban (?<targetplayername>['].+?[']|[^ ]+)");

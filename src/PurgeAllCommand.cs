@@ -9,16 +9,10 @@ using NPC;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class PurgeAllChatCommand : IChatCommand
   {
     public static int MIN_DAYS_TO_PURGE = 7;
-
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.purgeall.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new PurgeAllChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -27,7 +21,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "purgeall")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "purgeall")) {
         return true;
       }
       var m = Regex.Match (chattext, @"/purgeall (?<days>\d+)");

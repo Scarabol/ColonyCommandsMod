@@ -6,14 +6,9 @@ using ChatCommands;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class TradeChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.trade.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new TradeChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {

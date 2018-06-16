@@ -4,14 +4,9 @@ using ChatCommands;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class WhisperChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.whisper.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new WhisperChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {

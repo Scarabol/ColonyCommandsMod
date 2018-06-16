@@ -6,14 +6,9 @@ using ChatCommands.Implementations;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class WarpChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.warp.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new WarpChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -22,8 +17,8 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.player") &&
-          !PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.self")) {
+      if (!PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.player") &&
+          !PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.self")) {
         Chat.Send (causedBy, "<color=red>You don't have permission to warp</color>");
         return true;
       }
@@ -42,7 +37,7 @@ namespace ScarabolMods
       var teleportPlayer = causedBy;
       var teleportPlayerName = m.Groups ["teleportplayername"].Value;
       if (teleportPlayerName.Length > 0) {
-        if (PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "warp.player")) {
+        if (PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.player")) {
           if (!PlayerHelper.TryGetPlayer (teleportPlayerName, out teleportPlayer, out error)) {
             Chat.Send (causedBy, $"Could not find teleport player '{teleportPlayerName}'; {error}");
             return true;

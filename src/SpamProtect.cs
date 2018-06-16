@@ -43,7 +43,7 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       MuteList.Update ();
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "mute")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "mute")) {
         return true;
       }
       var m = Regex.Match (chattext, @"/mute (?<targetplayername>['].+?[']|[^ ]+)( (?<minutes>\d+))?");
@@ -83,7 +83,7 @@ namespace ScarabolMods
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
       MuteList.Update ();
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "mute")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "mute")) {
         return true;
       }
       var m = Regex.Match (chattext, @"/unmute (?<targetplayername>['].+?[']|[^ ]+)");

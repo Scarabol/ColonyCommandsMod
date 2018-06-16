@@ -4,14 +4,9 @@ using ChatCommands;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class LastSeenChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.lastseen.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new LastSeenChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {

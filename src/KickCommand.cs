@@ -5,14 +5,9 @@ using Permissions;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class KickChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.kick.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new KickChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -21,7 +16,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "kick")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "kick")) {
         return true;
       }
       var m = Regex.Match (chattext, @"/kick (?<targetplayername>['].+?[']|[^ ]+)");

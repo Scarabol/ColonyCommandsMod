@@ -4,24 +4,6 @@ using Pipliz;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
-  public static class CommandsModEntries
-  {
-    public static string MOD_PREFIX = "mods.scarabol.commands.";
-    public static string ModDirectory;
-
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnAssemblyLoaded, "scarabol.commands.assemblyload")]
-    public static void OnAssemblyLoaded (string path)
-    {
-      ModDirectory = Path.GetDirectoryName (path);
-    }
-
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterStartup, "scarabol.commands.registercallbacks")]
-    public static void AfterStartup ()
-    {
-      Log.Write ("Loaded Commands Mod 6.0.10 by Scarabol");
-    }
-  }
 
   public static class PlayerHelper
   {

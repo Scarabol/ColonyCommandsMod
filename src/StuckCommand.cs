@@ -14,12 +14,6 @@ namespace ScarabolMods
     static Dictionary<Players.Player, long> RescueOperations = new Dictionary<Players.Player, long> ();
     static Dictionary<Players.Player, Vector3Int> StuckPositions = new Dictionary<Players.Player, Vector3Int> ();
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.stuck.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new StuckChatCommand ());
-    }
-
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerMoved, "scarabol.commands.stuck.onplayermoved")]
     public static void OnPlayerMoved (Players.Player player)
     {

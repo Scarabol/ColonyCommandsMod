@@ -35,7 +35,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "colonycap")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "colonycap")) {
         return true;
       }
       var m = Regex.Match (chattext, @"/colonycap (?<colonistslimit>-?\d+)( (?<checkintervalseconds>\d+))?");

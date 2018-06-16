@@ -6,14 +6,9 @@ using BlockTypes.Builtin;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class CleanBannersChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.cleanbanners.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new CleanBannersChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -22,7 +17,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "cleanbanners")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "cleanbanners")) {
         return true;
       }
       var toClean = new List<Banner> ();

@@ -12,8 +12,10 @@ using Server.TerrainGeneration;
 namespace ScarabolMods
 {
   [ModLoader.ModManager]
-  public static class AntiGriefModEntries
+  public static class AntiGrief
   {
+    public static string MOD_PREFIX = "mods.scarabol.commands.";
+    public static string MOD_DIRECTORY;
     public static string PERMISSION_SUPER = "mods.scarabol.antigrief";
     public static string PERMISSION_SPAWN_CHANGE = PERMISSION_SUPER + ".spawnchange";
     public static string PERMISSION_BANNER_PREFIX = PERMISSION_SUPER + ".banner.";
@@ -37,7 +39,46 @@ namespace ScarabolMods
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnAssemblyLoaded, "scarabol.antigrief.assemblyload")]
     public static void OnAssemblyLoaded (string path)
     {
-      Log.Write ("Loaded AntiGrief by Scarabol");
+      MOD_DIRECTORY = Path.GetDirectoryName (path);
+      Log.Write ("Loaded ColonyCommands(AntiGrief) by Scarabol");
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
+    public static void AfterItemTypesDefined ()
+    {
+      CommandManager.RegisterCommand(new AntiGriefChatCommand());
+      CommandManager.RegisterCommand(new BanChatCommand());
+      CommandManager.RegisterCommand(new BannerNameChatCommand());
+      CommandManager.RegisterCommand(new BetterChatCommand());
+      CommandManager.RegisterCommand(new CleanBannersChatCommand());
+      CommandManager.RegisterCommand(new DrainChatCommand());
+      CommandManager.RegisterCommand(new GiveAllChatCommand());
+      CommandManager.RegisterCommand(new GodChatCommand());
+      CommandManager.RegisterCommand(new InactiveChatCommand());
+      CommandManager.RegisterCommand(new ItemIdChatCommand());
+      CommandManager.RegisterCommand(new KickChatCommand());
+      CommandManager.RegisterCommand(new KillNPCsChatCommand());
+      CommandManager.RegisterCommand(new KillPlayerChatCommand());
+      CommandManager.RegisterCommand(new LastSeenChatCommand());
+      CommandManager.RegisterCommand(new NoFlightChatCommand());
+      CommandManager.RegisterCommand(new OnlineChatCommand());
+      CommandManager.RegisterCommand(new PurgeAllChatCommand());
+      CommandManager.RegisterCommand(new ServerPopCommand());
+      CommandManager.RegisterCommand(new StuckChatCommand());
+      CommandManager.RegisterCommand(new TopChatCommand());
+      CommandManager.RegisterCommand(new TradeChatCommand());
+      CommandManager.RegisterCommand(new TrashChatCommand());
+      CommandManager.RegisterCommand(new TrashPlayerChatCommand());
+      CommandManager.RegisterCommand(new TravelChatCommand());
+      CommandManager.RegisterCommand(new TravelHereChatCommand());
+      CommandManager.RegisterCommand(new TravelThereChatCommand());
+      CommandManager.RegisterCommand(new TravelRemoveChatCommand());
+      CommandManager.RegisterCommand(new WarpBannerChatCommand());
+      CommandManager.RegisterCommand(new WarpChatCommand());
+      CommandManager.RegisterCommand(new WarpPlaceChatCommand());
+      CommandManager.RegisterCommand(new WarpSpawnChatCommand());
+      CommandManager.RegisterCommand(new WhisperChatCommand());
+      return;
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlock, "scarabol.antigrief.trychangeblock")]
@@ -105,12 +146,6 @@ namespace ScarabolMods
     {
       userData.CallbackState = ModLoader.OnTryChangeBlockData.ECallbackState.Cancelled;
       userData.InventoryItemResults.Clear ();
-    }
-
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new AntiGriefChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.antigrief.loadranges")]
@@ -266,131 +301,5 @@ namespace ScarabolMods
     }
   }
 
-  public class AntiGriefChatCommand : IChatCommand
-  {
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/antigrief") || chat.StartsWith ("/antigrief ");
-    }
-
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
-    {
-      var matched = Regex.Match (chattext, @"/antigrief (?<accesslevel>[^ ]+) ((?<playername>['].+?[']|[^ ]+)|((?<rangex>\d+) (?<rangez>\d+))|((?<rangexn>\d+) (?<rangexp>\d+) (?<rangezn>\d+) (?<rangezp>\d+)))$");
-      if (!matched.Success) {
-        Chat.Send (causedBy, "Command didn't match, use /antigrief [spawn|nospawn|banner|deny] [playername] or /antigrief area [rangex rangez|rangexn rangexp rangezn rangezp]");
-        return true;
-      }
-      var accesslevel = matched.Groups ["accesslevel"].Value;
-      var targetPlayerName = matched.Groups ["playername"].Value;
-      if (accesslevel.Equals ("area")) {
-        if (causedBy == null || causedBy.ID == NetworkID.Server) {
-          Log.WriteError ("You can't define custom protection areas as server (missing center)");
-          return true;
-        } else if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGriefModEntries.PERMISSION_SUPER)) {
-          return true;
-        }
-        var rangex = matched.Groups ["rangex"].Value;
-        var rangez = matched.Groups ["rangez"].Value;
-        int rx, rz;
-        var rangexn = matched.Groups ["rangexn"].Value;
-        var rangexp = matched.Groups ["rangexp"].Value;
-        var rangezn = matched.Groups ["rangezn"].Value;
-        var rangezp = matched.Groups ["rangezp"].Value;
-        int rxn, rxp, rzn, rzp;
-        if (rangex.Length > 0 && int.TryParse (rangex, out rx) && rangez.Length > 0 && int.TryParse (rangez, out rz)) {
-          AntiGriefModEntries.AddCustomArea (new CustomProtectionArea (causedBy.VoxelPosition, rx, rz));
-          Chat.Send (causedBy, $"Added anti grief area at {causedBy.VoxelPosition} with x-range {rx} and z-range {rz}");
-        } else if (rangexn.Length > 0 && int.TryParse (rangexn, out rxn) && rangexp.Length > 0 && int.TryParse (rangexp, out rxp) && rangezn.Length > 0 && int.TryParse (rangezn, out rzn) && rangezp.Length > 0 && int.TryParse (rangezp, out rzp)) {
-          AntiGriefModEntries.AddCustomArea (new CustomProtectionArea (causedBy.VoxelPosition, rxn, rxp, rzn, rzp));
-          Chat.Send (causedBy, $"Added anti grief area at {causedBy.VoxelPosition} from x- {rxn} to x+ {rxp} and from z- {rzn} to z+ {rzp}");
-        } else {
-          Chat.Send (causedBy, $"Could not parse protection area ranges {rangex} {rangez} {rangexn} {rangexp} {rangezn} {rangezp}");
-        }
-      } else {
-        Players.Player targetPlayer;
-        string error;
-        if (!PlayerHelper.TryGetPlayer (targetPlayerName, out targetPlayer, out error, true)) {
-          Chat.Send (causedBy, $"Could not find target player '{targetPlayerName}'; {error}");
-          return true;
-        }
-        if (accesslevel.Equals ("spawn")) {
-          if (PermissionsManager.CheckAndWarnPermission (causedBy, AntiGriefModEntries.PERMISSION_SUPER)) {
-            PermissionsManager.AddPermissionToUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_SPAWN_CHANGE);
-            Chat.Send (causedBy, $"You granted [{targetPlayer.Name}] permission to change the spawn area");
-            Chat.Send (targetPlayer, "You got permission to change the spawn area");
-          }
-        } else if (accesslevel.Equals ("nospawn")) {
-          if (PermissionsManager.HasPermission (causedBy, AntiGriefModEntries.PERMISSION_SUPER)) {
-            PermissionsManager.RemovePermissionOfUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_SPAWN_CHANGE);
-            Chat.Send (causedBy, $"You revoked permission for [{targetPlayer.Name}] to change the spawn area");
-            Chat.Send (targetPlayer, "You lost permission to change the spawn area");
-          }
-        } else if (accesslevel.Equals ("banner")) {
-          if (causedBy.Equals (targetPlayer)) {
-            Chat.Send (causedBy, "You already have this permission");
-            return true;
-          }
-          PermissionsManager.AddPermissionToUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_BANNER_PREFIX + causedBy.ID.steamID);
-          Chat.Send (causedBy, $"You granted [{targetPlayer.Name}] permission to change your banner area");
-          Chat.Send (targetPlayer, $"You got permission to change banner area of [{causedBy.Name}]");
-        } else if (accesslevel.Equals ("deny")) {
-          if (causedBy.Equals (targetPlayer)) {
-            Chat.Send (causedBy, "You can't revoke the permission for yourself");
-            return true;
-          }
-          PermissionsManager.RemovePermissionOfUser (causedBy, targetPlayer, AntiGriefModEntries.PERMISSION_BANNER_PREFIX + causedBy.ID.steamID);
-          Chat.Send (causedBy, $"You revoked permission for [{targetPlayer.Name}] to change your banner area");
-          Chat.Send (targetPlayer, $"You lost permission to change banner area of [{causedBy.Name}]");
-        } else {
-          Chat.Send (causedBy, "Unknown access level, use /antigrief [spawn|nospawn|banner|deny] steamid");
-        }
-      }
-      return true;
-    }
-  }
-
-  public class CustomProtectionArea
-  {
-    readonly int StartX;
-    readonly int EndX;
-    readonly int StartZ;
-    readonly int EndZ;
-
-    public CustomProtectionArea (int startX, int endX, int startZ, int endZ)
-    {
-      StartX = startX;
-      EndX = endX;
-      StartZ = startZ;
-      EndZ = endZ;
-    }
-
-    public CustomProtectionArea (Vector3Int center, int rangeX, int rangeZ)
-      : this (center, rangeX, rangeX, rangeZ, rangeZ)
-    {
-    }
-
-    public CustomProtectionArea (Vector3Int center, int rangeXN, int rangeXP, int rangeZN, int rangeZP)
-      : this (center.x - rangeXN, center.x + rangeXP, center.z - rangeZN, center.z + rangeZP)
-    {
-    }
-
-    public CustomProtectionArea (JSONNode jsonNode)
-      : this (jsonNode.GetAs<int> ("startX"), jsonNode.GetAs<int> ("endX"), jsonNode.GetAs<int> ("startZ"), jsonNode.GetAs<int> ("endZ"))
-    {
-    }
-
-    public JSONNode ToJSON ()
-    {
-      return new JSONNode ()
-        .SetAs ("startX", StartX)
-        .SetAs ("endX", EndX)
-        .SetAs ("startZ", StartZ)
-        .SetAs ("endZ", EndZ);
-    }
-
-    public bool Contains (Vector3Int point)
-    {
-      return StartX <= point.x && EndX >= point.x && StartZ <= point.z && EndZ >= point.z;
-    }
-  }
 }
+

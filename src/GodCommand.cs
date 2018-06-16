@@ -4,14 +4,9 @@ using Permissions;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class GodChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.god.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new GodChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -20,7 +15,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "god")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "god")) {
         return true;
       }
       if (PermissionsManager.HasPermission (causedBy, "")) {

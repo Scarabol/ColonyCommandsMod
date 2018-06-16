@@ -5,14 +5,9 @@ using Permissions;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class NoFlightChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.noflight.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new NoFlightChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -21,7 +16,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "noflight")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "noflight")) {
         return true;
       }
       foreach (var player in Players.PlayerDatabase.ValuesAsList) {

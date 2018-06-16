@@ -7,14 +7,9 @@ using BlockTypes.Builtin;
 
 namespace ScarabolMods
 {
-  [ModLoader.ModManager]
+
   public class DrainChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.drain.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new DrainChatCommand ());
-    }
 
     public bool IsCommand (string chat)
     {
@@ -23,7 +18,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "drain")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "drain")) {
         return true;
       }
       List<Vector3Int> toCheckWaterBlocks = new List<Vector3Int> () { };

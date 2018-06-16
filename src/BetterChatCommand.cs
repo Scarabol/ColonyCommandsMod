@@ -36,20 +36,14 @@ namespace ScarabolMods
         Chat.SendToAll ($"[<color=red>{name}</color>]: {chat}");
       } else {
         string nameColor = (from s in Colors
-                            where PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "betterchat.name." + s.Name)
+                            where PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "betterchat.name." + s.Name)
                             select s.Color).FirstOrDefault ();
         string textColor = (from s in Colors
-                            where PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "betterchat.text." + s.Name)
+                            where PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "betterchat.text." + s.Name)
                             select s.Color).FirstOrDefault ();
         Chat.SendToAll ($"[<color={nameColor}>{causedBy.Name}</color>]: <color={textColor}>{chat}</color>");
       }
       return true;
-    }
-
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "mods.scarabol.commands.betterchat.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new BetterChatCommand ());
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.betterchat.loadcolors")]

@@ -12,14 +12,6 @@ namespace ScarabolMods
   [ModLoader.ModManager]
   public class TravelChatCommand : IChatCommand
   {
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.travel.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new TravelChatCommand ());
-      CommandManager.RegisterCommand (new TravelHereChatCommand ());
-      CommandManager.RegisterCommand (new TravelThereChatCommand ());
-      CommandManager.RegisterCommand (new TravelRemoveChatCommand ());
-    }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.travel.loadwaypoints")]
     public static void AfterWorldLoad ()
@@ -54,7 +46,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;
       }
       WaypointManager.startWaypoints.Add (causedBy, causedBy.VoxelPosition);
@@ -72,7 +64,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;
       }
       Vector3Int StartWaypoint;
@@ -97,7 +89,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "travelpaths")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;
       }
       if (WaypointManager.travelPaths.Remove (causedBy.VoxelPosition)) {

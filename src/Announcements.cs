@@ -295,7 +295,7 @@ namespace ScarabolMods
     public void ListCommand (Players.Player causedBy)
     {
       string msg;
-      if (PermissionsManager.HasPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.list")) {
+      if (PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.list")) {
         msg = Announcements.ListAllAnnouncements ();
       } else {
         msg = Announcements.ListEnabledAnnouncements ();
@@ -309,7 +309,7 @@ namespace ScarabolMods
 
     public void AddCommand (Players.Player causedBy, string param)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.add")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.add")) {
         return;
       }
       Announcements.AddAnnouncement (param);
@@ -318,7 +318,7 @@ namespace ScarabolMods
 
     public void RemoveCommand (Players.Player causedBy, string param)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.remove")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.remove")) {
         return;
       }
       int Index;
@@ -331,7 +331,7 @@ namespace ScarabolMods
 
     public void EditCommand (Players.Player causedBy, string param)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.edit")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.edit")) {
         return;
       }
       var m = Regex.Match (param, @"A?(?<index>\d+) (?<text>.+)");
@@ -352,7 +352,7 @@ namespace ScarabolMods
 
     public void MoveCommand (Players.Player causedBy, string param)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.move")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.move")) {
         return;
       }
       var m = Regex.Match (param, @"A?(?<index>\d+) A?(?<newindex>\d+)");
@@ -378,7 +378,7 @@ namespace ScarabolMods
 
     public void EnableCommand (Players.Player causedBy, string param)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.enable")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.enable")) {
         return;
       }
       if (param.Length > 0) {
@@ -396,7 +396,7 @@ namespace ScarabolMods
 
     public void DisableCommand (Players.Player causedBy, string param)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.disable")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.disable")) {
         return;
       }
       if (param.Length > 0) {
@@ -430,7 +430,7 @@ namespace ScarabolMods
 
     public void IntervalCommand (Players.Player causedBy, string param)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.interval")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.interval")) {
         return;
       }
       var m = Regex.Match (param, @"(?<intervalSeconds>\d+)");
@@ -450,7 +450,7 @@ namespace ScarabolMods
 
     public void WelcomeCommand (Players.Player causedBy, string param)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, CommandsModEntries.MOD_PREFIX + "announcements.welcome")) {
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "announcements.welcome")) {
         return;
       }
       Announcements.SetWelcomeMessage (param);
