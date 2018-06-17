@@ -78,6 +78,7 @@ namespace ScarabolMods
       CommandManager.RegisterCommand(new WarpPlaceChatCommand());
       CommandManager.RegisterCommand(new WarpSpawnChatCommand());
       CommandManager.RegisterCommand(new WhisperChatCommand());
+      CommandManager.RegisterCommand(new SetJailCommand());
       return;
     }
 
@@ -152,6 +153,7 @@ namespace ScarabolMods
     public static void AfterWorldLoad ()
     {
       Load ();
+      JailManager.Load();
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerConnectedLate, "scarabol.antigrief.onplayerconnected")]
@@ -299,6 +301,13 @@ namespace ScarabolMods
              hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerProjectile ||
              hitSourceType == ModLoader.OnHitData.EHitSourceType.Misc;
     }
+
+    [ModLoader.ModCallback(ModLoader.EModCallbackType.OnAutoSaveWorld, "scarabol.antigrief.onautosaveworld")]
+    public static void OnAutoSaveWorld()
+    {
+      JailManager.Save();
+    }
+
   }
 
 }
