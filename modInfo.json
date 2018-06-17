@@ -1,0 +1,12 @@
+[
+  {
+    "name" : "scarabol.commands",
+    "namepretty" : "Scarabol Commands",
+    "version" : "6.2.12",
+    "dllpath" : "Commands.dll",
+    "enabled" : true,
+    "compatibleversions" : [
+      "0.6.2"
+    ]
+  }
+]
