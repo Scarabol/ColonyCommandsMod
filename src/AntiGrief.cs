@@ -40,17 +40,20 @@ namespace ScarabolMods
     public static void OnAssemblyLoaded (string path)
     {
       MOD_DIRECTORY = Path.GetDirectoryName (path);
-      Log.Write ("Loaded ColonyCommands(AntiGrief) by Scarabol");
+      Log.Write ("Loaded ColonyCommands 6.2.12");
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
     public static void AfterItemTypesDefined ()
     {
+      Log.Write("Registering commands (Anti-Grief)");
+      CommandManager.RegisterCommand(new AnnouncementsChatCommand());
       CommandManager.RegisterCommand(new AntiGriefChatCommand());
       CommandManager.RegisterCommand(new BanChatCommand());
       CommandManager.RegisterCommand(new BannerNameChatCommand());
       CommandManager.RegisterCommand(new BetterChatCommand());
       CommandManager.RegisterCommand(new CleanBannersChatCommand());
+      CommandManager.RegisterCommand(new ColonyCap());
       CommandManager.RegisterCommand(new DrainChatCommand());
       CommandManager.RegisterCommand(new GiveAllChatCommand());
       CommandManager.RegisterCommand(new GodChatCommand());
@@ -79,6 +82,8 @@ namespace ScarabolMods
       CommandManager.RegisterCommand(new WarpSpawnChatCommand());
       CommandManager.RegisterCommand(new WhisperChatCommand());
       CommandManager.RegisterCommand(new SetJailCommand());
+      CommandManager.RegisterCommand(new JailCommand());
+      CommandManager.RegisterCommand(new JailReleaseCommand());
       return;
     }
 

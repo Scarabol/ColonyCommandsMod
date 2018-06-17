@@ -22,12 +22,6 @@ namespace ScarabolMods
       }
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.colonycap.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new ColonyCap ());
-    }
-
     public bool IsCommand (string chat)
     {
       return chat.Equals ("/colonycap") || chat.StartsWith ("/colonycap ");

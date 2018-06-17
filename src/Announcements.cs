@@ -20,12 +20,6 @@ namespace ScarabolMods
       }
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.commands.announcements.registercommand")]
-    public static void AfterItemTypesDefined ()
-    {
-      CommandManager.RegisterCommand (new AnnouncementsChatCommand ());
-    }
-
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.commands.announcements.starttimers")]
     public static void AfterWorldLoad ()
     {
