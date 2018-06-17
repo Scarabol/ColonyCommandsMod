@@ -1,7 +1,6 @@
 ﻿using Pipliz.Chatting;
 using ChatCommands;
 using Permissions;
-using System;
 using System.Text.RegularExpressions;
 
 namespace ScarabolMods
@@ -21,13 +20,11 @@ namespace ScarabolMods
         return true;
       }
 
-      var m = Regex.Match(chattext, @"/setjail ?<range>[0-9]+");
+      var m = Regex.Match(chattext, @"/setjail (?<range>[0-9]+)");
       if (m.Success) {
         uint range = 0;
-        try {
-          range = System.Convert.ToUInt32(m.Groups["range"].Value, 10);
-        } catch (Exception e) {
-          Chat.Send(causedBy, $"Syntax error, use /setjail [range]: {e}");
+        if (!uint.TryParse(m.Groups["range"].Value, out range)) {
+          Chat.Send(causedBy, "Could not parse range value");
         }
         JailManager.setJailPosition(causedBy.Position, range);
         Chat.Send(causedBy, $"Jail set to your current position with range {range}");

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using Pipliz;
 using Pipliz.JSON;
+using Pipliz.Chatting;
+using ChatCommands.Implementations;
+using Server.TerrainGeneration;
 using UnityEngine;
 
 namespace ScarabolMods {
@@ -41,10 +44,16 @@ namespace ScarabolMods {
     public static void jailPlayer(Players.Player criminal, Players.Player causedBy, string reason, uint jailtime = DEFAULT_JAIL_TIME)
     {
       if (!validJail) {
+        Chat.Send(causedBy, "No valid jail found. Unable to complete jailing");
         return;
       }
       JailRecord record = new JailRecord(jailtime, causedBy, reason);
       jailedPersons.Add(criminal, record);
+
+      Teleport.TeleportTo(criminal, new Vector3(jailPosition.x, jailPosition.y, jailPosition.z));
+      Chat.Send(criminal, $"{causedBy.Name} threw you into jail! Reason: {reason}");
+      Chat.Send(criminal, $"Remaining Jail Time: {jailtime} minutes");
+      Log.Write($"{causedBy.Name} threw {criminal.Name} into jail! Reason: {reason}");
       return;
     }
 
@@ -70,6 +79,7 @@ namespace ScarabolMods {
         return;
       }
 
+      Log.Write("Loading jail config from {0}", CONFIG_FILE);
       try {
         JSONNode position;
         jsonConfig.TryGetAs("position", out position);
@@ -107,6 +117,8 @@ namespace ScarabolMods {
     // save to config file
     public static void Save()
     {
+      Log.Write("Saving jail config to {0}", CONFIG_FILE);
+
       JSONNode jsonConfig = new JSONNode();
       JSONNode jsonPosition = new JSONNode();
       jsonPosition.SetAs("x", jailPosition.x);
@@ -136,7 +148,19 @@ namespace ScarabolMods {
       return;
     }
 
-  } // class
+    public static bool IsPlayerJailed(Players.Player player)
+    {
+      return jailedPersons.ContainsKey(player);
+    }
 
-} // namespace
+    public static void releasePlayer(Players.Player criminal, Players.Player causedBy)
+    {
+      jailedPersons.Remove(criminal);
+      Teleport.TeleportTo(criminal, TerrainGenerator.UsedGenerator.GetSpawnLocation(causedBy));
+      Log.Write($"{causedBy.Name} released {criminal.Name} from jail");
+      return;
+    }
+
+  }
+}
 

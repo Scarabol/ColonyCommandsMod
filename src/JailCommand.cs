@@ -21,7 +21,7 @@ namespace ScarabolMods
         return true;
       }
 
-      var m = Regex.Match(chattext, @"/jail ?<player>[^ ]+ (?<jailtime>[0-9]+)? ?<reason>.+");
+      var m = Regex.Match(chattext, @"/jail (?<player>[^ ]+) (?<jailtime>[0-9]+)? ?(?<reason>.+)$");
       if (!m.Success) {
         Chat.Send(causedBy, "Syntax error, use /jail <player> [time] <reason>");
         return true;
@@ -40,17 +40,19 @@ namespace ScarabolMods
       if (timeval.Equals("")) {
         jailtime = JailManager.DEFAULT_JAIL_TIME;
       } else {
-        try {
-          jailtime = System.Convert.ToUInt32(timeval, 10);
-        } catch (Exception e) {
-          Chat.Send(causedBy, $"Could not identify time value {timeval}: {e}");
+        if (!uint.TryParse(timeval, out jailtime)) {
+          Chat.Send(causedBy, $"Could not identify time value {timeval}");
         }
       }
       string reason = m.Groups["reason"].Value;
 
+      if (JailManager.IsPlayerJailed(criminal)) {
+        Chat.Send(causedBy, $"{criminal.Name} is already in jail. Use /jail_extend in case");
+        return true;
+      }
+
       JailManager.jailPlayer(criminal, causedBy, reason, jailtime);
-      Chat.Send(causedBy, $"Threw {criminal.Name} into the jail for {timeval} minutes");
-      Chat.Send(criminal, $"{causedBy.Name} threw you into jail! Reason: {reason}");
+      Chat.Send(causedBy, $"Threw {criminal.Name} into the jail for {jailtime} minutes");
 
       return true;
     }
