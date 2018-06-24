@@ -16,13 +16,14 @@ namespace ScarabolMods
 
     public bool TryDoCommand(Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "setjailposition")) {
+      if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + ".setjailposition")) {
         return true;
       }
 
       if (chattext.Equals("/setjail visitor")) {
         JailManager.setJailVisitorPosition(causedBy.Position);
         Chat.Send(causedBy, "Jail visiting position set");
+        return true;
       }
 
       var m = Regex.Match(chattext, @"/setjail (?<range>[0-9]+)");

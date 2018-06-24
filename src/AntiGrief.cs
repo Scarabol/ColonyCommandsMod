@@ -9,12 +9,13 @@ using ChatCommands;
 using Permissions;
 using Server.TerrainGeneration;
 
-namespace ScarabolMods
-{
+namespace ScarabolMods {
+
   [ModLoader.ModManager]
   public static class AntiGrief
   {
-    public static string MOD_PREFIX = "mods.scarabol.commands.";
+    public const string MOD_PREFIX = "mods.scarabol.commands.";
+    public const string NAMESPACE = "AntiGrief";
     public static string MOD_DIRECTORY;
     public static string PERMISSION_SUPER = "mods.scarabol.antigrief";
     public static string PERMISSION_SPAWN_CHANGE = PERMISSION_SUPER + ".spawnchange";
@@ -37,18 +38,14 @@ namespace ScarabolMods
       }
     }
 
-    [ModLoader.ModCallback(ModLoader.EModCallbackType.OnAssemblyLoaded, "scarabol.antigrief.assemblyload")]
+    [ModLoader.ModCallback(ModLoader.EModCallbackType.OnAssemblyLoaded, NAMESPACE + ".OnAssemblyLoaded")]
     public static void OnAssemblyLoaded(string path)
     {
+      Log.Write("Loaded ColonyCommands 6.3.12");
       MOD_DIRECTORY = Path.GetDirectoryName(path);
-      Log.Write("Loaded ColonyCommands 6.2.12");
-      JSONNode permGroup = new JSONNode(NodeType.Array);
-      permGroup.SetAs("permissions", "setflight");
-      PermissionsManager.PermissionsGroup myGroup = new PermissionsManager.PermissionsGroup(permGroup);
-      PermissionsManager.RegisterGroup("admin", myGroup);
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, NAMESPACE + ".RegisterTypes")]
     public static void AfterItemTypesDefined ()
     {
       Log.Write("Registering commands (Anti-Grief)");
@@ -89,10 +86,12 @@ namespace ScarabolMods
       CommandManager.RegisterCommand(new SetJailCommand());
       CommandManager.RegisterCommand(new JailCommand());
       CommandManager.RegisterCommand(new JailReleaseCommand());
+      CommandManager.RegisterCommand(new JailVisitCommand());
+      CommandManager.RegisterCommand(new JailRecCommand());
       return;
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlock, "scarabol.antigrief.trychangeblock")]
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnTryChangeBlock, NAMESPACE + ".OnTryChangeBlock")]
     public static void OnTryChangeBlock (ModLoader.OnTryChangeBlockData userData)
     {
       var requestedBy = userData.RequestedByPlayer;
@@ -159,14 +158,14 @@ namespace ScarabolMods
       userData.InventoryItemResults.Clear ();
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, "scarabol.antigrief.loadranges")]
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterWorldLoad, NAMESPACE + ".AfterWorldLoaded")]
     public static void AfterWorldLoad ()
     {
       Load ();
       JailManager.Load();
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerConnectedLate, "scarabol.antigrief.onplayerconnected")]
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerConnectedLate, NAMESPACE + ".OnPlayerConnected")]
     public static void OnPlayerConnectedLate (Players.Player player)
     {
       Chat.Send (player, "<color=yellow>Anti-Grief protection enabled</color>");
@@ -273,7 +272,7 @@ namespace ScarabolMods
       JSON.Serialize (ConfigFilepath, jsonConfig, 2);
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnNPCHit, "scarabol.antigrief.onnpchit")]
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnNPCHit, NAMESPACE + ".OnNPCHit")]
     public static void OnNPCHit (NPC.NPCBase npc, ModLoader.OnHitData data)
     {
       if (IsKilled (npc, data) && IsHitByPlayer (data.HitSourceType) && data.HitSourceObject is Players.Player) {
@@ -314,12 +313,6 @@ namespace ScarabolMods
       return hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerClick ||
              hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerProjectile ||
              hitSourceType == ModLoader.OnHitData.EHitSourceType.Misc;
-    }
-
-    [ModLoader.ModCallback(ModLoader.EModCallbackType.OnAutoSaveWorld, "scarabol.antigrief.onautosaveworld")]
-    public static void OnAutoSaveWorld()
-    {
-      JailManager.Save();
     }
 
   }
