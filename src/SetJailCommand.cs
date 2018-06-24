@@ -20,6 +20,11 @@ namespace ScarabolMods
         return true;
       }
 
+      if (chattext.Equals("/setjail visitor")) {
+        JailManager.setJailVisitorPosition(causedBy.Position);
+        Chat.Send(causedBy, "Jail visiting position set");
+      }
+
       var m = Regex.Match(chattext, @"/setjail (?<range>[0-9]+)");
       if (m.Success) {
         uint range = 0;

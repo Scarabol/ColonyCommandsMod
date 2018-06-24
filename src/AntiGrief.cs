@@ -26,6 +26,7 @@ namespace ScarabolMods
     static int BannerProtectionRangeX;
     static int BannerProtectionRangeZ;
     static List<CustomProtectionArea> CustomAreas = new List<CustomProtectionArea> ();
+    static int NpcKillsJailThreshold;
     static int NpcKillsKickThreshold;
     static int NpcKillsBanThreshold;
     static Dictionary<Players.Player, int> KillCounter = new Dictionary<Players.Player, int> ();
@@ -36,11 +37,15 @@ namespace ScarabolMods
       }
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnAssemblyLoaded, "scarabol.antigrief.assemblyload")]
-    public static void OnAssemblyLoaded (string path)
+    [ModLoader.ModCallback(ModLoader.EModCallbackType.OnAssemblyLoaded, "scarabol.antigrief.assemblyload")]
+    public static void OnAssemblyLoaded(string path)
     {
-      MOD_DIRECTORY = Path.GetDirectoryName (path);
-      Log.Write ("Loaded ColonyCommands 6.2.12");
+      MOD_DIRECTORY = Path.GetDirectoryName(path);
+      Log.Write("Loaded ColonyCommands 6.2.12");
+      JSONNode permGroup = new JSONNode(NodeType.Array);
+      permGroup.SetAs("permissions", "setflight");
+      PermissionsManager.PermissionsGroup myGroup = new PermissionsManager.PermissionsGroup(permGroup);
+      PermissionsManager.RegisterGroup("admin", myGroup);
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.AfterItemTypesDefined, "scarabol.antigrief.registertypes")]
@@ -225,6 +230,7 @@ namespace ScarabolMods
           }
           Log.Write ($"Loaded {CustomAreas.Count} from file");
         }
+        jsonConfig.TryGetAsOrDefault ("NpcKillsJailThreshold", out NpcKillsJailThreshold, 5);
         jsonConfig.TryGetAsOrDefault ("NpcKillsKickThreshold", out NpcKillsKickThreshold, 10);
         jsonConfig.TryGetAsOrDefault ("NpcKillsBanThreshold", out NpcKillsBanThreshold, 50);
       } else {
@@ -279,13 +285,16 @@ namespace ScarabolMods
           }
           kills++;
           KillCounter [killer] = kills;
-          if (kills >= NpcKillsKickThreshold) {
-            Chat.SendToAll ($"{killer.Name} kicked for killing too many colonists");
-            Players.Disconnect (killer);
-          } else if (kills >= NpcKillsBanThreshold) {
+          if (kills >= NpcKillsBanThreshold) {
             Chat.SendToAll ($"{killer.Name} banned for killing too many colonists");
             BlackAndWhitelisting.AddBlackList (killer.ID.steamID.m_SteamID);
             Players.Disconnect (killer);
+          } else if (kills >= NpcKillsKickThreshold) {
+            Chat.SendToAll ($"{killer.Name} kicked for killing too many colonists");
+            Players.Disconnect (killer);
+          } else if (kills >= NpcKillsJailThreshold) {
+            Chat.SendToAll ($"{killer.Name} put in jail for killing too many colonists");
+            JailManager.jailPlayer(killer, null, "Killing Colonists");
           }
           Log.Write ($"{killer.Name} killed a colonist of {npc.Colony.Owner.Name} at {npc.Position}");
           var remainingKick = NpcKillsKickThreshold - kills;
