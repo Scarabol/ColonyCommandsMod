@@ -4,6 +4,8 @@
 
 **Special thanks to Crone for the chat coloring system and score system.**
 
+**The mod is now continued by adrenalynn**
+
 ## Anti-Grief
 
 This mods adds an anti-griefing mechanism to the server.
@@ -89,6 +91,8 @@ Muting and Unmuting players requires the **mods.scarabol.commands.mute** permiss
 <dd>Requires permission: <b>mods.scarabol.commands.warp.player</b><br>Warps the second given player to the first given playernames position.</dd>
 <dt>/warpbanner [targetplayername] [teleportplayername]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.warp.banner</b><br>Warps to the first given playernames banner position. If two names are provided, the second player is warped to the firsts banner position.</dd>
+<dt>/warpspawn</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.warp.spawn.self</b><br>Warps the calling player to the spawn point.</dd>
 <dt>/warpspawn [teleportplayername]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.warp.spawn</b><br>Warps the given player to the spawn point. If no playername is provided, warps the calling player.</dd>
 <dt>/warpplace [x] [y] [z]</dt>
