@@ -87,7 +87,9 @@ namespace ScarabolMods {
       CommandManager.RegisterCommand(new JailCommand());
       CommandManager.RegisterCommand(new JailReleaseCommand());
       CommandManager.RegisterCommand(new JailVisitCommand());
+      CommandManager.RegisterCommand(new JailLeaveCommand());
       CommandManager.RegisterCommand(new JailRecCommand());
+      CommandManager.RegisterCommand(new JailTimeCommand());
       return;
     }
 
@@ -229,9 +231,9 @@ namespace ScarabolMods {
           }
           Log.Write ($"Loaded {CustomAreas.Count} from file");
         }
-        jsonConfig.TryGetAsOrDefault ("NpcKillsJailThreshold", out NpcKillsJailThreshold, 5);
-        jsonConfig.TryGetAsOrDefault ("NpcKillsKickThreshold", out NpcKillsKickThreshold, 10);
-        jsonConfig.TryGetAsOrDefault ("NpcKillsBanThreshold", out NpcKillsBanThreshold, 50);
+        jsonConfig.TryGetAsOrDefault ("NpcKillsJailThreshold", out NpcKillsJailThreshold, 2);
+        jsonConfig.TryGetAsOrDefault ("NpcKillsKickThreshold", out NpcKillsKickThreshold, 5);
+        jsonConfig.TryGetAsOrDefault ("NpcKillsBanThreshold", out NpcKillsBanThreshold, 6);
       } else {
         Save ();
         Log.Write ($"Could not find {ConfigFilepath} file, created default one");
@@ -264,6 +266,7 @@ namespace ScarabolMods {
       jsonConfig.SetAs ("BannerProtectionRangeZ", BannerProtectionRangeZ);
       jsonConfig.SetAs ("NpcKillsKickThreshold", NpcKillsKickThreshold);
       jsonConfig.SetAs ("NpcKillsBanThreshold", NpcKillsBanThreshold);
+      jsonConfig.SetAs ("NpcKillsJailThreshold", NpcKillsJailThreshold);
       var jsonCustomAreas = new JSONNode (NodeType.Array);
       foreach (var customArea in CustomAreas) {
         jsonCustomAreas.AddToArray (customArea.ToJSON ());
@@ -282,8 +285,7 @@ namespace ScarabolMods {
           if (!KillCounter.TryGetValue (killer, out kills)) {
             kills = 0;
           }
-          kills++;
-          KillCounter [killer] = kills;
+          KillCounter[killer] = ++kills;
           if (kills >= NpcKillsBanThreshold) {
             Chat.SendToAll ($"{killer.Name} banned for killing too many colonists");
             BlackAndWhitelisting.AddBlackList (killer.ID.steamID.m_SteamID);
@@ -292,13 +294,13 @@ namespace ScarabolMods {
             Chat.SendToAll ($"{killer.Name} kicked for killing too many colonists");
             Players.Disconnect (killer);
           } else if (kills >= NpcKillsJailThreshold) {
-            Chat.SendToAll ($"{killer.Name} put in jail for killing too many colonists");
+            Chat.SendToAll ($"{killer.Name} put in Jail for killing too many colonists");
             JailManager.jailPlayer(killer, null, "Killing Colonists");
           }
           Log.Write ($"{killer.Name} killed a colonist of {npc.Colony.Owner.Name} at {npc.Position}");
           var remainingKick = NpcKillsKickThreshold - kills;
           var remainingBan = NpcKillsBanThreshold - kills;
-          Chat.Send (killer, $"You killed [{npc.Colony.Owner.Name}]'s colonist, remaining strikes until kick: {remainingKick}, remaining strikes until Ban: {remainingBan}");
+          Chat.Send (killer, $"You killed [{npc.Colony.Owner.Name}]'s colonist, remaining until kick: {remainingKick}, remaining until Ban: {remainingBan}");
         }
       }
     }
@@ -313,6 +315,12 @@ namespace ScarabolMods {
       return hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerClick ||
              hitSourceType == ModLoader.OnHitData.EHitSourceType.PlayerProjectile ||
              hitSourceType == ModLoader.OnHitData.EHitSourceType.Misc;
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnAutoSaveWorld, NAMESPACE + ".OnAutoSaveWorld")]
+    public static void OnAutoSaveWorld()
+    {
+      Save();
     }
 
   }

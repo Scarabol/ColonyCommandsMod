@@ -19,6 +19,7 @@ namespace ScarabolMods {
     static uint jailRange;
     static Dictionary<Players.Player, JailRecord> jailedPersons = new Dictionary<Players.Player, JailRecord>();
     public static Dictionary<Players.Player, List<JailLogRecord>> jailLog = new Dictionary<Players.Player, List<JailLogRecord>>();
+    public static Dictionary<Players.Player, Vector3> visitorPreviousPos = new Dictionary<Players.Player, Vector3>();
     const string CONFIG_FILE = "jail-config.json";
     const string LOG_FILE = "jail-log.json";
     public static bool validJail = false;
@@ -29,6 +30,7 @@ namespace ScarabolMods {
     // Jail record per player
     private class JailRecord {
       public int gracePeriod { get; set; }
+      public int escapeAttempts { get; set; }
       public long jailTimestamp { get; set; }
       public long jailDuration { get; set; }
       public Players.Player jailedBy { get; set; }
@@ -38,6 +40,7 @@ namespace ScarabolMods {
       public JailRecord(long time, long duration, Players.Player causedBy, string reason, List<string> permissions)
       {
         this.gracePeriod = 2;
+        this.escapeAttempts = 0;
         this.jailTimestamp = time;
         this.jailDuration = duration;
         this.jailedBy = causedBy;
@@ -93,10 +96,11 @@ namespace ScarabolMods {
         if (causedBy == null) {
           Log.Write($"Cannot Jail {target.Name}: no valid jail found");
         } else {
-          Chat.Send(causedBy, "No valid jail found. Unable to complete jailing");
+          Chat.Send(causedBy, "<color=yellow>No valid jail found. Unable to complete jailing</color>");
         }
         return;
       }
+
       Teleport.TeleportTo(target, jailPosition);
 
       List<string> permissions = new List<string>();
@@ -125,9 +129,15 @@ namespace ScarabolMods {
       jailedPersons.Add(target, record);
       Save();
 
-      Chat.Send(target, $"<color=red>{causedBy.Name} threw you into jail! Reason: {reason}</color>");
-      Chat.Send(target, $"Remaining Jail Time: {jailtime} minutes");
-      Log.Write($"{causedBy.Name} threw {target.Name} into jail! Reason: {reason}");
+      string sender;
+      if (causedBy == null) {
+        sender = "Server";
+      } else {
+        sender = causedBy.Name;
+      }
+      Chat.Send(target, $"<color=red>{sender} threw you into jail! Reason: {reason}</color>");
+      Chat.Send(target, $"Remaining Jail Time: {jailtime} minutes, type /jailtime to check");
+      Log.Write($"{sender} threw {target.Name} into jail! Reason: {reason}");
       return;
     }
 
@@ -135,7 +145,9 @@ namespace ScarabolMods {
     public static void VisitJail(Players.Player causedBy)
     {
       if (validJail && validVisitorPos) {
+        visitorPreviousPos[causedBy] = causedBy.Position;
         Teleport.TeleportTo(causedBy, jailVisitorPosition);
+        Chat.Send(causedBy, "Welcome Visitor! You're free to leave anytime, /jailleave will bring you back to your previous location");
       }
       return;
     }
@@ -202,7 +214,7 @@ namespace ScarabolMods {
           string causedByName = node.GetAs<string>("jailedBy");
           string reason = node.GetAs<string>("jailReason");
 
-          List<string> permissions = node.GetAs<List<string>>("permissions");
+          List<string> permissions = node.GetAs<List<string>>("permissions");  // TODO
           // List<string> permissions = new List<string>;
           // JSONNode jsonPerm;
           // node.TryGetAs("permissions", out jsonPerm);
@@ -214,8 +226,9 @@ namespace ScarabolMods {
           Players.Player causedBy;
           string error;
 
-          if (PlayerHelper.TryGetPlayer(PlayerName, out target, out error, true) &&
-            PlayerHelper.TryGetPlayer(causedByName, out causedBy, out error, true)) {
+          // causedBy can be null in case of server actions, but target has to be a valid player
+          PlayerHelper.TryGetPlayer(causedByName, out causedBy, out error, true);
+          if (PlayerHelper.TryGetPlayer(PlayerName, out target, out error, true)) {
             JailRecord record = new JailRecord(jailTimestamp, jailDuration, causedBy, reason, permissions);
             jailedPersons.Add(target, record);
           }
@@ -261,14 +274,18 @@ namespace ScarabolMods {
         jsonRecord.SetAs("target", target.ID.steamID);
         jsonRecord.SetAs("time", record.jailTimestamp);
         jsonRecord.SetAs("duration", record.jailDuration);
-        jsonRecord.SetAs("jailedBy", record.jailedBy.Name);
         jsonRecord.SetAs("jailReason", record.jailReason);
+        if (record.jailedBy != null) {
+          jsonRecord.SetAs("jailedBy", record.jailedBy.Name);
+        } else {
+          jsonRecord.SetAs("jailedBy", "Server");
+        }
 
         // JSONNode permissions = new JSONNode(NodeType.Array);
         // foreach (string perm in record.revokedPermissions) {
         //   permissions.AddToArray(perm);
         // }
-        jsonRecord.SetAs("permissions", record.revokedPermissions.ToString());  // TODO
+        // jsonRecord.SetAs("permissions", record.revokedPermissions.ToString());  // TODO
         jsonPlayers.AddToArray(jsonRecord);
       }
       jsonConfig.SetAs("players", jsonPlayers);
@@ -291,19 +308,21 @@ namespace ScarabolMods {
     // release a player from jail
     public static void releasePlayer(Players.Player target, Players.Player causedBy)
     {
-      jailedPersons.Remove(target);
-      Save();
-      if (causedBy == null) {
-        causedBy = target;
-      }
       JailRecord record;
       jailedPersons.TryGetValue(target, out record);
       foreach (string permission in record.revokedPermissions) {
         // PermissionsManager.AddPermissionToUser(causedBy, target, permission);
       }
+      jailedPersons.Remove(target);
+      Save();
+
       Teleport.TeleportTo(target, TerrainGenerator.UsedGenerator.GetSpawnLocation(target));
       Chat.Send(target, "<color=yellow>You did your time and are released from Jail</color>");
-      Log.Write($"{causedBy.Name} released {target.Name} from jail");
+      if (causedBy != null) {
+        Log.Write($"{causedBy.Name} released {target.Name} from jail");
+      } else {
+        Log.Write($"Released {target.Name} from jail");
+      }
       return;
     }
 
@@ -328,7 +347,14 @@ namespace ScarabolMods {
       uint distance = (uint) Vector3.Distance(causedBy.Position, jailPosition);
       if (distance > jailRange) {
         Teleport.TeleportTo(causedBy, jailPosition);
-        Chat.Send(causedBy, "<color=red>Guards spot your escape attempt and push you back</color>");
+
+        ++record.escapeAttempts;
+        if (record.escapeAttempts < 3) {
+          Chat.Send(causedBy, "<color=red>A Guard spot your escape attempt and pushes you back</color>");
+        } else {
+          record.jailDuration += 1 * 60;
+          Chat.Send(causedBy, "<color=red>The Guards get angry at you and increase your jailtime by 1 minute</color>");
+        }
       }
     }
 
@@ -345,6 +371,16 @@ namespace ScarabolMods {
       }
 
       return;
+    }
+
+    // calculate remaining jailtime
+    public static long getRemainingTime(Players.Player causedBy)
+    {
+      JailRecord record = jailedPersons[causedBy];
+      long now = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond / 1000;
+      long remaining = record.jailTimestamp + record.jailDuration - now;
+
+      return remaining;
     }
 
     // load log file (=past jail records)
@@ -412,8 +448,12 @@ namespace ScarabolMods {
           JSONNode jsonRecord = new JSONNode();
           jsonRecord.SetAs("timestamp", record.timestamp);
           jsonRecord.SetAs("duration", record.duration);
-          jsonRecord.SetAs("jailedBy", record.jailedBy.ID.steamID);
           jsonRecord.SetAs("reason", record.reason);
+          if (record.jailedBy != null) {
+            jsonRecord.SetAs("jailedBy", record.jailedBy.ID.steamID);
+          } else {
+            jsonRecord.SetAs("jailedBy", 0);
+          }
           jsonRecords.AddToArray(jsonRecord);
         }
         jsonPlayerRecord.SetAs("records", jsonRecords);

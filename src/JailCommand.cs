@@ -27,11 +27,11 @@ namespace ScarabolMods
         return true;
       }
 
-      Players.Player criminal;
-      string criminalName = m.Groups["player"].Value;
+      Players.Player target;
+      string targetName = m.Groups["player"].Value;
       string error;
-      if (!PlayerHelper.TryGetPlayer(criminalName, out criminal, out error, true)) {
-        Chat.Send(causedBy, $"Could not find player {criminalName}: {error}");
+      if (!PlayerHelper.TryGetPlayer(targetName, out target, out error, true)) {
+        Chat.Send(causedBy, $"Could not find player {targetName}: {error}");
         return true;
       }
 
@@ -46,13 +46,13 @@ namespace ScarabolMods
       }
       string reason = m.Groups["reason"].Value;
 
-      if (JailManager.IsPlayerJailed(criminal)) {
-        Chat.Send(causedBy, $"{criminal.Name} is already in jail. Use /jail_extend in case");
+      if (JailManager.IsPlayerJailed(target)) {
+        Chat.Send(causedBy, $"{target.Name} is already in jail.");
         return true;
       }
 
-      JailManager.jailPlayer(criminal, causedBy, reason, jailtime);
-      Chat.Send(causedBy, $"Threw {criminal.Name} into the jail for {jailtime} minutes");
+      JailManager.jailPlayer(target, causedBy, reason, jailtime);
+      Chat.Send(causedBy, $"Threw {target.Name} into the jail for {jailtime} minutes");
 
       return true;
     }

@@ -12,7 +12,7 @@ namespace ScarabolMods
 
     public bool IsCommand(string chat)
     {
-      return (chat.Equals("/jail_release") || chat.StartsWith("/jail_release "));
+      return (chat.Equals("/jailrelease") || chat.StartsWith("/jailrelease "));
     }
 
     public bool TryDoCommand(Players.Player causedBy, string chattext)
@@ -21,28 +21,28 @@ namespace ScarabolMods
         return true;
       }
 
-      var m = Regex.Match(chattext, @"/jail_release (?<player>[^ ]+)");
+      var m = Regex.Match(chattext, @"/jailrelease (?<player>[^ ]+)");
       if (!m.Success) {
-        Chat.Send(causedBy, "Syntax error, use /jail_release <player>");
+        Chat.Send(causedBy, "Syntax error, use /jailrelease <player>");
         return true;
       }
 
-      Players.Player criminal;
-      string criminalName = m.Groups["player"].Value;
+      Players.Player target;
+      string targetName = m.Groups["player"].Value;
       string error;
-      if (!PlayerHelper.TryGetPlayer(criminalName, out criminal, out error, true)) {
-        Chat.Send(causedBy, $"Could not find player {criminalName}: {error}");
+      if (!PlayerHelper.TryGetPlayer(targetName, out target, out error, true)) {
+        Chat.Send(causedBy, $"Could not find player {targetName}: {error}");
         return true;
       }
 
-      if (!JailManager.IsPlayerJailed(criminal)) {
-        Chat.Send(causedBy, $"{criminal.Name} is currently not in jail");
+      if (!JailManager.IsPlayerJailed(target)) {
+        Chat.Send(causedBy, $"{target.Name} is currently not in jail");
         return true;
       }
 
-      JailManager.releasePlayer(criminal, causedBy);
-      Chat.Send(causedBy, $"Released {criminal.Name} from jail");
-      Chat.Send(criminal, $"{causedBy.Name} released you from jail");
+      JailManager.releasePlayer(target, causedBy);
+      Chat.Send(causedBy, $"Released {target.Name} from jail");
+      Chat.Send(target, $"<color=yellow>{causedBy.Name} released you from jail</color>");
 
       return true;
     }
