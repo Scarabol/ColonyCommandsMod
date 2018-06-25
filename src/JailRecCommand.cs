@@ -40,16 +40,65 @@ namespace ScarabolMods
         }
         foreach (JailManager.JailLogRecord record in PlayerJailLog) {
           DateTime timestamp = new DateTime(record.timestamp * TimeSpan.TicksPerMillisecond * 1000);
-          Chat.Send(causedBy, String.Format("{0} by {1}: {2}", timestamp.ToString(), record.jailedBy, record.reason));
+          string jailedBy = "Server";
+          if (record.jailedBy != null) {
+            jailedBy = record.jailedBy.Name;
+          }
+          Chat.Send(causedBy, String.Format("{0} by: {1} for: {2}", timestamp.ToString(), jailedBy, record.reason));
         }
 
       // or get the full log
       } else {
-        Chat.Send(causedBy, "yet to be implemented - try /jailrec <player> instead");
+        // in full log mode only timestamp and playername are displayed (last 10 jailed).
+        // showing more would require a more capable chat window
+        List<combinedJailLog> combinedLog = new List<combinedJailLog>();
+        foreach (KeyValuePair<Players.Player, List<JailManager.JailLogRecord>> kvp in JailManager.jailLog) {
+          Players.Player target = kvp.Key;
+          List<JailManager.JailLogRecord> records = kvp.Value;
+          foreach (JailManager.JailLogRecord record in records) {
+            combinedLog.Add(new combinedJailLog(target, record.jailedBy, record.timestamp));
+          }
+        }
+        combinedLog.Sort(delegate(combinedJailLog a, combinedJailLog b)
+        {
+          return a.timestamp.CompareTo(b.timestamp);
+        });
+
+        int limit = 10;
+        if (combinedLog.Count < limit) {
+          limit = combinedLog.Count;
+        }
+
+        Chat.Send(causedBy, "Jail Records (last 10):");
+        for (int i = 0; i < limit; ++i) {
+          combinedJailLog record = combinedLog[i];
+          DateTime timestamp = new DateTime(record.timestamp * TimeSpan.TicksPerMillisecond * 1000);
+          string targetName = record.target.Name;
+          string jailerName = "Server";
+          if (record.causedBy != null) {
+            jailerName = record.causedBy.Name;
+          }
+          Chat.Send(causedBy, String.Format("{0} {1} by: {2}", timestamp.ToString(), targetName, jailerName));
+        }
       }
 
       return true;
     }
+
+    private class combinedJailLog
+    {
+      public Players.Player target { get; set; }
+      public Players.Player causedBy { get; set; }
+      public long timestamp { get; set; }
+
+      public combinedJailLog(Players.Player tgt, Players.Player src, long time)
+      {
+        target = tgt;
+        causedBy = src;
+        timestamp = time;
+      }
+    }
+
   }
 }
 
