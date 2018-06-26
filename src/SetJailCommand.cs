@@ -32,10 +32,10 @@ namespace ScarabolMods
         if (!uint.TryParse(m.Groups["range"].Value, out range)) {
           Chat.Send(causedBy, "Could not parse range value");
         }
-        JailManager.setJailPosition(causedBy.Position, range);
+        JailManager.setJailPosition(causedBy, range);
         Chat.Send(causedBy, $"Jail set to your current position with range {range}");
       } else {
-        JailManager.setJailPosition(causedBy.Position);
+        JailManager.setJailPosition(causedBy);
         Chat.Send(causedBy, $"Jail set to your current position and default range {JailManager.DEFAULT_RANGE}");
       }
       return true;

@@ -154,14 +154,34 @@ namespace ScarabolMods {
     }
 
     // update/set the jail position in the world
-    public static void setJailPosition(Vector3 newPosition, uint range = DEFAULT_RANGE)
+    public static void setJailPosition(Players.Player causedBy, uint range = DEFAULT_RANGE)
     {
-      jailPosition.x = newPosition.x;
-      jailPosition.y = newPosition.y + 1;  // one block higher to prevent clipping
-      jailPosition.z = newPosition.z;
+      // if an old jail position existed remove its protection area
+      if (validJail) {
+        Vector3Int oldPos = new Vector3Int(jailPosition);
+        CustomProtectionArea oldJail = null;
+        foreach (CustomProtectionArea area in AntiGrief.CustomAreas) {
+          if (area.Equals(oldPos, range)) {
+            oldJail = area;
+          }
+        }
+        if (oldJail != null) {
+          AntiGrief.RemoveCustomArea(oldJail);
+          Chat.Send(causedBy, String.Format("Removed old jail protection area at {0} {1}", (int)jailPosition.x, (int)jailPosition.z));
+        }
+      }
+
+      jailPosition.x = causedBy.Position.x;
+      jailPosition.y = causedBy.Position.y + 1;  // one block higher to prevent clipping
+      jailPosition.z = causedBy.Position.z;
       jailRange = range;
       validJail = true;
       Save();
+
+      Vector3Int playerPos = new Vector3Int(causedBy.Position);
+      AntiGrief.AddCustomArea(new CustomProtectionArea(playerPos, (int)range, (int)range));
+      Chat.Send(causedBy, "Created new custom protection area");
+
       return;
     }
 
@@ -299,7 +319,8 @@ namespace ScarabolMods {
         // foreach (string perm in record.revokedPermissions) {
         //   permissions.AddToArray(perm);
         // }
-        // jsonRecord.SetAs("permissions", record.revokedPermissions.ToString());  // TODO
+        //jsonRecord.SetAs("permissions", record.revokedPermissions.ToString());  // TODO
+        jsonRecord.SetAs("permissions", "none");
         jsonPlayers.AddToArray(jsonRecord);
       }
       jsonConfig.SetAs("players", jsonPlayers);

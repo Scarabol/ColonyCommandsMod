@@ -26,7 +26,7 @@ namespace ScarabolMods {
     static int SpawnProtectionRangeZNeg;
     static int BannerProtectionRangeX;
     static int BannerProtectionRangeZ;
-    static List<CustomProtectionArea> CustomAreas = new List<CustomProtectionArea> ();
+    public static List<CustomProtectionArea> CustomAreas = new List<CustomProtectionArea> ();
     static int NpcKillsJailThreshold;
     static int NpcKillsKickThreshold;
     static int NpcKillsBanThreshold;
@@ -90,6 +90,7 @@ namespace ScarabolMods {
       CommandManager.RegisterCommand(new JailLeaveCommand());
       CommandManager.RegisterCommand(new JailRecCommand());
       CommandManager.RegisterCommand(new JailTimeCommand());
+      CommandManager.RegisterCommand(new AreaShowCommand());
       return;
     }
 
@@ -250,6 +251,12 @@ namespace ScarabolMods {
     {
       CustomAreas.Add (area);
       Save ();
+    }
+
+    public static void RemoveCustomArea(CustomProtectionArea area)
+    {
+      CustomAreas.Remove(area);
+      Save();
     }
 
     public static void Save ()
