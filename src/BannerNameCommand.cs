@@ -36,7 +36,7 @@ namespace ScarabolMods
       if (closestBanner != null) {
         var ownerName = closestBanner.Owner.Name;
         if (ownerName != null) {
-          Chat.Send (causedBy, $"Closest banner at {closestBanner.KeyLocation} is owned by {ownerName}");
+          Chat.Send (causedBy, $"Closest banner at {closestBanner.KeyLocation} is owned by {ownerName}. {shortestDistance} blocks away");
         }
       }
       return true;
