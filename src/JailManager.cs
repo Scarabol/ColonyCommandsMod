@@ -24,8 +24,9 @@ namespace ScarabolMods {
     const string LOG_FILE = "jail-log.json";
     public static bool validJail = false;
     public static bool validVisitorPos = false;
+    public static uint DEFAULT_JAIL_TIME = 3;
+    public static uint GRACE_ESCAPE_ATTEMPTS = 3;
     public const uint DEFAULT_RANGE = 5;
-    public const uint DEFAULT_JAIL_TIME = 3;
 
     // Jail record per player
     private class JailRecord {
@@ -90,7 +91,7 @@ namespace ScarabolMods {
     }
 
     // send a player to jail
-    public static void jailPlayer(Players.Player target, Players.Player causedBy, string reason, long jailtime = DEFAULT_JAIL_TIME)
+    public static void jailPlayer(Players.Player target, Players.Player causedBy, string reason, long jailtime)
     {
       if (!validJail) {
         if (causedBy == null) {
@@ -205,10 +206,20 @@ namespace ScarabolMods {
           validVisitorPos = true;
         }
 
+        uint defaultJailTime;
+        if (jsonConfig.TryGetAs("defaultJailTime", out defaultJailTime)) {
+          DEFAULT_JAIL_TIME = defaultJailTime;
+        }
+
+        uint graceEscapeAttempts;
+        if (jsonConfig.TryGetAs("graceEscapeAttempts", out graceEscapeAttempts)) {
+          GRACE_ESCAPE_ATTEMPTS = graceEscapeAttempts;
+        }
+
         JSONNode players;
         jsonConfig.TryGetAs("players", out players);
         foreach (JSONNode node in players.LoopArray()) {
-          string PlayerName = node.GetAs<string>("name");
+          string PlayerName = node.GetAs<string>("target");
           long jailTimestamp = node.GetAs<long>("time");
           long jailDuration = node.GetAs<long>("duration");
           string causedByName = node.GetAs<string>("jailedBy");
@@ -265,6 +276,9 @@ namespace ScarabolMods {
         jsonVisitorPos.SetAs("z", jailVisitorPosition.z);
         jsonConfig.SetAs("visitorPosition", jsonVisitorPos);
       }
+
+      jsonConfig.SetAs("defaultJailTime", DEFAULT_JAIL_TIME);
+      jsonConfig.SetAs("graceEscapeAttempts", GRACE_ESCAPE_ATTEMPTS);
 
       JSONNode jsonPlayers = new JSONNode(NodeType.Array);
       foreach (KeyValuePair<Players.Player, JailRecord> kvp in jailedPersons) {
@@ -349,8 +363,8 @@ namespace ScarabolMods {
         Teleport.TeleportTo(causedBy, jailPosition);
 
         ++record.escapeAttempts;
-        if (record.escapeAttempts < 3) {
-          Chat.Send(causedBy, "<color=red>A Guard spot your escape attempt and pushes you back</color>");
+        if (GRACE_ESCAPE_ATTEMPTS == 0 || record.escapeAttempts < GRACE_ESCAPE_ATTEMPTS) {
+          Chat.Send(causedBy, "<color=red>A Guard spots your escape attempt and pushes you back</color>");
         } else {
           record.jailDuration += 1 * 60;
           Chat.Send(causedBy, "<color=red>The Guards get angry at you and increase your jailtime by 1 minute</color>");

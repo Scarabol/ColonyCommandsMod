@@ -19,7 +19,7 @@ namespace ScarabolMods
     public bool TryDoCommand(Players.Player causedBy, string chattext)
     {
 
-      if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + ".jailrec")) {
+      if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + ".jail")) {
         return true;
       }
 

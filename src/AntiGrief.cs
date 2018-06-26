@@ -295,12 +295,12 @@ namespace ScarabolMods {
             Players.Disconnect (killer);
           } else if (kills >= NpcKillsJailThreshold) {
             Chat.SendToAll ($"{killer.Name} put in Jail for killing too many colonists");
-            JailManager.jailPlayer(killer, null, "Killing Colonists");
+            JailManager.jailPlayer(killer, null, "Killing Colonists", JailManager.DEFAULT_JAIL_TIME);
           }
           Log.Write ($"{killer.Name} killed a colonist of {npc.Colony.Owner.Name} at {npc.Position}");
-          var remainingKick = NpcKillsKickThreshold - kills;
-          var remainingBan = NpcKillsBanThreshold - kills;
-          Chat.Send (killer, $"You killed [{npc.Colony.Owner.Name}]'s colonist, remaining until kick: {remainingKick}, remaining until Ban: {remainingBan}");
+          int remainingJail = NpcKillsJailThreshold - kills;
+          int remainingKick = NpcKillsKickThreshold - kills;
+          Chat.Send (killer, $"You killed [{npc.Colony.Owner.Name}]'s colonist, remaining until jail: {remainingJail}, remaining until kick: {remainingKick}");
         }
       }
     }
