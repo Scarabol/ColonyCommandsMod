@@ -1,10 +1,10 @@
 # Colony Commands Mod by Scarabol
 
+**The mod is now continued by adrenalynn**
+
 **Special thanks to Tjohei for most of the ideas and feature requests.**
 
 **Special thanks to Crone for the chat coloring system and score system.**
-
-**The mod is now continued by adrenalynn**
 
 ## Anti-Grief
 
