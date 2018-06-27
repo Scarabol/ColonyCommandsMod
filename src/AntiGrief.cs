@@ -139,7 +139,7 @@ namespace ScarabolMods {
                        int distanceX = checkRangeX - System.Math.Abs(bannerLocation.x - position.x);
                        int distanceZ = checkRangeZ - System.Math.Abs(bannerLocation.z - position.z);
 
-                        Chat.Send(requestedBy, string.Format("<color=red>You can't place your banner here because there is a banner too near. You need to walk {0} more blocks in X OR {1} more blocks in Z before place your banner.</color>", distanceX, distanceZ));
+                        Chat.Send(requestedBy, string.Format("<color=red>You can't place your banner here because there is another banner too close. You need to walk {0} blocks in X OR {1} blocks in Z to place your banner.</color>", distanceX, distanceZ));
                      }
                   else
                    Chat.Send (requestedBy, "<color=red>You don't have permission to change blocks near this banner!</color>");
