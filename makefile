@@ -1,6 +1,6 @@
 # important variables
 modname = Commands
-version = $(shell cat modInfo.json | awk '/"version"/ {print $3}'| sed 's/[",]//g')
+version = $(shell cat modInfo.json | awk '/"version"/ {print $$3}' | sed 's/[",]//g')
 zip_files_extra = "announcements.example.json" "protection-ranges.example.json" "chatcolors.example.json"
 build_dir = "adrenalynn/$(moddir)"
 fullname = Colony$(modname)Mod
@@ -26,4 +26,3 @@ zip: default
 	cp modInfo.json "$(dllname)" $(zip_files_extra) $(build_dir)/
 	zip -r "$(zipname)" $(build_dir)
 	rm -r $(build_dir)
-
