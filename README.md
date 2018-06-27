@@ -94,9 +94,9 @@ Requires permission **mods.scarabol.commands.jail**
 <dl>
 <dt>Configurable Settings</dt>
 <dd>After the first start a new file jail-config.json will be generated at the world save directory (gamedate/savegames/&lt;worldname&gt;).</dd>
-<dd>**defaultJailTime**: 5 Minutes, can be adjusted to any value</dd>
-<dd>**graceEscapeAttempts**: 3. Number of escape attempts after which additional jail time is added. Set to 0 to disable.</dd>
-<dd>protection-ranges.json contains a new entry **NpcKillsJailThreshold**, similar to kick and ban thresholds. If unwanted, set the value higher than the kick threshold to disable jailing as punishment option.</dd>
+<dd>defaultJailTime: 5 Minutes, can be adjusted to any value</dd>
+<dd>graceEscapeAttempts: 3. Number of escape attempts after which additional jail time is added. Set to 0 to disable.</dd>
+<dd>protection-ranges.json contains a new entry NpcKillsJailThreshold, similar to kick and ban thresholds. If unwanted, set the value higher than the kick threshold to disable jailing as punishment option.</dd>
 </dl>
 
 ## Further Commands
