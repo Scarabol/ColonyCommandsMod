@@ -150,13 +150,15 @@ protection-ranges.json contains a new entry **NpcKillsJailThreshold**, similar t
 <dd>Requires permission: <b>mods.scarabol.commands.purgeall</b><br>Kills all NPCs and removes banner for each player, who has not logged in or out since the last number of days.</dd>
 <dt>/trashplayer [playername] [itemname] [amount]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.trashplayer</b><br>Removes the given amount and type of items from the given players stockpile and inventory. The playername and itemname can be set to 'all', which is also the default value for amount.<br><b>Note: For safety reasons you can't use /trashplayer all all all</b></dd>
+<dt>/areashow</dt>
+<dd>Checks if the player is inside a custom protection area and will print its coordinates. If not inside an area it will print the closest area nearby instead</dd>
 </dl>
 
 ## Installation
 
 **This mod must be installed on server!**
 
-* download a (compatible) [release](https://github.com/Scarabol/ColonyCommandsMod/releases) or build from source code (see below)
+* download a (compatible) [release](https://github.com/adrenalynn/ColonyCommandsMod/releases) or build from source code (see below)
 * place the unzipped *Scarabol* folder inside your *ColonySurvival/gamedata/mods/* directory, like *ColonySurvival/gamedata/mods/Scarabol/*
 
 ## Build
