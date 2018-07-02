@@ -9,7 +9,7 @@ using ChatCommands;
 using Permissions;
 using Server.TerrainGeneration;
 
-namespace ScarabolMods {
+namespace ColonyCommands {
 
   [ModLoader.ModManager]
   public static class AntiGrief

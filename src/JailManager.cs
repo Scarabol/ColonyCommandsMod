@@ -9,7 +9,7 @@ using Server.TerrainGeneration;
 using UnityEngine;
 using Permissions;
 
-namespace ScarabolMods {
+namespace ColonyCommands {
 
   [ModLoader.ModManager]
   public static class JailManager

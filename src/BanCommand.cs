@@ -3,7 +3,7 @@ using Pipliz.Chatting;
 using Permissions;
 using ChatCommands;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class BanChatCommand : IChatCommand

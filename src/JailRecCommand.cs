@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class JailRecCommand : IChatCommand

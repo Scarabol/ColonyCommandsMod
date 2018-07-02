@@ -5,7 +5,7 @@ using ChatCommands;
 using Permissions;
 using ChatCommands.Implementations;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class WarpBannerChatCommand : IChatCommand

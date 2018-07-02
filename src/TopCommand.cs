@@ -6,7 +6,7 @@ using ChatCommands;
 /*
  * Copy of Crone's top command
  */
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class TopChatCommand : IChatCommand

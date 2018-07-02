@@ -5,7 +5,7 @@ using ChatCommands;
 using Permissions;
 using BlockTypes.Builtin;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class DrainChatCommand : IChatCommand

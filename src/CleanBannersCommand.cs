@@ -4,7 +4,7 @@ using ChatCommands;
 using Permissions;
 using BlockTypes.Builtin;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class CleanBannersChatCommand : IChatCommand

@@ -8,7 +8,7 @@ using Pipliz.JSON;
 using ChatCommands;
 using Permissions;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
   [ModLoader.ModManager]
   public class ColonyCap : IChatCommand

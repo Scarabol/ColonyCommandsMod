@@ -2,7 +2,7 @@
 using Pipliz.Chatting;
 using ChatCommands;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
   public class AreaShowCommand : IChatCommand
   {

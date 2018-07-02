@@ -4,7 +4,7 @@ using Permissions;
 using System;
 using System.Text.RegularExpressions;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class JailTimeCommand : IChatCommand

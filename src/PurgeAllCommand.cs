@@ -7,7 +7,7 @@ using Permissions;
 using BlockTypes.Builtin;
 using NPC;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class PurgeAllChatCommand : IChatCommand

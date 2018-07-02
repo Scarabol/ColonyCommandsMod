@@ -9,7 +9,7 @@ using Pipliz.Threading;
 using ChatCommands;
 using Permissions;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
   [ModLoader.ModManager]
   public static class Announcements

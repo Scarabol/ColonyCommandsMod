@@ -3,7 +3,7 @@ using Pipliz.Chatting;
 using ChatCommands;
 using Permissions;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class KickChatCommand : IChatCommand

@@ -5,7 +5,7 @@ using ChatCommands;
 using Permissions;
 using NPC;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class KillNPCsChatCommand : IChatCommand

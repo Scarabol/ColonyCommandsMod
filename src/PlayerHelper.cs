@@ -2,7 +2,7 @@
 using System.IO;
 using Pipliz;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public static class PlayerHelper

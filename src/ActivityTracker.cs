@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Pipliz;
 using Pipliz.JSON;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
   [ModLoader.ModManager]
   public static class ActivityTracker

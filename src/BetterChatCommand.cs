@@ -11,7 +11,7 @@ using Permissions;
 /*
  * Inspired by Crone's BetterChat
  */
-namespace ScarabolMods
+namespace ColonyCommands
 {
   [ModLoader.ModManager]
   public class BetterChatCommand : IChatCommand

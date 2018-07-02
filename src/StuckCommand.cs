@@ -6,7 +6,7 @@ using Server.TerrainGeneration;
 using ChatCommands;
 using ChatCommands.Implementations;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
   [ModLoader.ModManager]
   public class StuckChatCommand : IChatCommand

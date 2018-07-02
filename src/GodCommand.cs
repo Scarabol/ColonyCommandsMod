@@ -2,7 +2,7 @@
 using ChatCommands;
 using Permissions;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class GodChatCommand : IChatCommand

@@ -4,7 +4,7 @@ using Pipliz.Chatting;
 using Pipliz;
 using ChatCommands;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class TradeChatCommand : IChatCommand

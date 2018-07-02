@@ -6,7 +6,7 @@ using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class JailLeaveCommand : IChatCommand

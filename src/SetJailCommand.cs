@@ -3,7 +3,7 @@ using ChatCommands;
 using Permissions;
 using System.Text.RegularExpressions;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class SetJailCommand : IChatCommand

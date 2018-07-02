@@ -9,7 +9,7 @@ using Pipliz.Threading;
 using ChatCommands;
 using Permissions;
 
-namespace ScarabolMods
+namespace ColonyCommands
 {
 
   public class AnnouncementsChatCommand : IChatCommand
