@@ -35,13 +35,6 @@ namespace ColonyCommands
       return true;
     }
 
-    public static void SendFlightState (Players.Player player, bool state)
-    {
-      using (ByteBuilder byteBuilder = ByteBuilder.Get ()) {
-        byteBuilder.Write (30);
-        byteBuilder.Write (state);
-        NetworkWrapper.Send (byteBuilder.ToArray (), player, NetworkMessageReliability.ReliableWithBuffering);
-      }
-    }
   }
 }
+
