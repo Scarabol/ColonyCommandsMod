@@ -46,7 +46,7 @@ namespace ScarabolMods
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "mute")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/mute (?<targetplayername>['].+?[']|[^ ]+)( (?<minutes>\d+))?");
+      var m = Regex.Match (chattext, @"/mute (?<targetplayername>['].+[']|[^ ]+)( (?<minutes>\d+))?");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /mute [targetplayername] [minutes]");
         return true;
@@ -86,7 +86,7 @@ namespace ScarabolMods
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "mute")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/unmute (?<targetplayername>['].+?[']|[^ ]+)");
+      var m = Regex.Match (chattext, @"/unmute (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /unmute [targetplayername]");
         return true;

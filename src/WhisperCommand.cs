@@ -15,7 +15,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      var m = Regex.Match (chattext, @"/((w)|(whisper)) (?<targetplayername>['].+?[']|[^ ]+) (?<message>.+)");
+      var m = Regex.Match (chattext, @"/((w)|(whisper)) (?<targetplayername>['].+[']|[^ ]+) (?<message>.+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /w [targetplayername] [message] or /whisper [targetplayername] [message]");
         return true;

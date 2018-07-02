@@ -22,7 +22,7 @@ namespace ScarabolMods
         Chat.Send (causedBy, "<color=red>You don't have permission to warp</color>");
         return true;
       }
-      var m = Regex.Match (chattext, @"/warp (?<targetplayername>['].+?[']|[^ ]+)( (?<teleportplayername>['].+?[']|[^ ]+))?");
+      var m = Regex.Match (chattext, @"/warp (?<targetplayername>['].+[']|[^ ]+)( (?<teleportplayername>['].+[']|[^ ]+))?");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /warp [targetplayername] or /warp [targetplayername] [teleportplayername]");
         return true;

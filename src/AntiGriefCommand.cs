@@ -21,13 +21,14 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      var matched = Regex.Match (chattext, @"/antigrief (?<accesslevel>[^ ]+) ((?<playername>['].+?[']|[^ ]+)|((?<rangex>\d+) (?<rangez>\d+))|((?<rangexn>\d+) (?<rangexp>\d+) (?<rangezn>\d+) (?<rangezp>\d+)))$");
+      var matched = Regex.Match (chattext, @"/antigrief (?<accesslevel>[^ ]+) ((?<playername>['].+[']|[^ ]+)|((?<rangex>\d+) (?<rangez>\d+))|((?<rangexn>\d+) (?<rangexp>\d+) (?<rangezn>\d+) (?<rangezp>\d+)))$");
       if (!matched.Success) {
         Chat.Send (causedBy, "Command didn't match, use /antigrief [spawn|nospawn|banner|deny] [playername] or /antigrief area [rangex rangez|rangexn rangexp rangezn rangezp]");
         return true;
       }
       var accesslevel = matched.Groups ["accesslevel"].Value;
       var targetPlayerName = matched.Groups ["playername"].Value;
+
       if (accesslevel.Equals ("area")) {
         if (causedBy == null || causedBy.ID == NetworkID.Server) {
           Log.WriteError ("You can't define custom protection areas as server (missing center)");

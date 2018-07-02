@@ -19,7 +19,7 @@ namespace ScarabolMods
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "kick")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/kick (?<targetplayername>['].+?[']|[^ ]+)");
+      var m = Regex.Match (chattext, @"/kick (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /kick [targetplayername]");
         return true;

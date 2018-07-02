@@ -23,7 +23,7 @@ namespace ScarabolMods
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "trashplayer")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/trashplayer (?<targetplayername>['].+?[']|[^ ]+) (?<itemname>['].+?[']|[^ ]+)( (?<amount>.+))?");
+      var m = Regex.Match (chattext, @"/trashplayer (?<targetplayername>['].+[']|[^ ]+) (?<itemname>['].+?[']|[^ ]+)( (?<amount>.+))?");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /trashplayer [targetplayername] [itemname] [amount]");
         return true;

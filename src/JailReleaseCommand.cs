@@ -21,7 +21,7 @@ namespace ScarabolMods
         return true;
       }
 
-      var m = Regex.Match(chattext, @"/jailrelease (?<player>[^ ]+)");
+      var m = Regex.Match(chattext, @"/jailrelease (?<player>.+)");
       if (!m.Success) {
         Chat.Send(causedBy, "Syntax error, use /jailrelease <player>");
         return true;

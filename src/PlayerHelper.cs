@@ -7,12 +7,8 @@ namespace ScarabolMods
 
   public static class PlayerHelper
   {
-    public static bool TryGetPlayer (string identifier, out Players.Player targetPlayer, out string error)
-    {
-      return TryGetPlayer (identifier, out targetPlayer, out error, false);
-    }
 
-    public static bool TryGetPlayer (string identifier, out Players.Player targetPlayer, out string error, bool includeOffline)
+    public static bool TryGetPlayer (string identifier, out Players.Player targetPlayer, out string error, bool includeOffline = false)
     {
       targetPlayer = null;
       if (identifier.StartsWith ("'")) {

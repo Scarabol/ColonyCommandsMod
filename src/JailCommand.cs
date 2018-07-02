@@ -21,7 +21,7 @@ namespace ScarabolMods
         return true;
       }
 
-      var m = Regex.Match(chattext, @"/jail (?<player>[^ ]+) (?<jailtime>[0-9]+)? ?(?<reason>.+)$");
+      var m = Regex.Match(chattext, @"/jail (?<player>['].+[']|[^ ]+) (?<jailtime>[0-9]+)? ?(?<reason>.+)$");
       if (!m.Success) {
         Chat.Send(causedBy, "Syntax error, use /jail <player> [time] <reason>");
         return true;

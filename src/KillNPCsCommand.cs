@@ -21,7 +21,7 @@ namespace ScarabolMods
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "killnpcs")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/killnpcs (?<targetplayername>['].+?[']|[^ ]+)");
+      var m = Regex.Match (chattext, @"/killnpcs (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /killnpcs [targetplayername]");
         return true;

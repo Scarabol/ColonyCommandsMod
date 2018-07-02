@@ -17,7 +17,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      var m = Regex.Match (chattext, @"/trade (?<playername>['].+?[']|[^ ]+) (?<material>.+) (?<amount>\d+)");
+      var m = Regex.Match (chattext, @"/trade (?<playername>['].+[']|[^ ]+) (?<material>.+) (?<amount>\d+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /trade [playername] [material] [amount]");
         return true;

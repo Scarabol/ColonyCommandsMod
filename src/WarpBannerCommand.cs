@@ -21,7 +21,7 @@ namespace ScarabolMods
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.banner")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/warpbanner (?<targetplayername>['].+?[']|[^ ]+)( (?<teleportplayername>['].+?[']|[^ ]+))?");
+      var m = Regex.Match (chattext, @"/warpbanner (?<targetplayername>['].+[']|[^ ]+)( (?<teleportplayername>['].+[']|[^ ]+))?");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /warpbanner [targetplayername] or /warpbanner [targetplayername] [teleportplayername]");
         return true;

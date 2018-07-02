@@ -15,7 +15,7 @@ namespace ScarabolMods
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      var m = Regex.Match (chattext, @"/lastseen (?<playername>['].+?[']|[^ ]+)");
+      var m = Regex.Match (chattext, @"/lastseen (?<playername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /lastseen [playername]");
         return true;

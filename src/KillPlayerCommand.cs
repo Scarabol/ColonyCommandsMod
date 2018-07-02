@@ -19,7 +19,7 @@ namespace ScarabolMods
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "killplayer")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/killplayer (?<targetplayername>['].+?[']|[^ ]+)");
+      var m = Regex.Match (chattext, @"/killplayer (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /killplayer [targetplayername]");
         return true;

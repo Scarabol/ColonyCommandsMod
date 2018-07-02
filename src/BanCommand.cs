@@ -19,7 +19,7 @@ namespace ScarabolMods
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "ban")) {
         return true;
       }
-      var m = Regex.Match (chattext, @"/ban (?<targetplayername>['].+?[']|[^ ]+)");
+      var m = Regex.Match (chattext, @"/ban (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /ban [targetplayername]");
         return true;
