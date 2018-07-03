@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Pipliz;
+using System.Text.RegularExpressions;
 
 namespace ColonyCommands
 {
@@ -23,6 +24,8 @@ namespace ColonyCommands
         error = "no playername given";
         return false;
       }
+
+      // try to find by steamID first
       ulong steamid;
       if (ulong.TryParse (identifier, out steamid)) {
         Steamworks.CSteamID csteamid = new Steamworks.CSteamID (steamid);
@@ -36,8 +39,35 @@ namespace ColonyCommands
           }
         }
       }
-      int closestDist = int.MaxValue;
+
+      // try to find by hash code
+      var m = Regex.Match(identifier, @"#(?<hash>\d{8})");
+      int givenHash;
+      if (m.Success && int.TryParse(m.Groups["hash"].Value, out givenHash)) {
+        foreach (Players.Player player in Players.PlayerDatabase.ValuesAsList) {
+          if (!player.IsConnected && !includeOffline) {
+            continue;
+          }
+          if (player.ID.steamID.GetHashCode() == givenHash) {
+            if (targetPlayer == null) {
+              targetPlayer = player;
+            } else {
+              targetPlayer = null;
+              error = "duplicate hash code, please use full SteamID";
+              return false;
+            }
+          }
+        }
+
+        if (targetPlayer != null) {
+          error = "";
+          return true;
+        }
+      }
+
+      // try to find by string closest match
       Players.Player closestMatch = null;
+      int closestDist = int.MaxValue;
       foreach (var player in Players.PlayerDatabase.ValuesAsList) {
         if (!player.IsConnected && !includeOffline) {
           continue;
@@ -62,6 +92,7 @@ namespace ColonyCommands
           }
         }
       }
+
       if (targetPlayer != null) {
         error = "";
         return true;
