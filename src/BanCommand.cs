@@ -34,6 +34,7 @@ namespace ColonyCommands
       Chat.Send (targetPlayer, "<color=red>You were banned from the server</color>");
       Chat.SendToAll ($"{targetPlayer.Name} is banned by {causedBy.Name}");
       BlackAndWhitelisting.AddBlackList (targetPlayer.ID.steamID.m_SteamID);
+      BlackAndWhitelisting.Reload();
       Players.Disconnect (targetPlayer);
       return true;
     }
