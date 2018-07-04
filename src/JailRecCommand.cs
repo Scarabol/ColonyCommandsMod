@@ -19,7 +19,7 @@ namespace ColonyCommands
     public bool TryDoCommand(Players.Player causedBy, string chattext)
     {
 
-      if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + ".jail")) {
+      if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "jail")) {
         return true;
       }
 
