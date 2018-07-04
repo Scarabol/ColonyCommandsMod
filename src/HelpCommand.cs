@@ -3,6 +3,7 @@ using Pipliz.Chatting;
 using ChatCommands;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Permissions;
 
 namespace ColonyCommands
 {
@@ -25,14 +26,17 @@ namespace ColonyCommands
       // without filter basic command list
       if (!m.Success) {
         cmdList = string.Join(", ", basicList);
-        Chat.Send(causedBy, "Type /help warp|event|admin|jail... for specific commands.");
-        Chat.Send(causedBy, $"Basic commands: {cmdList}");
+        Chat.Send(causedBy, "Type /help warp|event|jail... to filter.");
+        Chat.Send(causedBy, $"Commands: {cmdList}");
         return true;
       }
 
-      // all admin commands
+      // all admin commands - only if permission
       string filter = m.Groups["section"].Value;
       if (filter.Equals("admin")) {
+        if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "adminhelp")) {
+          return true;
+        }
         cmdList = string.Join(", ", adminList);
         Chat.Send(causedBy, $"Admin commands: {cmdList}");
         return true;
@@ -45,9 +49,12 @@ namespace ColonyCommands
           matching.Add(elem);
         }
       }
-      foreach (string elem in adminList) {
-        if (elem.Contains(filter)) {
-          matching.Add(elem);
+      // search admin command only if permission ok
+      if (PermissionsManager.HasPermission(causedBy, AntiGrief.MOD_PREFIX + "adminhelp")) {
+        foreach (string elem in adminList) {
+          if (elem.Contains(filter)) {
+            matching.Add(elem);
+          }
         }
       }
       cmdList = string.Join(", ", matching.ToArray());
