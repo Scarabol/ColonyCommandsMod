@@ -38,6 +38,9 @@ namespace ColonyCommands {
       }
     }
 
+    // used only by the /top command to hide players from the scoring
+    public static List<Players.Player> UnscoredPlayers = new List<Players.Player>();
+
     [ModLoader.ModCallback(ModLoader.EModCallbackType.OnAssemblyLoaded, NAMESPACE + ".OnAssemblyLoaded")]
     public static void OnAssemblyLoaded(string path)
     {
@@ -244,6 +247,21 @@ namespace ColonyCommands {
         jsonConfig.TryGetAsOrDefault ("NpcKillsJailThreshold", out NpcKillsJailThreshold, 2);
         jsonConfig.TryGetAsOrDefault ("NpcKillsKickThreshold", out NpcKillsKickThreshold, 5);
         jsonConfig.TryGetAsOrDefault ("NpcKillsBanThreshold", out NpcKillsBanThreshold, 6);
+
+        JSONNode jsonNameList;
+        if (jsonConfig.TryGetAs("UnscoredPlayers", out jsonNameList) && jsonNameList.NodeType == NodeType.Array) {
+          foreach (JSONNode jsonName in jsonNameList.LoopArray()) {
+            Players.Player player;
+            string error;
+            string playerName = jsonName.GetAs<string>();
+            if (PlayerHelper.TryGetPlayer(playerName, out player, out error, true)) {
+              UnscoredPlayers.Add(player);
+            } else {
+              Log.Write($"Error loading unscored players {playerName}: {error}");
+            }
+          }
+        }
+
       } else {
         Save ();
         Log.Write ($"Could not find {ConfigFilepath} file, created default one");
@@ -288,6 +306,15 @@ namespace ColonyCommands {
         jsonCustomAreas.AddToArray (customArea.ToJSON ());
       }
       jsonConfig.SetAs ("CustomAreas", jsonCustomAreas);
+
+      JSONNode jsonUnscoredPlayers = new JSONNode(NodeType.Array);
+      foreach (Players.Player player in UnscoredPlayers) {
+        JSONNode jsonName = new JSONNode();
+        jsonName.SetAs(player.Name);
+        jsonUnscoredPlayers.AddToArray(jsonName);
+      }
+      jsonConfig.SetAs("UnscoredPlayers", jsonUnscoredPlayers);
+
       JSON.Serialize (ConfigFilepath, jsonConfig, 2);
     }
 

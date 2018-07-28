@@ -25,9 +25,14 @@ namespace ColonyCommands
         return true;
       }
       string typename = m.Groups ["typename"].Value;
+
       List<Players.Player> players = new List<Players.Player> ();
       Players.PlayerDatabase.ForeachValue (x => players.Add (x));
       players.RemoveAll (x => string.IsNullOrEmpty (x.Name));
+
+      // remove players that should be hidden from scoring
+      players.RemoveAll(x => AntiGrief.UnscoredPlayers.Contains(x));
+
       if (typename.Equals ("score")) {
         players.Sort (delegate (Players.Player c1, Players.Player c2) {
           double c1score = Utility.CalculatePlayerScore (c1);
