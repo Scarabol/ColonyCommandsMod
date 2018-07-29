@@ -34,7 +34,7 @@ namespace ColonyCommands
       Players.OnDeath (targetPlayer);
       targetPlayer.SendHealthPacket ();
       if (targetPlayer == causedBy) {
-        Chat.SendToAll ($"Player {causedBy.Name} killed himself");
+        Chat.SendToAll ($"Player {causedBy.Name} committed suicide");
       } else {
         Chat.SendToAll ($"Player {targetPlayer.Name} was killed by {causedBy.Name}");
       }
