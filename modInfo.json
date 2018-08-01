@@ -2,7 +2,7 @@
   {
     "name" : "scarabol.commands",
     "namepretty" : "Scarabol Commands",
-    "version" : "6.3.16",
+    "version" : "6.3.17",
     "dllpath" : "Commands.dll",
     "enabled" : true,
     "compatibleversions" : [
