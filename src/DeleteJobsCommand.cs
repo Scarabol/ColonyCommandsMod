@@ -24,9 +24,6 @@ namespace ColonyCommands
 
     public bool TryDoCommand(Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "deletejobs")) {
-        return true;
-      }
 
       var m = Regex.Match(chattext, @"/deletejobs (?<player>['].+[']|[^ ]+)$");
       if (!m.Success) {
@@ -39,6 +36,14 @@ namespace ColonyCommands
       string error;
       if (!PlayerHelper.TryGetPlayer(targetName, out target, out error, true)) {
         Chat.Send(causedBy, $"Could not find player {targetName}: {error}");
+        return true;
+      }
+
+      if (target == causedBy) {
+        if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "deletejobs.self")) {
+          return true;
+        }
+      } else if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "deletejobs")) {
         return true;
       }
 
