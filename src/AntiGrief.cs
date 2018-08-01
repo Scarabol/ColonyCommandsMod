@@ -95,6 +95,7 @@ namespace ColonyCommands {
       CommandManager.RegisterCommand(new JailTimeCommand());
       CommandManager.RegisterCommand(new AreaShowCommand());
       CommandManager.RegisterCommand(new HelpCommand());
+      CommandManager.RegisterCommand(new DeleteJobsCommand());
       return;
     }
 

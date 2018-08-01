@@ -11,7 +11,7 @@ namespace ColonyCommands
   {
 
     private static string[] basicList = {"/antigrief", "/bannername", "/eventjoin", "/eventleave", "/itemid", "/lastseen", "/online", "/serverpop", "/stuck", "/top", "/trade", "/travel", "/trash", "/jailvisit", "/jailleave", "/jailtime", "/whisper (/w)"};
-    private static string[] adminList = {"/announcements", "/ban", "/cleanbanners", "/colonycap", "/drain", "/giveall", "/inactive", "/kick", "/killnpc", "/killplayer", "/noflight", "/purgeall", "/trashplayer", "/travelhere", "/travelthere", "/travelremove", "/warpbanner", "/warp", "/warpplace", "/warpspawn", "/jail", "/jailrelease", "/jailrec", "/setjail", "/areashow", "/eventstart", "/eventend", "/mute", "/unmute"};
+    private static string[] adminList = {"/announcements", "/ban", "/cleanbanners", "/colonycap", "/drain", "/giveall", "/inactive", "/kick", "/killnpc", "/killplayer", "/noflight", "/purgeall", "/trashplayer", "/travelhere", "/travelthere", "/travelremove", "/warpbanner", "/warp", "/warpplace", "/warpspawn", "/jail", "/jailrelease", "/jailrec", "/setjail", "/areashow", "/eventstart", "/eventend", "/mute", "/unmute", "/deletejobs" };
 
     public bool IsCommand (string chat)
     {
