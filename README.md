@@ -91,13 +91,6 @@ No permissions required
 Use **/jailrec [player]** to check the jail history records. With a player name given it will show all jail records for that player. Without player name it will show the last 10 jail actions
 Requires permission **mods.scarabol.commands.jail**
 
-## Writing Player Names
-
-A lot of the commands require the name of a player as target. Names of players can sometimes be hard to type due to international character sets. For all commands the name can be specified in different ways:
-**/command 'player name with blanks'** enclose the player name with single quotes.
-**/command #12345678** use the 8 digit hash instead of the name. The hashes are printed out by the **/online id** command.
-**/command <steamid>** if all of the above fail one can use the full steamid also
-
 <dl>
 <dt>Configurable Settings</dt>
 <dd>After the first start a new file jail-config.json will be generated at the world save directory (gamedate/savegames/&lt;worldname&gt;).</dd>
@@ -105,6 +98,17 @@ A lot of the commands require the name of a player as target. Names of players c
 <dd>graceEscapeAttempts: 3. Number of escape attempts after which additional jail time is added. Set to 0 to disable.</dd>
 <dd>protection-ranges.json contains a new entry NpcKillsJailThreshold, similar to kick and ban thresholds. If unwanted, set the value higher than the kick threshold to disable jailing as punishment option.</dd>
 </dl>
+
+## Writing Player Names
+
+A lot of the commands require the name of a player as target. Names of players can sometimes be hard to type due to international character sets. For all commands the name can be specified in different ways:
+
+**/command 'player name with blanks'** enclose the player name with single quotes.
+
+**/command #12345678** use the 8 digit hash instead of the name. The hashes are printed out by the **/online id** command.
+
+**/command <steamid>** if all of the above fail one can use the full steamid also
+
 
 ## Further Commands
 
