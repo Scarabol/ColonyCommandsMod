@@ -91,6 +91,13 @@ No permissions required
 Use **/jailrec [player]** to check the jail history records. With a player name given it will show all jail records for that player. Without player name it will show the last 10 jail actions
 Requires permission **mods.scarabol.commands.jail**
 
+## Writing Player Names
+
+A lot of the commands require the name of a player as target. Names of players can sometimes be hard to type due to international character sets. For all commands the name can be specified in different ways:
+**/command 'player name with blanks'** enclose the player name with single quotes.
+**/command #12345678** use the 8 digit hash instead of the name. The hashes are printed out by the **/online id** command.
+**/command <steamid>** if all of the above fail one can use the full steamid also
+
 <dl>
 <dt>Configurable Settings</dt>
 <dd>After the first start a new file jail-config.json will be generated at the world save directory (gamedate/savegames/&lt;worldname&gt;).</dd>
@@ -102,6 +109,9 @@ Requires permission **mods.scarabol.commands.jail**
 ## Further Commands
 
 <dl>
+<dt>/help</dt>
+<dd>Requires no permission<br>Shows a list of available commands. Once can add a text filter optionally to search for specific commands, like /help jail, for example.<br>
+The other variant of this command is <b>/help admin</b> which list all admin commands. Permission <b>mods.scarabol.commands.adminhelp</b> is required for that.</dd>
 <dt>/bannername</dt>
 <dd>Requires no permission<br>Tells you the name of the owner of the closest banner.</dd>
 <dt>/online</dt>
@@ -154,6 +164,8 @@ Requires permission **mods.scarabol.commands.jail**
 <dd>Requires permission: <b>mods.scarabol.commands.trashplayer</b><br>Removes the given amount and type of items from the given players stockpile and inventory. The playername and itemname can be set to 'all', which is also the default value for amount.<br><b>Note: For safety reasons you can't use /trashplayer all all all</b></dd>
 <dt>/areashow</dt>
 <dd>Checks if the player is inside a custom protection area and will print its coordinates. If not inside an area it will print the closest area nearby instead</dd>
+<dt>/deletejobs [playername]</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.deletejobs.self</b> for a player to delete his/her own jobs and permission <b>mods.scarabol.commands.deletejobs</b> to delete the jobs of another player.<br>All jobs will be deleted in the background, for large numbers of jobs the command will take a while.</dd>
 </dl>
 
 ## Installation
