@@ -109,6 +109,10 @@ A lot of the commands require the name of a player as target. Names of players c
 
 **/command &lt;steamid&gt;** if all of the above fails one can use the full steamid also
 
+## Hiding player from scoring
+
+The /top command provides player scores (number of items, colonists, score, etc). For some servers it might be useful to hide staff from the scores. This can be done by adding the player names to the protection-ranges.json file (per world):
+<code>"UnscoredPlayers" : [ "player1", "player2", "player3" ]</code>
 
 ## Further Commands
 
