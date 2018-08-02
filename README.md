@@ -107,7 +107,7 @@ A lot of the commands require the name of a player as target. Names of players c
 
 **/command #12345678** use the 8 digit hash instead of the name. The hashes are printed out by the **/online id** command.
 
-**/command <steamid>** if all of the above fail one can use the full steamid also
+**/command &lt;steamid&gt;** if all of the above fail one can use the full steamid also
 
 
 ## Further Commands
