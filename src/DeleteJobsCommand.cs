@@ -16,6 +16,7 @@ namespace ColonyCommands
   public class DeleteJobsCommand : IChatCommand
   {
     private const int WAIT_DELAY = 250;
+    private bool includeBeds = false;
 
     public bool IsCommand(string chat)
     {
@@ -25,7 +26,7 @@ namespace ColonyCommands
     public bool TryDoCommand(Players.Player causedBy, string chattext)
     {
 
-      var m = Regex.Match(chattext, @"/deletejobs (?<player>['].+[']|[^ ]+)$");
+      var m = Regex.Match(chattext, @"/deletejobs (?<beds>includebeds)? ?(?<player>['].+[']|[^ ]+)$");
       if (!m.Success) {
         Chat.Send(causedBy, "Syntax error, use /deletejobs <player>");
         return true;
@@ -37,6 +38,10 @@ namespace ColonyCommands
       if (!PlayerHelper.TryGetPlayer(targetName, out target, out error, true)) {
         Chat.Send(causedBy, $"Could not find player {targetName}: {error}");
         return true;
+      }
+
+      if (m.Groups["beds"].Value.Equals("includebeds")) {
+        includeBeds = true;
       }
 
       if (target == causedBy) {
@@ -57,7 +62,10 @@ namespace ColonyCommands
 
     public void DeleteAllJobs(Players.Player causedBy, Players.Player target)
     {
-      int amount = 0;
+      int amountAreaJobs = 0;
+      int amountBlockJobs = 0;
+      int amountBeds = 0;
+      string deleteMessage = "Deleted ";
 
       // AreaJobs (Farms)
       Dictionary<Players.Player, List<IAreaJob>> allAreaJobs = typeof(AreaJobTracker).GetField("playerTrackedJobs",
@@ -74,12 +82,13 @@ namespace ColonyCommands
           jobTypes.Add(ident, 1);
         }
         AreaJobTracker.RemoveJob(playerAreaJobs[i]);
-        ++amount;
+        ++amountAreaJobs;
         ThreadManager.Sleep(WAIT_DELAY);
       }
       foreach (KeyValuePair<string, int> kvp in jobTypes) {
         Log.Write($"Deleted {kvp.Value} jobs of type {kvp.Key} of player {target.Name}");
       }
+      deleteMessage += string.Format("{0} AreaJobs", amountAreaJobs);
 
       // BlockJobs (everything else, including Guards, Miners and so on)
       List<IBlockJobManager> allBlockJobs = typeof(BlockJobManagerTracker).GetField("InstanceList",
@@ -95,14 +104,14 @@ namespace ColonyCommands
         }
 
         int count = (int)jobList.GetType().GetField("count", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(jobList);
-        amount += count;
+        amountBlockJobs += count;
 
         Type jobType = jobList.GetType().GetGenericArguments()[1];
         MethodInfo methodKeys = jobList.GetType().GetMethod("get_Keys");
 
         // create a copy of the Collection to allow thread safe deletion
         List<Vector3Int> jobPositions = new List<Vector3Int>();
-        foreach(Vector3Int pos in methodKeys.Invoke(jobList, null) as ICollection<Vector3Int>) {
+        foreach (Vector3Int pos in methodKeys.Invoke(jobList, null) as ICollection<Vector3Int>) {
           jobPositions.Add(pos);
         }
 
@@ -115,8 +124,36 @@ namespace ColonyCommands
         }
         Log.Write(string.Format("Deleted {0} jobs {1} of {2}", count, jobType, target.Name));
       }
+      if (!deleteMessage.EndsWith("Deleted ")) {
+        deleteMessage += ", ";
+      }
+      deleteMessage += string.Format("{0} BlockJobs", amountBlockJobs);
 
-      Chat.Send(causedBy, $"Deleted {amount} jobs of player {target.Name}");
+      // Beds, if requested
+      if (includeBeds) {
+        BlockTracker<BedBlock> tracker = typeof(BedBlockTracker).GetField("tracker", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) as BlockTracker<BedBlock>;
+        Pipliz.Collections.SortedList<Vector3Int, BedBlock> bedCollection = tracker.GetList(target);
+
+        List<Vector3Int> bedPositions = new List<Vector3Int>();
+        foreach (Vector3Int pos in bedCollection.Keys) {
+          bedPositions.Add(pos);
+        }
+        // again, traverse backwards to avoid index / null problems on removing items
+        for (int i = bedPositions.Count - 1; i >= 0; --i) {
+          ServerManager.TryChangeBlock(bedPositions[i], BlockTypes.Builtin.BuiltinBlocks.Air, causedBy);
+          ThreadManager.Sleep(WAIT_DELAY);
+          ++amountBeds;
+        }
+        Log.Write($"Deleted {amountBeds} Beds of {target.Name}");
+
+        if (!deleteMessage.EndsWith("Deleted ")) {
+          deleteMessage += ", ";
+        }
+        deleteMessage += string.Format("{0} Beds", amountBeds);
+      }
+
+
+      Chat.Send(causedBy, deleteMessage + " of player " + target.Name);
       return;
     }
   }
