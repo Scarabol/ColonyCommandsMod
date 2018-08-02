@@ -67,28 +67,29 @@ Muting and Unmuting players requires the **mods.scarabol.commands.mute** permiss
 
 ## Jail System
 
-The jail is an extensions for the Anti-Grief system. An admin or staff member can throw players into jail as punishment. A jailed player can only move within the defined jail area. Should a player try to escape repeatedly his/her jail time will be automatically extended (configurable).
+The jail is an extension for the Anti-Grief system. Admin or staff members can throw players into jail as punishment. A jailed player can only move within the defined jail area. Should a player try to escape repeatedly his/her jail time will be automatically extended (configurable).
 Getting jailed is also available as punishment option for killing another player's colonists.
 
 Use **/setjail [range]** to define the server jail at your current position. Parameter range determines how many blocks out the border of the jail is, the default is 5.
 **Notice:** The jail will automatically create a protection area with its range. You might want to create a larger protection area instead, depending on your actual jail build.
+
 Use **/setjail visitor** to define a visitor position for people wanting to visit the jail and its inmates. This position can be outside or inside the jail, visitors are always free to move.
 Requires permission **mods.scarabol.commands.setjailposition**
 
-Use **/jail {player} [time] {reason}** to send a player into jail. The default jail time is 3 minutes or you can specify the exact amount. Reason can be any text (including white spaces) but don't have it start with a number (would be taken as time value instead).
+Use **/jail {player} [time] {reason}** to send a player into jail. The default jail time is 3 minutes or you can specify the exact amount. Reason can be any text (including white spaces) but don't start it with a number (would be taken as time value instead).
 Requires permission **mods.scarabol.commands.jail**
 
 Use **/jailrelease {player}** to release a player from jail for good conduct. Players will be released automatically after their time is done.
 Requires permission **mods.scarabol.commands.jail**
 
 Visitors can use **/jailvisit** to visit the jail (if the visitor position was set). Visitors are completely free to move and can leave anytime.
-For convinience there is also **/jailleave** which will warp a visitor to the position where he/she used /jailvisit. Just in case they have no others means to leave.
+For convenience there is also **/jailleave** which will warp a visitor to the position where he/she used /jailvisit. Just in case they have no others means to leave.
 No permissions required for both commands
 
 A jailed player can use **/jailtime** to check his/her remaining time in jail. Once the time is done the player will be automatically released and teleported to spawn.
-No permissions required
+No permission required
 
-Use **/jailrec [player]** to check the jail history records. With a player name given it will show all jail records for that player. Without player name it will show the last 10 jail actions
+Use **/jailrec [player]** to check the jail history records. With a player name given it will show all jail records for that player. Without player name it will show the last 10 jail actions.
 Requires permission **mods.scarabol.commands.jail**
 
 <dl>
