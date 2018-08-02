@@ -105,21 +105,21 @@ A lot of the commands require the name of a player as target. Names of players c
 
 **/command 'player name with blanks'** enclose the player name with single quotes.
 
-**/command #12345678** use the 8 digit hash instead of the name. The hashes are printed out by the **/online id** command.
+**/command #12345678** use a 8 digit hash instead of the name. The hashes are printed out by the **/online id** command.
 
-**/command &lt;steamid&gt;** if all of the above fail one can use the full steamid also
+**/command &lt;steamid&gt;** if all of the above fails one can use the full steamid also
 
 
 ## Further Commands
 
 <dl>
 <dt>/help</dt>
-<dd>Requires no permission<br>Shows a list of available commands. Once can add a text filter optionally to search for specific commands, like /help jail, for example.<br>
+<dd>Requires no permission. Shows a list of available commands. One can add a text filter optionally to search for specific commands, like /help jail, for example.<br>
 The other variant of this command is <b>/help admin</b> which list all admin commands. Permission <b>mods.scarabol.commands.adminhelp</b> is required for that.</dd>
 <dt>/bannername</dt>
 <dd>Requires no permission<br>Tells you the name of the owner of the closest banner.</dd>
 <dt>/online</dt>
-<dd>Requires no permission<br>Lists all online player names.</dd>
+<dd>Requires no permission<br>Lists all online player names.<br><b>/online id</b> lists the players including a 8 digit hash which can be used instead of the player name for all commands</dd>
 <dt>/top [score|food|colonists|time|itemtypename]</dt>
 <dd>Requires no permission<br>Shows a top 10 ranking for the given category or item type</dd>
 <dt>/serverpop</dt>
