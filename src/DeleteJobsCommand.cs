@@ -59,7 +59,7 @@ namespace ColonyCommands
         amount += DeleteBeds(causedBy, target);
         beds = "/Beds";
       }
-      Chat.Send(causedBy, $"{amount} Jobs{beds} of player {targetName} will get deleted in the background");
+      Chat.Send(causedBy, $"{amount} Jobs{beds} of player {target.Name} will get deleted in the background");
 
       return true;
     }
