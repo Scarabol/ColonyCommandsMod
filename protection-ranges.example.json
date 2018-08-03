@@ -7,5 +7,6 @@
   "BannerProtectionRangeX" : 50,
   "BannerProtectionRangeZ" : 50,
   "NpcKillsKickThreshold" : 10,
-  "NpcKillsBanThreshold" : 50
+  "NpcKillsBanThreshold" : 50,
+  "UnscoredPlayers" : [ ]
 }
