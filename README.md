@@ -162,9 +162,11 @@ The other variant of this command is <b>/help admin</b> which list all admin com
 <dt>/cleanbanners</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.cleanbanners</b><br>Removes all banners from banner-tracker, which have no banner block in the world. Useful after server crashes.</dd>
 <dt>/killplayer [playername]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.killplayer</b><br>Kills the player with the given playername.</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.killplayer</b><br>Kills the player with the given playername.<br>
+To allow players killing themselfes permission <b>mods.scarabol.commands.killplayer.self</b> can be given.</dd>
 <dt>/killnpcs [playername]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.killnpcs</b><br>Kills all npcs of the given playername. Useful to reduce lag on crowded servers.</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.killnpcs</b><br>Kills all npcs of the given playername. Useful to reduce lag on crowded servers.<br>
+To allow players killing their own colonists permission <b>mods.scarabol.commands.killnpcs.self</b> can be given.</dd>
 <dt>/inactive [days]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.inactive</b><br>Lists all players, who have not logged in or out since the last number of days.</dd>
 <dt>/purgeall [days]</dt>
@@ -174,7 +176,9 @@ The other variant of this command is <b>/help admin</b> which list all admin com
 <dt>/areashow</dt>
 <dd>Checks if the player is inside a custom protection area and will print its coordinates. If not inside an area it will print the closest area nearby instead</dd>
 <dt>/deletejobs [playername]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.deletejobs.self</b> for a player to delete his/her own jobs and permission <b>mods.scarabol.commands.deletejobs</b> to delete the jobs of another player.<br>All jobs will be deleted in the background, for large numbers of jobs the command will take a while.</dd>
+<dd>Requires permission: <b>mods.scarabol.commands.deletejobs</b><br>
+Deletes all jobs for the given player. Blocks will not be refunded. All jobs will be deleted in the background, for large numbers of jobs the command will take a while.<br>
+To allow players deleting their own jobs the permission <b>mods.scarabol.commands.deletejobs.self</b> can be given.</dd>
 </dl>
 
 ## Installation

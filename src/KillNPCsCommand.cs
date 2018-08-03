@@ -18,9 +18,6 @@ namespace ColonyCommands
 
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
-      if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "killnpcs")) {
-        return true;
-      }
       var m = Regex.Match (chattext, @"/killnpcs (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /killnpcs [targetplayername]");
@@ -33,6 +30,15 @@ namespace ColonyCommands
         Chat.Send (causedBy, $"Could not find target player '{targetPlayerName}'; {error}");
         return true;
       }
+
+      string permission = AntiGrief.MOD_PREFIX + "killnpcs";
+      if (causedBy == targetPlayer) {
+        permission += ".self";
+      }
+      if (!PermissionsManager.CheckAndWarnPermission (causedBy, permission)) {
+        return true;
+      }
+
       var cachedFollowers = new List<NPCBase> (Colony.Get (targetPlayer).Followers);
       foreach (var npc in cachedFollowers) {
         npc.OnDeath ();
