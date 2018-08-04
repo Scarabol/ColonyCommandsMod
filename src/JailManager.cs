@@ -138,6 +138,7 @@ namespace ColonyCommands {
       }
       Chat.Send(target, $"<color=red>{sender} threw you into jail! Reason: {reason}</color>");
       Chat.Send(target, $"Remaining Jail Time: {jailtime} minutes, type /jailtime to check");
+      Chat.SendToAllBut(target, $"<color=red>{sender} threw {target.Name} into jail! Reason: {reason}</color>");
       Log.Write($"{sender} threw {target.Name} into jail! Reason: {reason}");
       return;
     }
