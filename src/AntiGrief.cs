@@ -330,14 +330,14 @@ namespace ColonyCommands {
             kills = 0;
           }
           KillCounter[killer] = ++kills;
-          if (kills >= NpcKillsBanThreshold) {
+          if (NpcKillsBanThreshold > 0 && kills >= NpcKillsBanThreshold) {
             Chat.SendToAll ($"{killer.Name} banned for killing too many colonists");
             BlackAndWhitelisting.AddBlackList (killer.ID.steamID.m_SteamID);
             Players.Disconnect (killer);
-          } else if (kills >= NpcKillsKickThreshold) {
+          } else if (NpcKillsKickThreshold > 0 && kills >= NpcKillsKickThreshold) {
             Chat.SendToAll ($"{killer.Name} kicked for killing too many colonists");
             Players.Disconnect (killer);
-          } else if (kills >= NpcKillsJailThreshold) {
+          } else if (NpcKillsJailThreshold > 0 && kills >= NpcKillsJailThreshold) {
             Chat.SendToAll ($"{killer.Name} put in Jail for killing too many colonists");
             JailManager.jailPlayer(killer, null, "Killing Colonists", JailManager.DEFAULT_JAIL_TIME);
           }

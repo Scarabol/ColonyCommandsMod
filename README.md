@@ -11,8 +11,8 @@
 This mods adds an anti-griefing mechanism to the server.
 Regular players can't change 50 blocks around the spawn point and 50 blocks around other player banners.
 Both values can be adjusted.
-Furthermore players are auto-**kicked**, if they kill more than 10 foreign colonists and even auto-**banned** if they kill more than 50 foreign colonists.
-Both values can be configured in the savegame folder.
+Furthermore players are auto-**jailed** if they kill more than 2 foreign colonists, auto-**kicked** if killing more than 5 and auto-**banned** if they kill more than 6 foreign colonists.
+Those values can be configured in the savegame folder, set them to 0 to disable the feature.
 
 Players are also able to whitelist friends by writing **/antigrief banner [friendly-player-name]** in chat. 
 
