@@ -1,4 +1,4 @@
-# Colony Commands Mod by Scarabol
+# Colony Commands Mod by Scarabol/Adrenalynn
 
 **The mod is now continued by adrenalynn**
 
