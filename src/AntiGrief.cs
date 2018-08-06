@@ -44,7 +44,6 @@ namespace ColonyCommands {
     [ModLoader.ModCallback(ModLoader.EModCallbackType.OnAssemblyLoaded, NAMESPACE + ".OnAssemblyLoaded")]
     public static void OnAssemblyLoaded(string path)
     {
-      Log.Write("Loaded ColonyCommands 6.3.12");
       MOD_DIRECTORY = Path.GetDirectoryName(path);
     }
 
@@ -96,6 +95,7 @@ namespace ColonyCommands {
       CommandManager.RegisterCommand(new AreaShowCommand());
       CommandManager.RegisterCommand(new HelpCommand());
       CommandManager.RegisterCommand(new DeleteJobsCommand());
+      CommandManager.RegisterCommand(new DeleteJobSpeedCommand());
       return;
     }
 
@@ -263,6 +263,10 @@ namespace ColonyCommands {
           }
         }
 
+        int speed = 0;
+        jsonConfig.TryGetAsOrDefault("DeleteJobSpeed", out speed, 4);
+        DeleteJobsManager.SetDeleteJobSpeed(speed, false);
+
       } else {
         Save ();
         Log.Write ($"Could not find {ConfigFilepath} file, created default one");
@@ -315,6 +319,7 @@ namespace ColonyCommands {
         jsonUnscoredPlayers.AddToArray(jsonName);
       }
       jsonConfig.SetAs("UnscoredPlayers", jsonUnscoredPlayers);
+      jsonConfig.SetAs("DeleteJobSpeed", DeleteJobsManager.GetDeleteJobSpeed());
 
       JSON.Serialize (ConfigFilepath, jsonConfig, 2);
     }

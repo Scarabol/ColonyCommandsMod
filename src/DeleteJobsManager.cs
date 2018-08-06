@@ -1,0 +1,196 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Pipliz;
+using Pipliz.Mods.APIProvider.Jobs;
+using Pipliz.Threading;
+using Pipliz.Chatting;
+
+namespace ColonyCommands
+{
+
+  public static class DeleteJobsManager
+  {
+    public static double WAIT_DELAY = 0.5;
+
+    public static void SetDeleteJobSpeed(int blocksPerSecond, bool save = true)
+    {
+      WAIT_DELAY = 1.0 / blocksPerSecond;
+      if (save) {
+        AntiGrief.Save();
+      }
+    }
+
+    public static int GetDeleteJobSpeed()
+    {
+      return (int)(1.0 / WAIT_DELAY);
+    }
+
+    // Delete Area Jobs of a player
+    public static int DeleteAreaJobs(Players.Player causedBy, Players.Player target)
+    {
+      DelegatedBlockDelete blockDeletor = new DelegatedBlockDelete(causedBy, EDeleteType.AreaJobs);
+
+      int amount = 0;
+      Dictionary<Players.Player, List<IAreaJob>> allAreaJobs = typeof(AreaJobTracker).GetField("playerTrackedJobs",
+        BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) as Dictionary<Players.Player, List<IAreaJob>>;
+      if (!allAreaJobs.ContainsKey(target)) {
+        return 0;
+      }
+      List<IAreaJob> playerAreaJobs = allAreaJobs[target];
+      List<Vector3Int> AreaJobPositions = new List<Vector3Int>();
+
+      // go through the list and get amounts per type (just for log output)
+      Dictionary<string, int> jobTypes = new Dictionary<string, int>();
+      for (int i = playerAreaJobs.Count - 1; i >= 0; --i) {
+        string ident = playerAreaJobs[i].AreaType.ToString();
+        if (jobTypes.ContainsKey(ident)) {
+          jobTypes[ident]++;
+        } else {
+          jobTypes.Add(ident, 1);
+        }
+        AreaJobPositions.Add(playerAreaJobs[i].Minimum);
+        ++amount;
+      }
+      blockDeletor.Add(AreaJobPositions);
+
+      foreach (KeyValuePair<string, int> kvp in jobTypes) {
+        Log.Write($"Deleting {kvp.Value} jobs of type {kvp.Key} of player {target.Name}");
+      }
+
+      // this is the real delete
+      ThreadManager.InvokeOnMainThread(delegate() {
+        blockDeletor.DeleteBlocks();
+      }, WAIT_DELAY + 0.100);
+
+      return amount;
+    }
+
+    // Delete Block Jobs of a player
+    public static int DeleteBlockJobs(Players.Player causedBy, Players.Player target)
+    {
+      int amount = 0;
+      DelegatedBlockDelete blockDeletor = new DelegatedBlockDelete(causedBy, EDeleteType.BlockJobs);
+
+      List<IBlockJobManager> allBlockJobs = typeof(BlockJobManagerTracker).GetField("InstanceList",
+        BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) as List<IBlockJobManager>;
+
+      foreach (IBlockJobManager mgr in allBlockJobs) {
+        object tracker = mgr.GetType().GetField("tracker", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(mgr);
+        MethodInfo methodGetList = tracker.GetType().GetMethod("GetList", new Type[] { typeof(Players.Player) } );
+        object jobList = methodGetList.Invoke(tracker, new object[] { target } );
+
+        // happens if no jobs of this type exist
+        if (jobList == null) {
+          continue;
+        }
+
+        Type jobType = jobList.GetType().GetGenericArguments()[1];
+        MethodInfo methodKeys = jobList.GetType().GetMethod("get_Keys");
+        int count = blockDeletor.Add(methodKeys.Invoke(jobList, null) as ICollection<Vector3Int>);
+        amount += count;
+
+        if (count > 0) {
+          Log.Write(string.Format("Deleting {0} jobs {1} of {2}", count, jobType, target.Name));
+        }
+      }
+      ThreadManager.InvokeOnMainThread(delegate() {
+        blockDeletor.DeleteBlocks();
+      }, WAIT_DELAY + 0.200);
+
+      return amount;
+    }
+
+    // Delete Beds of a player
+    public static int DeleteBeds(Players.Player causedBy, Players.Player target)
+    {
+      DelegatedBlockDelete blockDeletor = new DelegatedBlockDelete(causedBy, EDeleteType.Beds);
+
+      BlockTracker<BedBlock> tracker = typeof(BedBlockTracker).GetField("tracker", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) as BlockTracker<BedBlock>;
+      Pipliz.Collections.SortedList<Vector3Int, BedBlock> bedCollection = tracker.GetList(target);
+
+      int amount = bedCollection.Count;
+      
+      blockDeletor.Add(bedCollection.Keys);
+      ThreadManager.InvokeOnMainThread(delegate() {
+        blockDeletor.DeleteBlocks();
+      }, WAIT_DELAY + 0.300);
+
+      Log.Write($"Deleting {amount} Beds of {target.Name}");
+
+      return amount;
+    }
+
+    private enum EDeleteType: byte
+    {
+      AreaJobs,
+      BlockJobs,
+      Beds
+    }
+
+    // Class for the actual delete
+    private class DelegatedBlockDelete
+    {
+      List<Vector3Int> blockList;
+      Players.Player causedBy;
+      EDeleteType Type;
+
+      public DelegatedBlockDelete(Players.Player causedBy, EDeleteType type)
+      {
+        this.blockList = new List<Vector3Int>();
+        this.causedBy = causedBy;
+        this.Type = type;
+      }
+
+      public int Add(ICollection<Vector3Int> blocks)
+      {
+        int count = 0;
+        foreach (Vector3Int pos in blocks) {
+          this.blockList.Add(pos);
+          ++count;
+        }
+        return count;
+      }
+
+      public void DeleteBlocks()
+      {
+        if (this.blockList.Count == 0) {
+          return;
+        }
+
+        Vector3Int oneBlock = this.blockList[blockList.Count - 1];
+
+        // make sure the chunk is loaded
+        Vector3Int chunkPos = oneBlock.ToChunk();
+        Chunk chunk = World.GetChunk(chunkPos);
+        if (chunk == null || chunk.DataState != Chunk.ChunkDataState.DataFull) {
+          Chat.Send(causedBy, $"Chunk got unloaded. Stopped deleting {this.Type}");
+          return;
+        }
+
+        if (this.Type == EDeleteType.AreaJobs) {
+          AreaJobTracker.RemoveJobAt(oneBlock);
+        } else {
+          // EDeleteType.BlockJobs + Beds
+          ServerManager.TryChangeBlock(oneBlock, BlockTypes.Builtin.BuiltinBlocks.Air, null);
+        }
+        this.blockList.Remove(oneBlock);
+
+        if (this.blockList.Count > 0) {
+          ThreadManager.InvokeOnMainThread(delegate() {
+            this.DeleteBlocks();
+          }, DeleteJobsManager.WAIT_DELAY);
+        } else {
+          if (this.causedBy.IsConnected) {
+            Chat.Send(causedBy, $"Finished deleting {this.Type}");
+          }
+        }
+
+        return;
+      }
+    }
+
+  }
+
+}
+

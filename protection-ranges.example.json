@@ -8,5 +8,6 @@
   "BannerProtectionRangeZ" : 50,
   "NpcKillsKickThreshold" : 10,
   "NpcKillsBanThreshold" : 50,
-  "UnscoredPlayers" : [ ]
+  "UnscoredPlayers" : [ ],
+  "DeleteJobSpeed" : 4
 }

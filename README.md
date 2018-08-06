@@ -177,13 +177,16 @@ To allow players killing their own colonists permission <b>mods.scarabol.command
 <dd>Checks if the player is inside a custom protection area and will print its coordinates. If not inside an area it will print the closest area nearby instead</dd>
 <dt>/deletejobs [playername]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.deletejobs</b><br>
-Deletes all jobs for the given player. Blocks will not be refunded. All jobs will be deleted in the background, for large numbers of jobs the command will take a while.<br>
+Deletes all jobs for the given player. Blocks will not be refunded. All jobs will be deleted in the background, for large numbers of jobs the command will take a while. If the Banner is already removed the player needs to stay in the area, otherwise the chunks will get unloaded and jobs can no longer be deleted. The command will send an error message if that happens and can be started again.<br>
 To allow players deleting their own jobs the permission <b>mods.scarabol.commands.deletejobs.self</b> can be given.</dd>
+<dt>/deletejobspeed [blocks]</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.deletespeedjobs</b><br>
+Per default /deletejobs will delete up to 4 blocks per second. With this command the deletion speed can be adjusted. 8 or maybe even 16 blocks per second can work, depending on server hardware. Larger values will most likely not increase the effective speed anymore.</dd>
 </dl>
 
 ## Installation
 
-**This mod must be installed on server!**
+**This mod must be installed on the server!**
 
 * download a (compatible) [release](https://github.com/adrenalynn/ColonyCommandsMod/releases) or build from source code (see below)
 * place the unzipped *Scarabol* folder inside your *ColonySurvival/gamedata/mods/* directory, like *ColonySurvival/gamedata/mods/Scarabol/*
