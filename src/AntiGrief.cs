@@ -96,6 +96,7 @@ namespace ColonyCommands {
       CommandManager.RegisterCommand(new HelpCommand());
       CommandManager.RegisterCommand(new DeleteJobsCommand());
       CommandManager.RegisterCommand(new DeleteJobSpeedCommand());
+      CommandManager.RegisterCommand(new ProductionCommand());
       return;
     }
 
@@ -179,6 +180,7 @@ namespace ColonyCommands {
     {
       Load ();
       JailManager.Load();
+	  StatisticManager.TrackItems();
     }
 
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerConnectedLate, NAMESPACE + ".OnPlayerConnected")]
