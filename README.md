@@ -115,6 +115,14 @@ A lot of the commands require the name of a player as target. Names of players c
 The /top command provides player scores (number of items, colonists, score, etc). For some servers it might be useful to hide staff from the scores. This can be done by adding the player names to the protection-ranges.json file (per world):
 <code>"UnscoredPlayers" : [ "player1", "player2", "player3" ]</code>
 
+## Production tracking
+
+Production tracking allows to track the production of items per day or multiple days. Every day in the morning the player will receive a status messages showing the total amounts.
+
+**/production add|list|remove {item} [interval]**
+Use **add** to track production for a item, the interval defaults to 1 day but you can also request a multiple day interval
+Use **list** to show all tracked items and **remove** to stop tracking for an item.
+
 ## Further Commands
 
 <dl>
