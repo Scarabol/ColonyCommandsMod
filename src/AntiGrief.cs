@@ -180,6 +180,7 @@ namespace ColonyCommands {
     {
       Load ();
       JailManager.Load();
+	  StatisticManager.Load();
 	  StatisticManager.TrackItems();
     }
 
@@ -372,6 +373,13 @@ namespace ColonyCommands {
     public static void OnAutoSaveWorld()
     {
       Save();
+	  StatisticManager.Save();
+    }
+
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnQuit, NAMESPACE + ".OnQuit")]
+	public static void OnQuit()
+	{
+	  StatisticManager.Save();
     }
 
   }

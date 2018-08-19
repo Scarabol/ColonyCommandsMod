@@ -61,7 +61,12 @@ namespace ColonyCommands
 				Chat.Send(causedBy, $"Removed {itemName} from tracking");
 
 			} else if (action.Equals("list")) {
-				Chat.Send(causedBy, "Not yet implemented");
+				string itemList;
+				if (StatisticManager.GetItemNameList(causedBy, out itemList)) {
+					Chat.Send(causedBy, $"<color=yellow>Tracked Items: {itemList}</color>");
+				} else {
+					Chat.Send(causedBy, "<color=yellow>No production is tracked</color>");
+				}
 			}
 
 			return true;
