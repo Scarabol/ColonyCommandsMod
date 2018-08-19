@@ -97,6 +97,7 @@ namespace ColonyCommands {
       CommandManager.RegisterCommand(new DeleteJobsCommand());
       CommandManager.RegisterCommand(new DeleteJobSpeedCommand());
       CommandManager.RegisterCommand(new ProductionCommand());
+      CommandManager.RegisterCommand(new ColorTestCommand());
       return;
     }
 
