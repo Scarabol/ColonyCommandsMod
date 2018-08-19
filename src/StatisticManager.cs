@@ -120,7 +120,7 @@ namespace ColonyCommands {
 						string name = char.ToUpper(item.Name[0]) + item.Name.Substring(1);
 						if (owner.IsConnected) {
 							if (item.DidIncrease) {
-								Chat.Send(owner, $"<color=#15cf64>{name} per {item.interval}/day: {delta}</color>");
+								Chat.Send(owner, $"<color=#15cf64>{name} per {item.interval}/day: +{delta}</color>");
 							}
 							if (item.DidDecrease) {
 								Chat.Send(owner, $"<color=red>{name} per {item.interval}/day: {delta}</color>");

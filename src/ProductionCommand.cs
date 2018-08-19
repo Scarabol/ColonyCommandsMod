@@ -22,13 +22,23 @@ namespace ColonyCommands
 		public bool TryDoCommand(Players.Player causedBy, string chattext)
 		{
 
-			var m = Regex.Match(chattext, @"/production (?<action>[^ ]+) (?<item>[^ ]+) ?(?<interval>[0-9]+)?$");
+			var m = Regex.Match(chattext, @"/production (?<action>[^ ]+) ?(?<item>[^ ]+)? ?(?<interval>[0-9]+)?$");
 			if (!m.Success) {
 				return SyntaxError(causedBy);
 			}
 			string action = m.Groups["action"].Value;
 			if ( !(action.Equals("add") || action.Equals("list") || action.Equals("remove")) ) {
 				return SyntaxError(causedBy);
+			}
+
+			if (action.Equals("list")) {
+				string itemList;
+				if (StatisticManager.GetItemNameList(causedBy, out itemList)) {
+					Chat.Send(causedBy, $"Tracked Production: {itemList}");
+				} else {
+					Chat.Send(causedBy, "No production is tracked");
+				}
+				return true;
 			}
 
 			string itemName = m.Groups["item"].Value;
@@ -51,21 +61,15 @@ namespace ColonyCommands
 				if (!StatisticManager.AddTrackingItem(causedBy, itemType, interval)) {
 					Chat.Send(causedBy, $"Item {itemName} already tracked");
 					return true;
+				} else {
+					Chat.Send(causedBy, $"Added production tracking for {itemName}");
 				}
-				Chat.Send(causedBy, $"Added production tracking for {itemName}");
 
 			} else if (action.Equals("remove")) {
 				if (!StatisticManager.RemoveTrackingItem(causedBy, itemType)) {
 					Chat.Send(causedBy, $"Item {itemName} was not tracked");
-				}
-				Chat.Send(causedBy, $"Removed {itemName} from tracking");
-
-			} else if (action.Equals("list")) {
-				string itemList;
-				if (StatisticManager.GetItemNameList(causedBy, out itemList)) {
-					Chat.Send(causedBy, $"<color=yellow>Tracked Items: {itemList}</color>");
 				} else {
-					Chat.Send(causedBy, "<color=yellow>No production is tracked</color>");
+					Chat.Send(causedBy, $"Removed {itemName} from tracking");
 				}
 			}
 
