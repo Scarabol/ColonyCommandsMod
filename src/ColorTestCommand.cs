@@ -16,7 +16,7 @@ namespace ColonyCommands
 		public bool TryDoCommand(Players.Player causedBy, string chattext)
 		{
 
-			var m = Regex.Match(chattext, @"/production (?<color>[^ ]+)");
+			var m = Regex.Match(chattext, @"/colortest (?<color>[^ ]+)");
 			if (!m.Success) {
 				Chat.Send(causedBy, "Syntax: /colortest {colorvalue}");
 				return true;
