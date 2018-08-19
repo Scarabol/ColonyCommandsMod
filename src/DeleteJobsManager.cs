@@ -152,7 +152,7 @@ namespace ColonyCommands
         return count;
       }
 
-      public void DeleteBlocks()
+      public void DeleteBlocks(bool DidTryChunkLoading = false)
       {
         if (this.blockList.Count == 0) {
           return;
@@ -164,6 +164,16 @@ namespace ColonyCommands
         Vector3Int chunkPos = oneBlock.ToChunk();
         Chunk chunk = World.GetChunk(chunkPos);
         if (chunk == null || chunk.DataState != Chunk.ChunkDataState.DataFull) {
+
+		  // try to load the chunk - but only once
+		  if (!DidTryChunkLoading) {
+			  ChunkQueue.QueueLoadBanner(chunkPos);
+			  ThreadManager.InvokeOnMainThread(delegate() {
+				this.DeleteBlocks(true);
+			  }, DeleteJobsManager.WAIT_DELAY + 1.2);
+			  return;
+		  }
+
           Chat.Send(causedBy, $"Chunk got unloaded. Stopped deleting {this.Type}");
           return;
         }

@@ -2,13 +2,19 @@
 {
 	"name" : "scarabol.commands",
 		"namepretty" : "Scarabol Commands",
-		"version" : "6.3.20",
+		"version" : "6.3.21",
 		"dllpath" : "Commands.dll",
 		"enabled" : true,
 		"compatibleversions" : [
 			"0.6.2", "0.6.3"
 		],
 		"patchnotes": [
+		{ "version": "6.3.21",
+			"notes": [
+				"/deletejobs now loads chunks as needed, might introduce lag",
+				"synchronized mod version with git release tags to allow ModManager to recognize the newest one"
+			]
+		},
 		{ "version": "0.6.3.20",
 			"notes": [
 				"/production command to track daily production of items"
