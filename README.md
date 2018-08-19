@@ -119,8 +119,8 @@ The /top command provides player scores (number of items, colonists, score, etc)
 
 Production tracking allows to track the production of items per day or multiple days. Every day in the morning the player will receive a status messages showing the total amounts.
 
-**/production add|list|remove {item} [interval]**
-Use **add** to track production for a item, the interval defaults to 1 day but you can also request a multiple day interval
+**/production add|list|remove {item} [interval]**<br>
+Use **add** to track production for a item, the interval defaults to 1 day but you can also request a multiple day interval<br>
 Use **list** to show all tracked items and **remove** to stop tracking for an item.
 
 ## Further Commands
