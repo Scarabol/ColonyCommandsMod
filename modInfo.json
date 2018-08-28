@@ -1,6 +1,6 @@
 [
 {
-	"name" : "scarabol.commands",
+	"name" : "colony.commands",
 	"namepretty" : "Colony Commands",
 	"version" : "6.3.22",
 	"dllpath" : "Commands.dll",
