@@ -5,6 +5,7 @@ zip_files_extra = "announcements.example.json" "protection-ranges.example.json" 
 build_dir = "adrenalynn/$(moddir)"
 fullname = Colony$(modname)Mod
 moddir = $(fullname)
+basedir = "../../../.."
 zipname = $(fullname)-$(version).zip
 dllname = $(modname).dll
 
@@ -13,7 +14,7 @@ dllname = $(modname).dll
 #
 
 default:
-	mcs /target:library -r:../../../colonyserver_Data/Managed/Assembly-CSharp.dll,../Pipliz/APIProvider/APIProvider.dll,../../../colonyserver_Data/Managed/UnityEngine.dll -out:"$(dllname)" -sdk:2 src/*.cs
+	mcs /target:library -r:$(basedir)/colonyserver_Data/Managed/Assembly-CSharp.dll,$(basedir)/gamedata/mods/Pipliz/APIProvider/APIProvider.dll,$(basedir)/colonyserver_Data/Managed/UnityEngine.dll -out:"$(dllname)" -sdk:2 src/*.cs
 
 clean:
 	rm -f "$(dllname)"
@@ -24,6 +25,6 @@ all: clean default zip
 zip: default
 	rm -f "$(zipname)"
 	mkdir -p $(build_dir)
-	cp modInfo.json "$(dllname)" $(zip_files_extra) $(build_dir)/
+	cp modInfo.json LICENSE README.md "$(dllname)" $(zip_files_extra) $(build_dir)/
 	zip -r "$(zipname)" $(build_dir)
 	rm -r $(build_dir)
