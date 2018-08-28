@@ -118,14 +118,14 @@ namespace ColonyCommands
       return stats.lastSeen;
     }
 
-    public static Dictionary<Players.Player, long> GetInactivePlayers (int days)
+    public static Dictionary<Players.Player, int> GetInactivePlayers(int days, int max = 0)
     {
-      var result = new Dictionary<Players.Player, long> ();
+      var result = new Dictionary<Players.Player, int>();
       foreach (var player in Players.PlayerDatabase.ValuesAsList) {
-        StatsDataEntry stats = GetOrCreateStats (player.IDString);
-        double inactiveDays = DateTime.Now.Subtract (DateTime.Parse (stats.lastSeen)).TotalDays;
-        if (inactiveDays >= days) {
-          result.Add (player, (long)inactiveDays);
+        StatsDataEntry stats = GetOrCreateStats(player.IDString);
+        double inactiveDays = DateTime.Now.Subtract(DateTime.Parse(stats.lastSeen)).TotalDays;
+        if (inactiveDays >= days && (max == 0 || inactiveDays <= max)) {
+          result.Add(player, (int)inactiveDays);
         }
       }
       return result;
