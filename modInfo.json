@@ -11,7 +11,9 @@
 	"patchnotes": [
 		{ "version": "6.3.22", "notes": [
 				"/inactive and /purgeall now both have a max option (optinal) to limit the amount of output",
-				"/purgeall deletes areajobs of a player, too"
+				"/purgeall deletes areajobs of a player, too",
+				"/spawnnpc to spawn in colonists",
+				"/beds to spawn beds around the banner"
 			]
 		},
 		{ "version": "6.3.21", "notes": [

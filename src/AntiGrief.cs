@@ -99,6 +99,7 @@ namespace ColonyCommands {
       CommandManager.RegisterCommand(new ProductionCommand());
       CommandManager.RegisterCommand(new ColorTestCommand());
       CommandManager.RegisterCommand(new SpawnNpcCommand());
+      CommandManager.RegisterCommand(new BedsCommand());
       return;
     }
 

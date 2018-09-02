@@ -1,6 +1,7 @@
 ﻿using Pipliz;
 using Pipliz.Chatting;
 using ChatCommands;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Permissions;
@@ -10,8 +11,14 @@ namespace ColonyCommands
   public class HelpCommand : IChatCommand
   {
 
-    private static string[] basicList = {"/antigrief", "/bannername", "/eventjoin", "/eventleave", "/itemid", "/lastseen", "/online", "/serverpop", "/stuck", "/top", "/trade", "/travel", "/trash", "/jailvisit", "/jailleave", "/jailtime", "/whisper (/w)"};
-    private static string[] adminList = {"/announcements", "/ban", "/cleanbanners", "/colonycap", "/drain", "/giveall", "/inactive", "/kick", "/killnpc", "/killplayer", "/noflight", "/purgeall", "/trashplayer", "/travelhere", "/travelthere", "/travelremove", "/warpbanner", "/warp", "/warpplace", "/warpspawn", "/jail", "/jailrelease", "/jailrec", "/setjail", "/areashow", "/eventstart", "/eventend", "/mute", "/unmute", "/deletejobs" };
+    private static string[] basicList = {"/antigrief", "/bannername", "/eventjoin", "/eventleave", "/itemid", "/lastseen", "/online", "/serverpop", "/stuck", "/top", "/trade", "/travel", "/trash", "/jailvisit", "/jailleave", "/jailtime", "/whisper (/w)", "/production"};
+    private static string[] adminList = {"/announcements", "/ban", "/cleanbanners", "/colonycap", "/drain", "/giveall", "/inactive", "/kick", "/killnpc", "/killplayer", "/noflight", "/purgeall", "/trashplayer", "/travelhere", "/travelthere", "/travelremove", "/warpbanner", "/warp", "/warpplace", "/warpspawn", "/jail", "/jailrelease", "/jailrec", "/setjail", "/areashow", "/eventstart", "/eventend", "/mute", "/unmute", "/deletejobs", "/spawnnpc", "/beds" };
+
+	public HelpCommand() : base()
+	{
+		Array.Sort(HelpCommand.basicList, StringComparer.InvariantCulture);
+		Array.Sort(HelpCommand.adminList, StringComparer.InvariantCulture);
+	}
 
     public bool IsCommand (string chat)
     {
