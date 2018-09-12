@@ -190,27 +190,20 @@ To allow players deleting their own jobs the permission <b>mods.scarabol.command
 <dt>/deletejobspeed [blocks]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.deletespeedjobs</b><br>
 Per default /deletejobs will delete up to 4 blocks per second. With this command the deletion speed can be adjusted. 8 or maybe even 16 blocks per second can work, depending on server hardware. Larger values will most likely not increase the effective speed anymore.</dd>
+<dt>/spawnnpc {number}</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.npcandbeds</b><br>
+Spawn given number of colonists. Intended for admin/test use, spawning will not cost food and no beds required.</dd>
+<dt>/beds {number}</dt>
+<dd>Requires permission: <b>mods.scarabol.commands.npcandbeds</b><br>
+Create given number of beds around your banner. Intended for admin/test use, beds will be placed in a rectangular spiral form around your banner</dd>
 </dl>
 
 ## Installation
 
 **This mod must be installed on the server!**
 
-* download a (compatible) [release](https://github.com/adrenalynn/ColonyCommandsMod/releases) or build from source code (see below)
-* place the unzipped *Scarabol* folder inside your *ColonySurvival/gamedata/mods/* directory, like *ColonySurvival/gamedata/mods/Scarabol/*
-
-## Build
-
-* install Linux
-* download source code
-```Shell
-git clone https://github.com/Scarabol/ColonyCommandsMod
-```
-* use make
-```Shell
-cd ColonyCommandsMod
-make
-```
+* download a (compatible) [release](https://github.com/adrenalynn/ColonyCommandsMod/releases) or build from source code
+* place the unzipped folder inside your *ColonySurvival/gamedata/mods/* directory, like *ColonySurvival/gamedata/mods/adrenalynn/ColonyCommandsMod*
 
 **Pull requests welcome!**
 
