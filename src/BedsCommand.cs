@@ -1,6 +1,7 @@
 ﻿using Pipliz.Chatting;
 using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using Permissions;
 using Pipliz;
 using ChatCommands;
@@ -11,6 +12,13 @@ namespace ColonyCommands
 
 	public class BedsCommand : IChatCommand
 	{
+
+		public static List<ushort> bedBlocks = new List<ushort>{
+			BuiltinBlocks.BedZN, BuiltinBlocks.BedXP,
+			BuiltinBlocks.BedZP, BuiltinBlocks.BedXN,
+			BuiltinBlocks.BedEndZN, BuiltinBlocks.BedEndXP,
+			BuiltinBlocks.BedEndZP, BuiltinBlocks.BedEndXN
+		};
 
 		public bool IsCommand(string chat)
 		{
@@ -44,11 +52,12 @@ namespace ColonyCommands
 			int radius = 3;
 			Vector3Int pos = banner.KeyLocation.Add(-radius + 1, 0, -radius);
 			int counterX = -radius + 1, counterZ = -radius;
-			ushort[] BedTypes = new ushort[] {BuiltinBlocks.BedZN, BuiltinBlocks.BedXP, BuiltinBlocks.BedZP, BuiltinBlocks.BedXN};
 			int bedUsed = 0;
 			int stepX = 1, stepZ = 0;
 			while (amount > 0) {
-				if (ServerManager.TryChangeBlock(pos, BedTypes[bedUsed], causedBy)) {
+				ushort blockType;
+				if (World.TryGetTypeAt(pos, out blockType) && blockType == BuiltinBlocks.Air
+					&& ServerManager.TryChangeBlock(pos, bedBlocks[bedUsed], causedBy)) {
 					--amount;
 				}
 				if (counterX == -radius && counterZ == -radius) {
