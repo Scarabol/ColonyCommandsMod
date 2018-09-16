@@ -1,6 +1,5 @@
-﻿using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+﻿using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -20,10 +19,10 @@ namespace ColonyCommands
       }
       if (PermissionsManager.HasPermission (causedBy, "")) {
         PermissionsManager.RemovePermissionOfUser (causedBy, causedBy, "");
-        Chat.SendToAll ($"{causedBy.Name} is a cockroach now!");
+        Chat.SendToConnected ($"{causedBy.Name} is a cockroach now!");
       } else {
         PermissionsManager.AddPermissionToUser (causedBy, causedBy, "");
-        Chat.SendToAll ($"{causedBy.Name} is now godlike!");
+        Chat.SendToConnected ($"{causedBy.Name} is now godlike!");
       }
       return true;
     }

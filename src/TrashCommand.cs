@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -36,6 +35,12 @@ namespace ColonyCommands
         return true;
       }
 
+      Colony colony = causedBy.ActiveColony;
+	  if (colony == null) {
+		Chat.Send(causedBy, "You have to be near an active colony to use this command");
+		return true;
+	  }
+
       // delete from the player's inventory first
       int totalRemoved = 0;
       Inventory playerInventory;
@@ -52,7 +57,7 @@ namespace ColonyCommands
       }
 
       // then delete from the stockpile
-      Stockpile playerStockpile = Stockpile.GetStockPile(causedBy);
+      Stockpile playerStockpile = colony.Stockpile;
       if (playerStockpile == null) {
         Chat.Send(causedBy, "Could not get stockpile");
       } else {

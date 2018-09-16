@@ -1,8 +1,6 @@
 ﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
-using ChatCommands.Implementations;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {

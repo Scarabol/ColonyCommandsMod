@@ -1,9 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
-using Server.TerrainGeneration;
-using ChatCommands.Implementations;
+using Chatting;
+using Chatting.Commands;
+using TerrainGeneration;
 
 namespace ColonyCommands
 {

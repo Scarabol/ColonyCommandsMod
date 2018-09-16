@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
+using Chatting;
+using Chatting.Commands;
 
 /*
  * Copy of Crone's top command
@@ -95,8 +95,8 @@ namespace ColonyCommands
         }
       } else if (typename.Equals ("time")) {
         players.Sort (delegate (Players.Player c1, Players.Player c2) {
-          long c1Time = ActivityTracker.GetOrCreateStats (c1.IDString).secondsPlayed;
-          long c2Time = ActivityTracker.GetOrCreateStats (c2.IDString).secondsPlayed;
+          long c1Time = ActivityTracker.GetOrCreateStats (c1.ID.ToStringReadable()).secondsPlayed;
+          long c2Time = ActivityTracker.GetOrCreateStats (c2.ID.ToStringReadable()).secondsPlayed;
           return c2Time.CompareTo (c1Time);
         });
         Chat.Send (causedBy, "##### Top Time Played #####");
@@ -104,13 +104,13 @@ namespace ColonyCommands
         if (players.Count > 10) {
           for (var i = 0; i < 10; i++) {
             Players.Player currentPlayer = players [i];
-            var seconds = ActivityTracker.GetOrCreateStats (currentPlayer.IDString).secondsPlayed;
+            var seconds = ActivityTracker.GetOrCreateStats (currentPlayer.ID.ToStringReadable()).secondsPlayed;
             var time = $"{seconds / 3600f:00}:{System.Math.Truncate ((seconds / 60f)) % 60f:00}:{seconds % 60f:00}";
             Chat.Send (causedBy, $"{i + 1}: {currentPlayer.Name} Time: {time}");
           }
         } else {
           foreach (var currentPlayer in players) {
-            var seconds = ActivityTracker.GetOrCreateStats (currentPlayer.IDString).secondsPlayed;
+            var seconds = ActivityTracker.GetOrCreateStats (currentPlayer.ID.ToStringReadable()).secondsPlayed;
             var time = $"{seconds / 3600f:00}:{System.Math.Truncate ((seconds / 60f)) % 60f:00}:{seconds % 60f:00}";
             Chat.Send (causedBy, $"{count++}: {currentPlayer.Name} Time: {time}");
           }

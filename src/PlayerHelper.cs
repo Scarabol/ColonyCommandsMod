@@ -44,7 +44,7 @@ namespace ColonyCommands
       var m = Regex.Match(identifier, @"#(?<hash>\d{8})");
       int givenHash;
       if (m.Success && int.TryParse(m.Groups["hash"].Value, out givenHash)) {
-        foreach (Players.Player player in Players.PlayerDatabase.ValuesAsList) {
+        foreach (Players.Player player in Players.PlayerDatabase.Values) {
           if (!player.IsConnected && !includeOffline) {
             continue;
           }
@@ -68,7 +68,7 @@ namespace ColonyCommands
       // try to find by string closest match
       Players.Player closestMatch = null;
       int closestDist = int.MaxValue;
-      foreach (var player in Players.PlayerDatabase.ValuesAsList) {
+      foreach (var player in Players.PlayerDatabase.Values) {
         if (!player.IsConnected && !includeOffline) {
           continue;
         }

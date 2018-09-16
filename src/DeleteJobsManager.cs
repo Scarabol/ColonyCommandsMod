@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Pipliz;
-using Pipliz.Mods.APIProvider.Jobs;
+using Pipliz.APIProvider.Jobs;
 using Pipliz.Threading;
-using Pipliz.Chatting;
+using Chatting;
 
 namespace ColonyCommands
 {
@@ -182,7 +182,7 @@ namespace ColonyCommands
           AreaJobTracker.RemoveJobAt(oneBlock);
         } else {
           // EDeleteType.BlockJobs + Beds
-          ServerManager.TryChangeBlock(oneBlock, BlockTypes.Builtin.BuiltinBlocks.Air, null);
+          ServerManager.TryChangeBlock(oneBlock, BlockTypes.BuiltinBlocks.Air, null);
         }
         this.blockList.Remove(oneBlock);
 

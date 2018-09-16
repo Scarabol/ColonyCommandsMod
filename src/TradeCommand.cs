@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using Pipliz.Chatting;
 using Pipliz;
-using ChatCommands;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -52,15 +52,15 @@ namespace ColonyCommands
         Chat.Send (causedBy, $"Could not find target player '{targetPlayerName}'; {error}");
         return true;
       }
-      Stockpile sourceStockpile = Stockpile.GetStockPile(causedBy);
-      Stockpile targetStockpile = Stockpile.GetStockPile(targetPlayer);
-      if (sourceStockpile == null || targetStockpile == null) {
-        Chat.Send (causedBy, "Could not get stockpile for both players");
+	  Colony sourceColony = causedBy.ActiveColony;
+	  Colony targetColony = targetPlayer.ActiveColony;
+      if (sourceColony == null || targetColony == null) {
+        Chat.Send (causedBy, "Coud not get active colony for both players");
         return false;
       }
       InventoryItem tradeItem = new InventoryItem (itemType, amount);
-      if (sourceStockpile.TryRemove (tradeItem)) {
-        targetStockpile.Add (tradeItem);
+      if (sourceColony.Stockpile.TryRemove (tradeItem)) {
+        targetColony.Stockpile.Add (tradeItem);
         Chat.Send (causedBy, $"Send {amount} x {itemTypeName} to '{targetPlayer.Name}'");
         Chat.Send (targetPlayer, $"Received {amount} x {itemTypeName} from '{causedBy.Name}'");
       } else {

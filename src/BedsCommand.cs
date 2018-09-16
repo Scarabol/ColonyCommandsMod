@@ -1,11 +1,11 @@
-﻿using Pipliz.Chatting;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using Permissions;
 using Pipliz;
-using ChatCommands;
-using BlockTypes.Builtin;
+using Chatting;
+using Chatting.Commands;
+using BlockTypes;
+using BlockEntities.Implementations;
 
 namespace ColonyCommands
 {
@@ -42,15 +42,20 @@ namespace ColonyCommands
 				return true;
 			}
 
-			Banner banner = BannerTracker.Get(causedBy);
+			Colony colony = causedBy.ActiveColony;
+			if (colony == null) {
+				Chat.Send(causedBy, "You need to be at an active colony to spawn beds");
+				return true;
+			}
+			BannerTracker.Banner banner = colony.GetClosestBanner(causedBy.VoxelPosition);
 			if (banner == null) {
-				Chat.Send(causedBy, "You need to place a banner to spawn beds");
+				Chat.Send(causedBy, "No banners found for the active colony");
 				return true;
 			}
 
 			Chat.Send(causedBy, $"Placing {amount} beds around you");
 			int radius = 3;
-			Vector3Int pos = banner.KeyLocation.Add(-radius + 1, 0, -radius);
+			Vector3Int pos = banner.Position.Add(-radius + 1, 0, -radius);
 			int counterX = -radius + 1, counterZ = -radius;
 			int bedUsed = 0;
 			int stepX = 1, stepZ = 0;

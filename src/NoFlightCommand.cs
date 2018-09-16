@@ -1,7 +1,6 @@
 ﻿using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -28,7 +27,7 @@ namespace ColonyCommands
             Chat.Send (player, "Please don't fly");
             Players.Disconnect (player);
           } else {
-            Log.Write ($"Removed flight state from offline player {player.IDString}");
+            Log.Write ($"Removed flight state from offline player {player.ID.ToStringReadable()}");
           }
         }
       }

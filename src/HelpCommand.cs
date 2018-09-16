@@ -1,10 +1,9 @@
 ﻿using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
+using Chatting;
+using Chatting.Commands;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Permissions;
 
 namespace ColonyCommands
 {

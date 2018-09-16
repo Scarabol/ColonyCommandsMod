@@ -3,11 +3,10 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
 using Pipliz.JSON;
-using ChatCommands;
-using Permissions;
-using Server.TerrainGeneration;
+using Chatting;
+using Chatting.Commands;
+using TerrainGeneration;
 
 namespace ColonyCommands
 {

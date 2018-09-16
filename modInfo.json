@@ -2,13 +2,17 @@
 {
 	"name" : "colony.commands",
 	"namepretty" : "Colony Commands",
-	"version" : "6.3.22",
+	"version" : "0.7.1",
 	"dllpath" : "Commands.dll",
 	"enabled" : true,
 	"compatibleversions" : [
-		"0.6.2", "0.6.3"
+		"0.7"
 	],
 	"patchnotes": [
+		{ "version": "0.7.1", "notes": [
+				"updated to game version 0.7"
+			]
+		},
 		{ "version": "6.3.22", "notes": [
 				"/inactive and /purgeall now both have a max option (optinal) to limit the amount of output",
 				"/purgeall deletes areajobs of a player, too",

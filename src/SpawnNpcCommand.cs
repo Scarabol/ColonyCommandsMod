@@ -1,10 +1,9 @@
-﻿using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+﻿using Chatting;
+using Chatting.Commands;
 using System;
 using System.Text.RegularExpressions;
 using NPC;
-using Server.NPCs;
+using BlockEntities.Implementation;
 
 namespace ColonyCommands
 {
@@ -34,16 +33,20 @@ namespace ColonyCommands
 				return true;
 			}
 
-			Colony colony = Colony.Get(causedBy);
-			Banner banner = BannerTracker.Get(causedBy);
-			NPCType laborer = NPCType.GetByKeyNameOrDefault("pipliz.laborer");
-			if (banner == null || colony == null) {
-				Chat.Send(causedBy, "You need to place a banner to spawn in colonists");
+			Colony colony = causedBy.ActiveColony;
+			if (colony == null) {
+				Chat.Send(causedBy, "You need to be at an active colony to spawn beds");
+				return true;
+			}
+			BannerTracker.Banner banner = colony.GetClosestBanner(causedBy.VoxelPosition);
+			if (banner == null) {
+				Chat.Send(causedBy, "No banners found for the active colony");
 				return true;
 			}
 
+			NPCType laborer = NPCType.GetByKeyNameOrDefault("pipliz.laborer");
 			for (int i = 0; i < amount; i++) {
-				NPCBase npc = new NPCBase(laborer, banner.KeyLocation.Vector, colony);
+				NPCBase npc = new NPCBase(laborer, banner.Position.Vector, colony);
 				ModLoader.TriggerCallbacks(ModLoader.EModCallbackType.OnNPCRecruited, npc);
 			}
 			colony.SendUpdate();

@@ -1,5 +1,5 @@
-﻿using Pipliz.Chatting;
-using ChatCommands;
+﻿using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {

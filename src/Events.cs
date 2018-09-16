@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using Pipliz;
-using Pipliz.Chatting;
 using Pipliz.JSON;
-using ChatCommands;
-using Permissions;
-using ChatCommands.Implementations;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -89,7 +87,7 @@ namespace ColonyCommands
       Events.currentLocation = causedBy.VoxelPosition;
       Events.originPositions.Clear ();
       if (Events.msgAllStarted.Length > 0) {
-        Chat.SendToAll (Events.msgAllStarted.Replace ("{startername}", causedBy.Name));
+        Chat.SendToConnected (Events.msgAllStarted.Replace ("{startername}", causedBy.Name));
       }
       return true;
     }
@@ -120,10 +118,10 @@ namespace ColonyCommands
       if (!string.IsNullOrEmpty (Events.msgPrivJoined)) {
         Chat.Send (causedBy, Events.msgPrivJoined);
         if (!string.IsNullOrEmpty (Events.msgAllJoined)) {
-          Chat.SendToAllBut (causedBy, Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
+          Chat.SendToConnectedBut (causedBy, Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
         }
       } else if (!string.IsNullOrEmpty (Events.msgAllJoined)) {
-        Chat.SendToAll (Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
+        Chat.SendToConnected (Events.msgAllJoined.Replace ("{playername}", causedBy.Name));
       }
       return true;
     }
@@ -151,10 +149,10 @@ namespace ColonyCommands
         if (!string.IsNullOrEmpty (Events.msgPrivLeft)) {
           Chat.Send (causedBy, Events.msgPrivLeft);
           if (!string.IsNullOrEmpty (Events.msgAllLeft)) {
-            Chat.SendToAllBut (causedBy, Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
+            Chat.SendToConnectedBut (causedBy, Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
           }
         } else if (!string.IsNullOrEmpty (Events.msgAllLeft)) {
-          Chat.SendToAll (Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
+          Chat.SendToConnected (Events.msgAllLeft.Replace ("{playername}", causedBy.Name));
         }
       } else {
         Chat.Send (causedBy, "You're not participating in an event");
@@ -195,7 +193,7 @@ namespace ColonyCommands
       }
       Events.originPositions.Clear ();
       if (!string.IsNullOrEmpty (Events.msgAllStopped)) {
-        Chat.SendToAll (Events.msgAllStopped.Replace ("{stoppername}", causedBy.Name));
+        Chat.SendToConnected (Events.msgAllStopped.Replace ("{stoppername}", causedBy.Name));
       }
       return true;
     }

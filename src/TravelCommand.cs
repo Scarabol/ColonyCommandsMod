@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using Pipliz;
-using Pipliz.Chatting;
 using Pipliz.JSON;
-using ChatCommands;
-using Permissions;
-using ChatCommands.Implementations;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {

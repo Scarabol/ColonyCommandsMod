@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -46,7 +45,7 @@ namespace ColonyCommands
 					if (resultMsg.Length > 0) {
 						resultMsg += ", ";
 					}
-					resultMsg += $"{player.IDString} ({inactiveDays})";
+					resultMsg += $"{player.ID.ToStringReadable()} ({inactiveDays})";
 				}
 			}
 			if (resultMsg.Length < 1) {

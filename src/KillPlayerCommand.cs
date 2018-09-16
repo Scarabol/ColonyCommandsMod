@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -40,9 +39,9 @@ namespace ColonyCommands
       Players.OnDeath (targetPlayer);
       targetPlayer.SendHealthPacket ();
       if (targetPlayer == causedBy) {
-        Chat.SendToAll ($"Player {causedBy.Name} committed suicide");
+        Chat.SendToConnected ($"Player {causedBy.Name} committed suicide");
       } else {
-        Chat.SendToAll ($"Player {targetPlayer.Name} was killed by {causedBy.Name}");
+        Chat.SendToConnected ($"Player {targetPlayer.Name} was killed by {causedBy.Name}");
       }
       return true;
     }

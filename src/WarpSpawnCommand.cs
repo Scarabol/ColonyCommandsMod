@@ -1,10 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
-using Server.TerrainGeneration;
-using ChatCommands.Implementations;
+using Chatting;
+using Chatting.Commands;
+using TerrainGeneration;
 
 namespace ColonyCommands
 {
@@ -40,7 +38,7 @@ namespace ColonyCommands
         }
       }
 
-      Teleport.TeleportTo (TeleportPlayer, TerrainGenerator.UsedGenerator.GetSpawnLocation (causedBy));
+      Teleport.TeleportTo (TeleportPlayer, ServerManager.TerrainGenerator.GetDefaultSpawnLocation().Vector);
       return true;
     }
   }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Pipliz.Chatting;
 using Pipliz.Collections.Threadsafe;
-using ChatCommands;
-using Permissions;
-using BlockTypes.Builtin;
+using Chatting;
+using Chatting.Commands;
+using BlockTypes;
 using NPC;
 
 namespace ColonyCommands
@@ -61,7 +60,7 @@ namespace ColonyCommands
 				if (resultMsg.Length > 0) {
 					resultMsg += ", ";
 				}
-				resultMsg += $"{player.IDString}({inactiveDays})";
+				resultMsg += $"{player.ID.ToStringReadable()}({inactiveDays})";
 			}
 			if (resultMsg.Length < 1) {
 				resultMsg = "No inactive players found";

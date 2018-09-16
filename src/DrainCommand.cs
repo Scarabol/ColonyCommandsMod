@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
-using BlockTypes.Builtin;
+using Chatting;
+using Chatting.Commands;
+using BlockTypes;
 
 namespace ColonyCommands
 {

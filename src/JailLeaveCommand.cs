@@ -1,9 +1,8 @@
-﻿using Pipliz.Chatting;
-using ChatCommands.Implementations;
-using ChatCommands;
-using Server.TerrainGeneration;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
+using Chatting;
+using Chatting.Commands;
+using TerrainGeneration;
 using UnityEngine;
 
 namespace ColonyCommands

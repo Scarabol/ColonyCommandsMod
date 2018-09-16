@@ -3,10 +3,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using Pipliz;
-using Pipliz.Chatting;
 using Pipliz.JSON;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 /*
  * Inspired by Crone's BetterChat
@@ -33,7 +32,7 @@ namespace ColonyCommands
     {
       if (PermissionsManager.HasPermission (causedBy, "")) {
         String name = causedBy != null ? causedBy.Name : "Server";
-        Chat.SendToAll ($"[<color=red>{name}</color>]: {chat}");
+        Chat.SendToConnected ($"[<color=red>{name}</color>]: {chat}");
       } else {
         string nameColor = (from s in Colors
                             where PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "betterchat.name." + s.Name)
@@ -41,7 +40,7 @@ namespace ColonyCommands
         string textColor = (from s in Colors
                             where PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "betterchat.text." + s.Name)
                             select s.Color).FirstOrDefault ();
-        Chat.SendToAll ($"[<color={nameColor}>{causedBy.Name}</color>]: <color={textColor}>{chat}</color>");
+        Chat.SendToConnected ($"[<color={nameColor}>{causedBy.Name}</color>]: <color={textColor}>{chat}</color>");
       }
       return true;
     }

@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -27,8 +27,8 @@ namespace ColonyCommands
         Chat.Send (causedBy, $"Could not find player '{targetPlayerName}'; {error}");
         return true;
       }
-      var lastSeen = ActivityTracker.GetLastSeen (targetPlayer.IDString);
-      Chat.Send (causedBy, $"Player {targetPlayer.IDString} last seen {lastSeen}");
+      var lastSeen = ActivityTracker.GetLastSeen (targetPlayer.ID.ToStringReadable());
+      Chat.Send (causedBy, $"Player {targetPlayer.ID.ToStringReadable()} last seen {lastSeen}");
       return true;
     }
   }
