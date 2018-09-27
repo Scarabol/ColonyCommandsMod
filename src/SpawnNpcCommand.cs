@@ -3,7 +3,7 @@ using Chatting.Commands;
 using System;
 using System.Text.RegularExpressions;
 using NPC;
-using BlockEntities.Implementation;
+using BlockEntities.Implementations;
 
 namespace ColonyCommands
 {

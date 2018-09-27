@@ -100,7 +100,7 @@ namespace ColonyCommands {
         return;
       }
 
-      Teleport.TeleportTo(target, jailPosition);
+	  target.Position = jailPosition;
 
       List<string> permissions = new List<string>();
       foreach (string permission in permissionList) {
@@ -146,7 +146,7 @@ namespace ColonyCommands {
     {
       if (validJail && validVisitorPos) {
         visitorPreviousPos[causedBy] = causedBy.Position;
-        Teleport.TeleportTo(causedBy, jailVisitorPosition);
+        causedBy.Position = jailVisitorPosition;
         Chat.Send(causedBy, "Welcome Visitor! You're free to leave anytime, /jailleave will bring you back to your previous location");
       }
       return;
@@ -157,7 +157,7 @@ namespace ColonyCommands {
     {
       // if an old jail position existed remove its protection area
       if (validJail) {
-        Vector3Int oldPos = new Vector3Int(jailPosition);
+        Pipliz.Vector3Int oldPos = new Pipliz.Vector3Int(jailPosition);
         CustomProtectionArea oldJail = null;
         foreach (CustomProtectionArea area in AntiGrief.CustomAreas) {
           if (area.Equals(oldPos, range)) {
@@ -177,7 +177,7 @@ namespace ColonyCommands {
       validJail = true;
       Save();
 
-      Vector3Int playerPos = new Vector3Int(causedBy.Position);
+      Pipliz.Vector3Int playerPos = new Pipliz.Vector3Int(causedBy.Position);
       AntiGrief.AddCustomArea(new CustomProtectionArea(playerPos, (int)range, (int)range));
       Chat.Send(causedBy, "Created new custom protection area");
 
@@ -350,7 +350,7 @@ namespace ColonyCommands {
       jailedPersons.Remove(target);
       Save();
 
-      Teleport.TeleportTo(target, TerrainGenerator.UsedGenerator.GetSpawnLocation(target));
+      target.Position = ServerManager.TerrainGenerator.GetDefaultSpawnLocation().Vector;
       Chat.Send(target, "<color=yellow>You did your time and are released from Jail</color>");
       if (causedBy != null) {
         Log.Write($"{causedBy.Name} released {target.Name} from jail");
@@ -380,7 +380,7 @@ namespace ColonyCommands {
       }
       uint distance = (uint) Vector3.Distance(causedBy.Position, jailPosition);
       if (distance > jailRange) {
-        Teleport.TeleportTo(causedBy, jailPosition);
+        causedBy.Position = jailPosition;
 
         ++record.escapeAttempts;
         if (GRACE_ESCAPE_ATTEMPTS == 0 || record.escapeAttempts < GRACE_ESCAPE_ATTEMPTS) {

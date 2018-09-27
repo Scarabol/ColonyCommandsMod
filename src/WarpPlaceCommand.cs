@@ -45,9 +45,10 @@ namespace ColonyCommands
         }
       } else {
         vz = vy;
-        vy = TerrainGenerator.UsedGenerator.GetHeight (vx, vz);
+        // TODO vy = TerrainGenerator.UsedGenerator.GetHeight (vx, vz);
+		vy = 65;
       }
-      Teleport.TeleportTo (causedBy, new UnityEngine.Vector3 (vx, vy, vz));
+      causedBy.Position = new UnityEngine.Vector3(vx, vy, vz);
       return true;
     }
   }

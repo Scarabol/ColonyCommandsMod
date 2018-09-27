@@ -18,7 +18,7 @@ namespace ColonyCommands
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "noflight")) {
         return true;
       }
-      foreach (var player in Players.PlayerDatabase.ValuesAsList) {
+      foreach (var player in Players.PlayerDatabase.Values) {
         var flightState = player.GetTempValues(false).GetOrDefault("pipliz.setflight", false);
         if (!PermissionsManager.HasPermission (player, "setflight") && flightState) {
           player.GetTempValues(true).Set("pipliz.setflight", false);

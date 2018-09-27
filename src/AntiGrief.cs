@@ -20,7 +20,7 @@ namespace ColonyCommands {
 		public const string PERMISSION_SUPER = "mods.scarabol.antigrief";
 		public const string PERMISSION_SPAWN_CHANGE = PERMISSION_SUPER + ".spawnchange";
 		public const string PERMISSION_BANNER_PREFIX = PERMISSION_SUPER + ".banner.";
-		private const string COLONY_ID_FORMAT = "{0:0000000000}";
+		private const string COLONY_ID_FORMAT = "colony.{0:0000000000}";
 		static int SpawnProtectionRangeXPos;
 		static int SpawnProtectionRangeXNeg;
 		static int SpawnProtectionRangeZPos;
@@ -62,7 +62,7 @@ namespace ColonyCommands {
 			// CommandManager.RegisterCommand(new CleanBannersChatCommand());
 			CommandManager.RegisterCommand(new ColonyCap());
 			CommandManager.RegisterCommand(new DrainChatCommand());
-			CommandManager.RegisterCommand(new GiveAllChatCommand());
+			// CommandManager.RegisterCommand(new GiveAllChatCommand());
 			CommandManager.RegisterCommand(new GodChatCommand());
 			CommandManager.RegisterCommand(new InactiveChatCommand());
 			CommandManager.RegisterCommand(new ItemIdChatCommand());
@@ -72,18 +72,18 @@ namespace ColonyCommands {
 			CommandManager.RegisterCommand(new LastSeenChatCommand());
 			CommandManager.RegisterCommand(new NoFlightChatCommand());
 			CommandManager.RegisterCommand(new OnlineChatCommand());
-			CommandManager.RegisterCommand(new PurgeAllChatCommand());
+			// CommandManager.RegisterCommand(new PurgeAllChatCommand());
 			CommandManager.RegisterCommand(new ServerPopCommand());
 			CommandManager.RegisterCommand(new StuckChatCommand());
-			CommandManager.RegisterCommand(new TopChatCommand());
+			// CommandManager.RegisterCommand(new TopChatCommand());
 			CommandManager.RegisterCommand(new TradeChatCommand());
 			CommandManager.RegisterCommand(new TrashChatCommand());
-			CommandManager.RegisterCommand(new TrashPlayerChatCommand());
+			// CommandManager.RegisterCommand(new TrashPlayerChatCommand());
 			CommandManager.RegisterCommand(new TravelChatCommand());
 			CommandManager.RegisterCommand(new TravelHereChatCommand());
 			CommandManager.RegisterCommand(new TravelThereChatCommand());
 			CommandManager.RegisterCommand(new TravelRemoveChatCommand());
-			//CommandManager.RegisterCommand(new WarpBannerChatCommand());
+			// CommandManager.RegisterCommand(new WarpBannerChatCommand());
 			CommandManager.RegisterCommand(new WarpChatCommand());
 			CommandManager.RegisterCommand(new WarpPlaceChatCommand());
 			CommandManager.RegisterCommand(new WarpSpawnChatCommand());
@@ -99,7 +99,7 @@ namespace ColonyCommands {
 			CommandManager.RegisterCommand(new HelpCommand());
 			CommandManager.RegisterCommand(new DeleteJobsCommand());
 			CommandManager.RegisterCommand(new DeleteJobSpeedCommand());
-			CommandManager.RegisterCommand(new ProductionCommand());
+			// CommandManager.RegisterCommand(new ProductionCommand());
 			CommandManager.RegisterCommand(new ColorTestCommand());
 			CommandManager.RegisterCommand(new SpawnNpcCommand());
 			CommandManager.RegisterCommand(new BedsCommand());
@@ -116,7 +116,6 @@ namespace ColonyCommands {
 			Vector3Int playerPos = userData.Position;
 
 			// check spawn area
-			// TODO var spawn = TerrainGenerator.UsedGenerator.GetSpawnLocation(requestedBy);
 			int ox = playerPos.x - ServerManager.TerrainGenerator.GetDefaultSpawnLocation().x;
 			int oz = playerPos.z - ServerManager.TerrainGenerator.GetDefaultSpawnLocation().z;
 			if (((ox >= 0 && ox <= SpawnProtectionRangeXPos) || (ox < 0 && ox >= -SpawnProtectionRangeXNeg)) && ((oz >= 0 && oz <= SpawnProtectionRangeZPos) || (oz < 0 && oz >= -SpawnProtectionRangeZNeg))) {
@@ -148,7 +147,22 @@ namespace ColonyCommands {
 								return;
 							}
 						}
-						// TODO check if /antigrief permission
+						// check if /antigrief permission - only done for banner placement
+						// after the banner is placed the player will be an owner of the colony
+						if (userData.TypeNew.ItemIndex == BlockTypes.BuiltinBlocks.Banner) {
+
+							// permission for this colony id
+							if (PermissionsManager.HasPermission(causedBy, PERMISSION_BANNER_PREFIX + string.Format(COLONY_ID_FORMAT, checkColony.ColonyID))) {
+								return;
+							}
+
+							// permission for all colonies of the owner
+							foreach (Players.Player owner in checkColony.Owners) {
+								if (PermissionsManager.HasPermission(causedBy, PERMISSION_BANNER_PREFIX + owner.ID.steamID)) {
+									return;
+								}
+							}
+						}
 
 						if (userData.TypeNew.ItemIndex == BlockTypes.BuiltinBlocks.Banner) {
 							int tooCloseX = checkRangeX - distanceX;
@@ -189,8 +203,8 @@ namespace ColonyCommands {
 		{
 			Load();
 			JailManager.Load();
-			StatisticManager.Load();
-			StatisticManager.TrackItems();
+			// StatisticManager.Load();
+			// StatisticManager.TrackItems();
 		}
 
 		// send welcome message
@@ -393,13 +407,13 @@ namespace ColonyCommands {
 		public static void OnAutoSaveWorld()
 		{
 			Save();
-			StatisticManager.Save();
+			// TODO StatisticManager.Save();
 		}
 
 		[ModLoader.ModCallback (ModLoader.EModCallbackType.OnQuit, NAMESPACE + ".OnQuit")]
 		public static void OnQuit()
 		{
-			StatisticManager.Save();
+			// TODO StatisticManager.Save();
 		}
 
 	} // class

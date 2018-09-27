@@ -41,12 +41,10 @@ namespace ColonyCommands
 			foreach (KeyValuePair<Players.Player, int> entry in ActivityTracker.GetInactivePlayers(days, max_days)) {
 				var player = entry.Key;
 				var inactiveDays = entry.Value;
-				if (BannerTracker.Get(player) != null) {
-					if (resultMsg.Length > 0) {
-						resultMsg += ", ";
-					}
-					resultMsg += $"{player.ID.ToStringReadable()} ({inactiveDays})";
+				if (resultMsg.Length > 0) {
+					resultMsg += ", ";
 				}
+				resultMsg += $"{player.ID.ToStringReadable()} ({inactiveDays})";
 			}
 			if (resultMsg.Length < 1) {
 				resultMsg = "No inactive players found";

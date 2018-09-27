@@ -38,7 +38,8 @@ namespace ColonyCommands
         return true;
       }
 
-      var cachedFollowers = new List<NPCBase> (Colony.Get (targetPlayer).Followers);
+	  // TODO
+      var cachedFollowers = new List<NPCBase>(targetPlayer.ActiveColony.Followers);
       foreach (var npc in cachedFollowers) {
         npc.OnDeath ();
       }
