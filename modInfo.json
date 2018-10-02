@@ -2,60 +2,65 @@
 {
 	"name" : "colony.commands",
 	"namepretty" : "Colony Commands",
-	"version" : "6.3.22",
+	"version" : "6.3.23",
 	"dllpath" : "Commands.dll",
 	"enabled" : true,
 	"compatibleversions" : [
-		"0.6.2", "0.6.3"
+		"0.6.3"
 	],
 	"patchnotes": [
+		{ "version": "6.3.23", "notes": [
+			"/areashow {add|remove} to toggle showing area job highlights of all players. /areashow without parameters to reload the job list",
+			"/customarea to find custom protectiona areas"
+			]
+		},
 		{ "version": "6.3.22", "notes": [
-				"/inactive and /purgeall now both have a max option (optinal) to limit the amount of output",
-				"/purgeall deletes areajobs of a player, too",
-				"/spawnnpc to spawn in colonists",
-				"/beds to spawn beds around the banner"
+			"/inactive and /purgeall now both have a max option (optinal) to limit the amount of output",
+			"/purgeall deletes areajobs of a player, too",
+			"/spawnnpc to spawn in colonists",
+			"/beds to spawn beds around the banner"
 			]
 		},
 		{ "version": "6.3.21", "notes": [
-				"/deletejobs now loads chunks as needed, might introduce lag",
-				"synchronized mod version with git release tags to allow ModManager to recognize the newest one"
+			"/deletejobs now loads chunks as needed, might introduce lag",
+			"synchronized mod version with git release tags to allow ModManager to recognize the newest one"
 			]
 		},
 		{ "version": "0.6.3.20", "notes": [
-				"/production command to track daily production of items"
+			"/production command to track daily production of items"
 			]
 		},
 		{ "version": "0.6.3.19", "notes": [
-				"Setting NpcKillsJail|Ban|KickThreshold to 0 disables the feature",
+			"Setting NpcKillsJail|Ban|KickThreshold to 0 disables the feature",
 			"/deletejobs checks if chunks are loaded and sends a warning message, if not",
 			"/deletejobspeed command for admins to adjust how many blocks per second get deleted (4-8 should be reasonable)"
 			]
 		},
 		{ "version": "0.6.3.18", "notes": [
-				"/deletejobs has an optional option includebeds now and deletes jobs without creating lag",
+			"/deletejobs has an optional option includebeds now and deletes jobs without creating lag",
 			"/killplayer, /killnpcs, /deletejobs all got a second permission with .self at the end. Can be set to allow players to use the commands on themselves"
 			]
 		},
 		{ "version": "0.6.3.17", "notes": [
-				"updated permission settings: mods.scarabol.commands.deletejobs.self to allow deleting you own jobs.",
+			"updated permission settings: mods.scarabol.commands.deletejobs.self to allow deleting you own jobs.",
 			"mods.scarabol.commands.deletejobs is only required for admins to allow deleting other player's jobs"
 			]
 		},
 		{ "version": "0.6.3.16", "notes": [
-				"/deletejobs [player] command (requires permission mods.scarabol.commands.deletejobs)"
+			"/deletejobs [player] command (requires permission mods.scarabol.commands.deletejobs)"
 			]
 		},
 		{ "version": "0.6.3.15", "notes": [
-				"Hashcodes for playername. The command '/online id' will list hashcodes in addition to the playernames. ",
-				"those hash codes can be used for all commands instead of the player name",
-				"new command /help to display available commands",
-				"new config file setting UnscoredPlayers to hide specific players from the /top command's scoring"
+			"Hashcodes for playername. The command '/online id' will list hashcodes in addition to the playernames. ",
+			"those hash codes can be used for all commands instead of the player name",
+			"new command /help to display available commands",
+			"new config file setting UnscoredPlayers to hide specific players from the /top command's scoring"
 			]
 		},
 		{ "version": "0.6.3.14", "notes": [
-				"When a player can't place his/her banner the message returns more details information how close the closest banner is",
-				"Jail feature added. After a jail position was set admins can jail players as form of punishment",
-				"There is also a new NPCkillJailThreshold setting to automatically jail players for killing colonists."
+			"When a player can't place his/her banner the message returns more details information how close the closest banner is",
+			"Jail feature added. After a jail position was set admins can jail players as form of punishment",
+			"There is also a new NPCkillJailThreshold setting to automatically jail players for killing colonists."
 			]
 		}
 	]

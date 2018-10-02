@@ -2,12 +2,14 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Reflection;
 using Pipliz;
 using Pipliz.Chatting;
 using Pipliz.JSON;
 using ChatCommands;
 using Permissions;
 using Server.TerrainGeneration;
+using UnityEngine;
 
 namespace ColonyCommands {
 
@@ -100,6 +102,7 @@ namespace ColonyCommands {
       CommandManager.RegisterCommand(new ColorTestCommand());
       CommandManager.RegisterCommand(new SpawnNpcCommand());
       CommandManager.RegisterCommand(new BedsCommand());
+      CommandManager.RegisterCommand(new CustomAreaCommand());
       return;
     }
 
@@ -384,6 +387,32 @@ namespace ColonyCommands {
 	{
 	  StatisticManager.Save();
     }
+
+	static Dictionary<Players.Player, List<IAreaJob>> allAreaJobs = typeof(AreaJobTracker).GetField("playerTrackedJobs",
+		BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) as Dictionary<Players.Player, List<IAreaJob>>;
+
+	[ModLoader.ModCallback(ModLoader.EModCallbackType.OnSendAreaHighlights, NAMESPACE + ".OnSendAreaHighlights")]
+	public static void OnSendAreaHighlights(Players.Player causedBy, List<AreaJobTracker.AreaHighlight> jobs, List<ushort> activeTypes)
+	{
+
+		if (!AreaShowManager.ShowAll(causedBy)) {
+			return;
+		}
+
+		Vector3 playerPos = causedBy.Position;
+		foreach (KeyValuePair<Players.Player, List<IAreaJob>> kvp in allAreaJobs) {
+			foreach (IAreaJob job in kvp.Value) {
+				Vector3 center = new Vector3((job.Maximum.x + job.Minimum.x) / 2,
+					(job.Maximum.y + job.Minimum.y) / 2,
+					(job.Maximum.z + job.Minimum.z) / 2);
+				if (Vector3.Distance(playerPos, center) < ServerManager.ServerVariables.MaxDrawDistance) {
+					jobs.Add(new AreaJobTracker.AreaHighlight(job.Minimum, job.Maximum, job.AreaTypeMesh, job.AreaType));
+				}
+			}
+		}
+
+		return;
+	}
 
   }
 

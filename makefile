@@ -12,11 +12,11 @@ $(dllname): src/*.cs
 	mcs /target:library -r:$(gamedir)/colonyserver_Data/Managed/Assembly-CSharp.dll,$(gamedir)/gamedata/mods/Pipliz/APIProvider/APIProvider.dll,$(gamedir)/colonyserver_Data/Managed/UnityEngine.dll -out:"$(dllname)" -sdk:2 src/*.cs
 
 $(zipname): $(dllname)
-	rm $(zipname)
+	rm -f $(zipname)
 	mkdir -p $(build_dir)
 	cp modInfo.json LICENSE README.md $(dllname) $(zip_files_extra) $(build_dir)/
 	zip -r $(zipname) $(build_dir)
-	rm -r $(build_dir)
+	rm -rf $(build_dir)
 
 .PHONY: build default clean all zip install
 build: $(dllname)
