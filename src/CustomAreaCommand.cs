@@ -16,14 +16,14 @@ namespace ColonyCommands
 		{
 			Vector3Int playerPos = new Vector3Int(causedBy.Position);
 			CustomProtectionArea closestArea = null;
-			int shortestDistance = -1;
+			int shortestDistance = int.MaxValue;
 			foreach (CustomProtectionArea area in AntiGrief.CustomAreas) {
 				if (area.Contains(playerPos)) {
 					Chat.Send(causedBy, $"You are inside a custom area: from {area.StartX}, {area.StartZ} to {area.EndX}, {area.EndZ}");
 					return true;
 				}
 				int distance = area.DistanceToCenter(playerPos);
-				if (shortestDistance == -1 || distance < shortestDistance) {
+				if (distance < shortestDistance) {
 					shortestDistance = distance;
 					closestArea = area;
 				}
