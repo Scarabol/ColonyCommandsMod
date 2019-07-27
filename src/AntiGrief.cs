@@ -276,6 +276,9 @@ namespace ColonyCommands {
         jsonConfig.TryGetAsOrDefault("DeleteJobSpeed", out speed, 4);
         DeleteJobsManager.SetDeleteJobSpeed(speed, false);
 
+        jsonConfig.TryGetAsOrDefault("ChunkLoadingMaxRetries", out speed, 10);
+        DeleteJobsManager.SetChunkLoadingRetries(speed);
+
       } else {
         Save ();
         Log.Write ($"Could not find {ConfigFilepath} file, created default one");
@@ -329,6 +332,7 @@ namespace ColonyCommands {
       }
       jsonConfig.SetAs("UnscoredPlayers", jsonUnscoredPlayers);
       jsonConfig.SetAs("DeleteJobSpeed", DeleteJobsManager.GetDeleteJobSpeed());
+      jsonConfig.SetAs("ChunkLoadingMaxRetries", DeleteJobsManager.CHUNK_LOAD_MAX_RETRIES);
 
       JSON.Serialize (ConfigFilepath, jsonConfig, 2);
     }

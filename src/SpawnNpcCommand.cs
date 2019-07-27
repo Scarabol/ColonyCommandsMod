@@ -23,9 +23,9 @@ namespace ColonyCommands
 				return true;
 			}
 
-			var m = Regex.Match(chattext, @"/spawnnpc (?<amount>\d+)");
+			var m = Regex.Match(chattext, @"/spawnnpc (?<amount>\d+) ?(?<player>['].+[']|[^ ]+)?");
 			if (!m.Success) {
-				Chat.Send(causedBy, "Syntax: /spawnnpc {number}");
+				Chat.Send(causedBy, "Syntax: /spawnnpc {number} [targetplayer]");
 				return true;
 			}
 			int amount = 0;
@@ -34,11 +34,22 @@ namespace ColonyCommands
 				return true;
 			}
 
-			Colony colony = Colony.Get(causedBy);
-			Banner banner = BannerTracker.Get(causedBy);
+			// by default target is self but it can be given as parameter
+			Players.Player target = causedBy;
+			string targetName = m.Groups["player"].Value;
+			if (!targetName.Equals("")) {
+				string error;
+				if (!PlayerHelper.TryGetPlayer(targetName, out target, out error, true)) {
+					Chat.Send(causedBy, $"Could not find player {targetName}: {error}");
+					return true;
+				}
+			}
+
+			Colony colony = Colony.Get(target);
+			Banner banner = BannerTracker.Get(target);
 			NPCType laborer = NPCType.GetByKeyNameOrDefault("pipliz.laborer");
 			if (banner == null || colony == null) {
-				Chat.Send(causedBy, "You need to place a banner to spawn in colonists");
+				Chat.Send(causedBy, "Could not find a banner to spawn in colonists");
 				return true;
 			}
 

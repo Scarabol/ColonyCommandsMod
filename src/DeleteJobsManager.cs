@@ -12,6 +12,7 @@ namespace ColonyCommands
   public static class DeleteJobsManager
   {
     public static double WAIT_DELAY = 0.5;
+	public static int CHUNK_LOAD_MAX_RETRIES = 10;
 
     public static void SetDeleteJobSpeed(int blocksPerSecond, bool save = true)
     {
@@ -25,6 +26,11 @@ namespace ColonyCommands
     {
       return (int)(1.0 / WAIT_DELAY);
     }
+
+	public static void SetChunkLoadingRetries(int retries)
+	{
+		CHUNK_LOAD_MAX_RETRIES = retries;
+	}
 
     // Delete Area Jobs of a player
     public static int DeleteAreaJobs(Players.Player causedBy, Players.Player target)
@@ -152,7 +158,7 @@ namespace ColonyCommands
         return count;
       }
 
-      public void DeleteBlocks(bool DidTryChunkLoading = false)
+      public void DeleteBlocks(int ChunkLoadingRetries = 0)
       {
         if (this.blockList.Count == 0) {
           return;
@@ -165,16 +171,17 @@ namespace ColonyCommands
         Chunk chunk = World.GetChunk(chunkPos);
         if (chunk == null || chunk.DataState != Chunk.ChunkDataState.DataFull) {
 
-		  // try to load the chunk - but only once
-		  if (!DidTryChunkLoading) {
+		  // try to load the chunk including retries
+		  if (ChunkLoadingRetries < DeleteJobsManager.CHUNK_LOAD_MAX_RETRIES) {
+			  Log.Write($"DeleteJobs: trying to load chunk at {oneBlock}, retry {ChunkLoadingRetries}");
 			  ChunkQueue.QueueLoadBanner(chunkPos);
 			  ThreadManager.InvokeOnMainThread(delegate() {
-				this.DeleteBlocks(true);
+				this.DeleteBlocks(ChunkLoadingRetries + 1);
 			  }, DeleteJobsManager.WAIT_DELAY + 1.2);
 			  return;
 		  }
 
-          Chat.Send(causedBy, $"Chunk got unloaded. Stopped deleting {this.Type}");
+          Chat.Send(causedBy, $"Failed to load chunk at {oneBlock}. Stopped deleting {this.Type}");
           return;
         }
 
