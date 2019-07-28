@@ -8,13 +8,11 @@ namespace ColonyCommands
   public class ItemIdChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/itemid");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/itemid")) {
+		return false;
+	}
       string reply = "";
       for (int slot = 0; slot < causedBy.Inventory.Items.Length; slot++) {
         var item = causedBy.Inventory.Items [slot];

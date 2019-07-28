@@ -12,14 +12,11 @@ namespace ColonyCommands
   public class JailLeaveCommand : IChatCommand
   {
 
-    public bool IsCommand(string chat)
-    {
-      return chat.Equals("/jailleave");
-    }
-
     public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
     {
-
+		if (!splits[0].Equals("/jailleave")) {
+			return false;
+		}
       Vector3 oldPos;
       if (JailManager.visitorPreviousPos.TryGetValue(causedBy, out oldPos)) {
         Teleport.TeleportTo(causedBy, oldPos);

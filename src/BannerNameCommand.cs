@@ -8,13 +8,11 @@ namespace ColonyCommands
 {
 	public class BannerNameChatCommand : IChatCommand
 	{
-		public bool IsCommand(string chat)
-		{
-			return chat.Equals("/bannername");
-		}
-
 		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
+			if (!splits[0].Equals("/bannername")) {
+				return false;
+			}
 			BannerTracker.Banner closestBanner = null;
 			int shortestDistance = -1;
 			foreach (Colony checkColony in ServerManager.ColonyTracker.ColoniesByID.Values) {

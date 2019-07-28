@@ -8,13 +8,11 @@ namespace ColonyCommands
 	public class ServerPopCommand : IChatCommand
 	{
 
-		public bool IsCommand(string chat)
-		{
-			return chat.Equals("/serverpop");
-		}
-
 		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
+			if (!splits[0].Equals("/serverpop")) {
+				return false;
+			}
 			var allPlayers = Players.PlayerDatabase.Count;
 			var onlinePlayers = Players.CountConnected;
 			var allFollower = 0;

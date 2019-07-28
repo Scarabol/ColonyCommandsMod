@@ -9,13 +9,11 @@ namespace ColonyCommands
   public class NoFlightChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/noflight");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals("/noflight")) {
+		return false;
+		}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "noflight")) {
         return true;
       }

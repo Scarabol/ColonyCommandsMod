@@ -8,14 +8,11 @@ namespace ColonyCommands
 
 	public class ColorTestCommand : IChatCommand
 	{
-
-		public bool IsCommand(string chat)
-		{
-			return (chat.Equals("/colortest") || chat.StartsWith("/colortest "));
-		}
-
 		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
+			if (!splits[0].Equals("/colortest")) {
+				return false;
+			}
 
 			var m = Regex.Match(chattext, @"/colortest (?<color>[^ ]+)");
 			if (!m.Success) {

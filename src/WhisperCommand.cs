@@ -9,13 +9,11 @@ namespace ColonyCommands
   public class WhisperChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/w") || chat.StartsWith ("/w ") || chat.Equals ("/whisper") || chat.StartsWith ("/whisper ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/w") && !splits[0].Equals ("/whisper")) {
+		return false;
+		}
       var m = Regex.Match (chattext, @"/((w)|(whisper)) (?<targetplayername>['].+[']|[^ ]+) (?<message>.+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /w [targetplayername] [message] or /whisper [targetplayername] [message]");

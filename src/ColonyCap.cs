@@ -13,13 +13,11 @@ namespace ColonyCommands
 	public class ColonyCap : IChatCommand
 	{
 
-		public bool IsCommand(string chat)
-		{
-			return chat.Equals("/colonycap") || chat.StartsWith("/colonycap ");
-		}
-
 		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
+			if (!splits[0].Equals("/colonycap")) {
+				return false;
+			}
 			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "colonycap")) {
 				return true;
 			}

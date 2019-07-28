@@ -8,13 +8,12 @@ namespace ColonyCommands
 {
 	public class AreaShowCommand : IChatCommand
 	{
-		public bool IsCommand(string chat)
-		{
-			return chat.Equals("/areashow") || chat.StartsWith("/areashow ");
-		}
-
 		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
+			if (!splits[0].Equals("/areashow")) {
+				return false;
+			}
+
 			// if parameter action given toggle all areas shown
 			Match m = Regex.Match(chattext, @"/areashow ?(?<action>.+)?");
 			string action = m.Groups["action"].Value;

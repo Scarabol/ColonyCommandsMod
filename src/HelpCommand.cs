@@ -19,13 +19,11 @@ namespace ColonyCommands
 		Array.Sort(HelpCommand.adminList, StringComparer.InvariantCulture);
 	}
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/help") || chat.StartsWith("/help ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/help")) {
+		return false;
+		}
       var m = Regex.Match(chattext, @"/help (?<section>.+)");
       string cmdList;
 

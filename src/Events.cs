@@ -70,13 +70,11 @@ namespace ColonyCommands
       CommandManager.RegisterCommand (new EventStartChatCommand ());
     }
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/eventstart");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/eventstart")) {
+		return false;
+	}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "events")) {
         return true;
       }
@@ -102,13 +100,11 @@ namespace ColonyCommands
       CommandManager.RegisterCommand (new EventJoinChatCommand ());
     }
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/eventjoin");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/eventjoin")) {
+		return false;
+	}
       if (Events.currentLocation == Vector3Int.invalidPos) {
         Chat.Send (causedBy, "There is currently no event ongoing");
         return true;
@@ -136,13 +132,11 @@ namespace ColonyCommands
       CommandManager.RegisterCommand (new EventLeaveChatCommand ());
     }
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/eventleave");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/eventleave")) {
+		return false;
+		}
       UnityEngine.Vector3 originPosition;
       if (Events.originPositions.TryGetValue (causedBy, out originPosition) && Events.originPositions.Remove (causedBy)) {
         Teleport.TeleportTo (causedBy, originPosition);
@@ -170,13 +164,11 @@ namespace ColonyCommands
       CommandManager.RegisterCommand (new EventEndChatCommand ());
     }
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/eventend");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/eventend")) {
+		return false;
+		}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "events")) {
         return true;
       }

@@ -11,13 +11,11 @@ namespace ColonyCommands
   public class TrashChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/trash") || chat.StartsWith ("/trash ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/trash")) {
+		return false;
+		}
       var m = Regex.Match (chattext, @"/trash (?<material>.+) (?<amount>\d+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /trash [material] [amount]");

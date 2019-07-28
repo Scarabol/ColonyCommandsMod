@@ -10,13 +10,11 @@ namespace ColonyCommands
   public class DrainChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/drain");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/drain")) {
+		return false;
+	}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "drain")) {
         return true;
       }

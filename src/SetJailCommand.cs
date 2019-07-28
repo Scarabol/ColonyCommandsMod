@@ -9,13 +9,11 @@ namespace ColonyCommands
   public class SetJailCommand : IChatCommand
   {
 
-    public bool IsCommand(string chat)
-    {
-      return (chat.Equals("/setjail") || chat.StartsWith("/setjail "));
-    }
-
     public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals("/setjail")) {
+		return false;
+	}
       if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "setjailposition")) {
         return true;
       }

@@ -11,13 +11,11 @@ namespace ColonyCommands
   public class TradeChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/trade") || chat.StartsWith ("/trade ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/trade")) {
+		return false;
+		}
       var m = Regex.Match (chattext, @"/trade (?<playername>['].+[']|[^ ]+) (?<material>.+) (?<amount>\d+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /trade [playername] [material] [amount]");

@@ -10,13 +10,11 @@ namespace ColonyCommands
   public class WarpPlaceChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/warpplace") || chat.StartsWith ("/warpplace ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/warpplace")) {
+		return false;
+		}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.place")) {
         return true;
       }

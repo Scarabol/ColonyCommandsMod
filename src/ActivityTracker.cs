@@ -86,19 +86,23 @@ namespace ColonyCommands
     }
 
     static void Save ()
-    {
-      try {
-        JSONNode JsonPlayerStats = new JSONNode ();
-        foreach (var playerStats in PlayerStats) {
-          JsonPlayerStats.SetAs (playerStats.Key, (JSONNode)playerStats.Value);
-        }
-        JSONNode JsonActivity = new JSONNode ();
-        JsonActivity.SetAs ("stats", JsonPlayerStats);
-        JSON.Serialize (ConfigFilepath, JsonActivity, 3);
-      } catch (Exception exception) {
-        Log.WriteError ($"Exception while saving player activity; {exception.Message}");
-      }
-    }
+	{
+		if (PlayerStats.Count == 0) {
+			Log.Write("No player statistics found to save");
+			return;
+		}
+		try {
+			JSONNode JsonPlayerStats = new JSONNode ();
+			foreach (var playerStats in PlayerStats) {
+				JsonPlayerStats.SetAs (playerStats.Key, (JSONNode)playerStats.Value);
+			}
+			JSONNode JsonActivity = new JSONNode ();
+			JsonActivity.SetAs ("stats", JsonPlayerStats);
+			JSON.Serialize (ConfigFilepath, JsonActivity, 3);
+		} catch (Exception exception) {
+			Log.WriteError ($"Exception while saving player activity; {exception.Message}");
+		}
+	}
 
     public static StatsDataEntry GetOrCreateStats (string playerId)
     {

@@ -7,13 +7,11 @@ namespace ColonyCommands
 {
 	public class CustomAreaCommand : IChatCommand
 	{
-		public bool IsCommand (string chat)
-		{
-			return chat.Equals("/customarea");
-		}
-
 		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
+			if (!splits[0].Equals("/customarea")) {
+				return false;
+			}
 			Pipliz.Vector3Int playerPos = new Vector3Int(causedBy.Position);
 			CustomProtectionArea closestArea = null;
 			int shortestDistance = int.MaxValue;

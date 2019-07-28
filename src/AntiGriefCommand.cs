@@ -13,13 +13,12 @@ namespace ColonyCommands
 
   public class AntiGriefChatCommand : IChatCommand
   {
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/antigrief") || chat.StartsWith ("/antigrief ");
-    }
 
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/antigrief")) {
+		return false;
+	}
       var matched = Regex.Match (chattext, @"/antigrief (?<accesslevel>[^ ]+) ((?<playername>['].+[']|[^ ]+)|((?<rangex>\d+) (?<rangez>\d+))|((?<rangexn>\d+) (?<rangexp>\d+) (?<rangezn>\d+) (?<rangezp>\d+)))$");
       if (!matched.Success) {
         Chat.Send (causedBy, "Command didn't match, use /antigrief [spawn|nospawn|banner|deny] [playername] or /antigrief area [rangex rangez|rangexn rangexp rangezn rangezp]");

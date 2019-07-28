@@ -9,13 +9,11 @@ namespace ColonyCommands
   public class LastSeenChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/lastseen") || chat.StartsWith ("/lastseen ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals("/lastseen")) {
+		return false;
+		}
       var m = Regex.Match (chattext, @"/lastseen (?<playername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /lastseen [playername]");

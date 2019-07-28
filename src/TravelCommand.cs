@@ -17,13 +17,11 @@ namespace ColonyCommands
       WaypointManager.Load ();
     }
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/travel");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/travel")) {
+		return false;
+		}
       foreach (var TravelPath in WaypointManager.travelPaths) {
         if (Pipliz.Math.ManhattanDistance (causedBy.VoxelPosition, TravelPath.Key) < 3) {
           Teleport.TeleportTo (causedBy, TravelPath.Value.Vector);
@@ -37,13 +35,12 @@ namespace ColonyCommands
 
   public class TravelHereChatCommand : IChatCommand
   {
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/travelhere");
-    }
 
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/travelhere")) {
+		return false;
+		}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;
       }
@@ -55,13 +52,12 @@ namespace ColonyCommands
 
   public class TravelThereChatCommand : IChatCommand
   {
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/travelthere");
-    }
 
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/travelthere")) {
+		return false;
+		}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;
       }
@@ -80,13 +76,12 @@ namespace ColonyCommands
 
   public class TravelRemoveChatCommand : IChatCommand
   {
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/travelremove");
-    }
 
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/travelremove")) {
+		return false;
+		}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;
       }

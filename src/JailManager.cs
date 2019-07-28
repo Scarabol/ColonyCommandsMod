@@ -362,7 +362,7 @@ namespace ColonyCommands {
 
     // track jailed players movement
     [ModLoader.ModCallback (ModLoader.EModCallbackType.OnPlayerMoved, AntiGrief.NAMESPACE + ".OnPlayerMoved")]
-    public static void OnPlayerMoved(Players.Player causedBy)
+    public static void OnPlayerMoved(Players.Player causedBy, Vector3 pos)
     {
       if (!jailedPersons.ContainsKey(causedBy)) {
         return;

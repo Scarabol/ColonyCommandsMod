@@ -10,13 +10,11 @@ namespace ColonyCommands
   public class KillNPCsChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/killnpcs") || chat.StartsWith ("/killnpcs ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/killnpcs")) {
+		return false;
+	}
       var m = Regex.Match (chattext, @"/killnpcs (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
         Chat.Send (causedBy, "Command didn't match, use /killnpcs [targetplayername]");

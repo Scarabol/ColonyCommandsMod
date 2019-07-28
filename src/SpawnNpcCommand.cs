@@ -12,13 +12,11 @@ namespace ColonyCommands
 	public class SpawnNpcCommand : IChatCommand
 	{
 
-		public bool IsCommand(string chat)
-		{
-			return (chat.Equals("/spawnnpc") || chat.StartsWith("/spawnnpc "));
-		}
-
 		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
+			if (!splits[0].Equals("/spawnnpc")) {
+				return false;
+			}
 			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "npcandbeds")) {
 				return true;
 			}

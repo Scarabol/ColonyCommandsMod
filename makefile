@@ -30,6 +30,6 @@ all: clean default zip
 zip: $(zipname)
 
 install: build zip
-	$(RM) $(gamedir)/gamedata/mods/$(build_dir)
+	$(RM) -r $(gamedir)/gamedata/mods/$(build_dir)
 	unzip $(zipname) -d $(gamedir)/gamedata/mods
 

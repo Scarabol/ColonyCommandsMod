@@ -23,13 +23,11 @@ namespace ColonyCommands
       }
     }
 
-    public bool IsCommand (string chat)
-    {
-      return !chat.StartsWith ("/");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chat, List<string> splits)
     {
+      if (chat.StartsWith("/")) {
+		return false;
+	}
       if (PermissionsManager.HasPermission (causedBy, "")) {
         String name = causedBy != null ? causedBy.Name : "Server";
         Chat.SendToConnected ($"[<color=red>{name}</color>]: {chat}");

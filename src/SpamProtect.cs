@@ -34,13 +34,12 @@ namespace ColonyCommands
 
   public class MuteChatCommand : IChatCommand
   {
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/mute") || chat.StartsWith ("/mute ");
-    }
 
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/mute")) {
+		return false;
+	}
       MuteList.Update ();
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "mute")) {
         return true;
@@ -74,13 +73,11 @@ namespace ColonyCommands
 
   public class UnmuteChatCommand : IChatCommand
   {
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/unmute") || chat.StartsWith ("/unmute ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/unmute")) {
+		return false;
+		}
       MuteList.Update ();
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "mute")) {
         return true;
@@ -105,11 +102,6 @@ namespace ColonyCommands
 
   public class SilenceChatCommand : IChatCommand
   {
-    public bool IsCommand (string chat)
-    {
-      return true;
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       MuteList.Update ();

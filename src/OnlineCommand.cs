@@ -8,13 +8,11 @@ namespace ColonyCommands
   public class OnlineChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals("/online") || chat.Equals("/online id");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals("/online")) {
+		return false;
+		}
       string msg = "";
       bool idMode = false;
       if (chattext.Equals("/online id")) {

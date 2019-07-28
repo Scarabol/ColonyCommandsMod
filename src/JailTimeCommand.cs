@@ -10,14 +10,11 @@ namespace ColonyCommands
   public class JailTimeCommand : IChatCommand
   {
 
-    public bool IsCommand(string chat)
-    {
-      return chat.Equals("/jailtime");
-    }
-
     public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
     {
-
+		if (!splits[0].Equals("/jailtime")) {
+			return false;
+		}
       if (!JailManager.IsPlayerJailed(causedBy)) {
         Chat.Send(causedBy, "You are not jailed - free to move!");
         return true;

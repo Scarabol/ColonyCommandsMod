@@ -9,13 +9,11 @@ namespace ColonyCommands
   public class BanChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/ban") || chat.StartsWith ("/ban ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+	  if (!splits[0].Equals ("/ban")) {
+		return false;
+	}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "ban")) {
         return true;
       }

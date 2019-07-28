@@ -8,13 +8,11 @@ namespace ColonyCommands
   public class GiveAllChatCommand : IChatCommand
   {
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/giveall") || chat.StartsWith ("/giveall ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext)
     {
+	  if (!chat.Equals ("/giveall") && !chat.StartsWith ("/giveall ")) {
+		return false;
+		}
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "giveall")) {
         return true;
       }

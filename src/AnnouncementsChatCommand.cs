@@ -22,13 +22,11 @@ namespace ColonyCommands
     static string INTERVAL_PREFIX = "/announcements interval";
     static string WELCOME_PREFIX = "/announcements welcome";
 
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/announcements") || chat.StartsWith ("/announcements ");
-    }
-
     public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
+      if (!splits[0].Equals ("/announcements")) {
+		return false;
+	 }
       if (chattext.Equals ("/announcements") || chattext.Equals ("/announcements list")) {
         ListCommand (causedBy);
       } else if (chattext.Equals (ADD_PREFIX) || chattext.StartsWith (ADD_PREFIX + " ")) {
