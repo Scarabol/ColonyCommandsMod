@@ -1,9 +1,9 @@
-﻿using Pipliz.Chatting;
-using ChatCommands.Implementations;
-using ChatCommands;
-using Server.TerrainGeneration;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Chatting;
+using Chatting.Commands;
+using TerrainGeneration;
 using UnityEngine;
 
 namespace ColonyCommands
@@ -17,7 +17,7 @@ namespace ColonyCommands
       return chat.Equals("/jailleave");
     }
 
-    public bool TryDoCommand(Players.Player causedBy, string chattext)
+    public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
     {
 
       Vector3 oldPos;

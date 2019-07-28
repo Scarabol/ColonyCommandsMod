@@ -1,9 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
-using Server.TerrainGeneration;
-using ChatCommands.Implementations;
+using System.Collections.Generic;
+using Chatting;
+using Chatting.Commands;
+using TerrainGeneration;
 
 namespace ColonyCommands
 {
@@ -16,7 +15,7 @@ namespace ColonyCommands
       return chat.Equals ("/warpplace") || chat.StartsWith ("/warpplace ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.place")) {
         return true;
@@ -47,9 +46,10 @@ namespace ColonyCommands
         }
       } else {
         vz = vy;
-        vy = TerrainGenerator.UsedGenerator.GetHeight (vx, vz);
+        // TODO vy = TerrainGenerator.UsedGenerator.GetHeight (vx, vz);
+		vy = 65;
       }
-      Teleport.TeleportTo (causedBy, new UnityEngine.Vector3 (vx, vy, vz));
+      causedBy.Position = new UnityEngine.Vector3(vx, vy, vz);
       return true;
     }
   }

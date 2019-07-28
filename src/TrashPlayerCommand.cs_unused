@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -66,7 +65,7 @@ namespace ColonyCommands
         if (Inventory.TryGetInventory (player, out playerInventory)) {
           if (trashItemType == 0) {
             playerInventory.Clear ();
-            Log.Write ($"Cleared the inventory of {player.IDString}");
+            Log.Write ($"Cleared the inventory of {player.ID.ToStringReadable()}");
           } else {
             int todoRemove = 0;
             foreach (var item in playerInventory.Items) {
@@ -80,7 +79,7 @@ namespace ColonyCommands
               }
             }
             if (removedPerPlayer > 0) {
-              Log.Write ($"Removed {removedPerPlayer} items from inventory of {player.IDString}");
+              Log.Write ($"Removed {removedPerPlayer} items from inventory of {player.ID.ToStringReadable()}");
             }
           }
         }
@@ -94,14 +93,14 @@ namespace ColonyCommands
               playerStockpile.TryRemove (item);
               item = playerStockpile.GetByIndex (0);
             }
-            Log.Write ($"Cleared the stockpile of {player.IDString}");
+            Log.Write ($"Cleared the stockpile of {player.ID.ToStringReadable()}");
           } else {
             var todoRemove = System.Math.Min (numRemove, playerStockpile.AmountContained (trashItemType));
             if (playerStockpile.TryRemove (trashItemType, todoRemove)) {
               numRemove -= todoRemove;
               totalnum += todoRemove;
               removedPerPlayer += todoRemove;
-              Log.Write ($"Removed {todoRemove} items from stockpile of {player.IDString}");
+              Log.Write ($"Removed {todoRemove} items from stockpile of {player.ID.ToStringReadable()}");
             }
           }
         }

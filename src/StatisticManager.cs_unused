@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Pipliz;
 using Pipliz.JSON;
 using Pipliz.Threading;
-using Pipliz.Chatting;
+using Chatting;
 
 namespace ColonyCommands {
 

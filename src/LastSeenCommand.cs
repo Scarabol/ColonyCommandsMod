@@ -1,6 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -13,7 +14,7 @@ namespace ColonyCommands
       return chat.Equals ("/lastseen") || chat.StartsWith ("/lastseen ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       var m = Regex.Match (chattext, @"/lastseen (?<playername>['].+[']|[^ ]+)");
       if (!m.Success) {
@@ -27,8 +28,8 @@ namespace ColonyCommands
         Chat.Send (causedBy, $"Could not find player '{targetPlayerName}'; {error}");
         return true;
       }
-      var lastSeen = ActivityTracker.GetLastSeen (targetPlayer.IDString);
-      Chat.Send (causedBy, $"Player {targetPlayer.IDString} last seen {lastSeen}");
+      var lastSeen = ActivityTracker.GetLastSeen (targetPlayer.ID.ToStringReadable());
+      Chat.Send (causedBy, $"Player {targetPlayer.ID.ToStringReadable()} last seen {lastSeen}");
       return true;
     }
   }

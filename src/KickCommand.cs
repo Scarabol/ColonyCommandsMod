@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -14,7 +14,7 @@ namespace ColonyCommands
       return chat.Equals ("/kick") || chat.StartsWith ("/kick ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "kick")) {
         return true;
@@ -32,7 +32,7 @@ namespace ColonyCommands
         return true;
       }
       Chat.Send (targetPlayer, "<color=red>You were kicked from the server</color>");
-      Chat.SendToAll ($"{targetPlayer.Name} is kicked by {causedBy.Name}");
+      Chat.SendToConnected ($"{targetPlayer.Name} is kicked by {causedBy.Name}");
       Players.Disconnect (targetPlayer);
       return true;
     }

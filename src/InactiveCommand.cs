@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -16,7 +15,7 @@ namespace ColonyCommands
 			return chat.Equals("/inactive") || chat.StartsWith("/inactive ");
 		}
 
-		public bool TryDoCommand(Players.Player causedBy, string chattext)
+		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
 			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "inactive")) {
 				return true;
@@ -42,12 +41,10 @@ namespace ColonyCommands
 			foreach (KeyValuePair<Players.Player, int> entry in ActivityTracker.GetInactivePlayers(days, max_days)) {
 				var player = entry.Key;
 				var inactiveDays = entry.Value;
-				if (BannerTracker.Get(player) != null) {
-					if (resultMsg.Length > 0) {
-						resultMsg += ", ";
-					}
-					resultMsg += $"{player.IDString} ({inactiveDays})";
+				if (resultMsg.Length > 0) {
+					resultMsg += ", ";
 				}
+				resultMsg += $"{player.ID.ToStringReadable()} ({inactiveDays})";
 			}
 			if (resultMsg.Length < 1) {
 				resultMsg = "No inactive players found";

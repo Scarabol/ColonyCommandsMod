@@ -1,5 +1,6 @@
-﻿using Pipliz.Chatting;
-using ChatCommands;
+﻿using System.Collections.Generic;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -12,7 +13,7 @@ namespace ColonyCommands
       return chat.Equals("/online") || chat.Equals("/online id");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       string msg = "";
       bool idMode = false;

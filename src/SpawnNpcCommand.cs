@@ -1,10 +1,10 @@
-﻿using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+﻿using Chatting;
+using Chatting.Commands;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NPC;
-using Server.NPCs;
+using BlockEntities.Implementations;
 
 namespace ColonyCommands
 {
@@ -17,7 +17,7 @@ namespace ColonyCommands
 			return (chat.Equals("/spawnnpc") || chat.StartsWith("/spawnnpc "));
 		}
 
-		public bool TryDoCommand(Players.Player causedBy, string chattext)
+		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
 			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "npcandbeds")) {
 				return true;
@@ -34,30 +34,23 @@ namespace ColonyCommands
 				return true;
 			}
 
-			// by default target is self but it can be given as parameter
-			Players.Player target = causedBy;
-			string targetName = m.Groups["player"].Value;
-			if (!targetName.Equals("")) {
-				string error;
-				if (!PlayerHelper.TryGetPlayer(targetName, out target, out error, true)) {
-					Chat.Send(causedBy, $"Could not find player {targetName}: {error}");
-					return true;
-				}
+			Colony colony = causedBy.ActiveColony;
+			if (colony == null) {
+				Chat.Send(causedBy, "You need to be at an active colony to spawn beds");
+				return true;
 			}
-
-			Colony colony = Colony.Get(target);
-			Banner banner = BannerTracker.Get(target);
-			NPCType laborer = NPCType.GetByKeyNameOrDefault("pipliz.laborer");
-			if (banner == null || colony == null) {
-				Chat.Send(causedBy, "Could not find a banner to spawn in colonists");
+			BannerTracker.Banner banner = colony.GetClosestBanner(causedBy.VoxelPosition);
+			if (banner == null) {
+				Chat.Send(causedBy, "No banners found for the active colony");
 				return true;
 			}
 
+			// NPCType laborer = NPCType.GetByKeyNameOrDefault("pipliz.laborer");
 			for (int i = 0; i < amount; i++) {
-				NPCBase npc = new NPCBase(laborer, banner.KeyLocation.Vector, colony);
-				ModLoader.TriggerCallbacks(ModLoader.EModCallbackType.OnNPCRecruited, npc);
+				// NPCBase npc = new NPCBase(colony, banner.Position);
+				// ModLoader.TriggerCallbacks(ModLoader.EModCallbackType.OnNPCRecruited, npc);
 			}
-			colony.SendUpdate();
+			// colony.SendUpdate();
 
 			Chat.Send(causedBy, $"Spawned {amount} colonists");
 			return true;

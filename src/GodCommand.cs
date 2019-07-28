@@ -1,6 +1,6 @@
-﻿using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+﻿using System.Collections.Generic;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -13,17 +13,17 @@ namespace ColonyCommands
       return chat.Equals ("/god");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "god")) {
         return true;
       }
       if (PermissionsManager.HasPermission (causedBy, "")) {
         PermissionsManager.RemovePermissionOfUser (causedBy, causedBy, "");
-        Chat.SendToAll ($"{causedBy.Name} is a cockroach now!");
+        Chat.SendToConnected ($"{causedBy.Name} is a cockroach now!");
       } else {
         PermissionsManager.AddPermissionToUser (causedBy, causedBy, "");
-        Chat.SendToAll ($"{causedBy.Name} is now godlike!");
+        Chat.SendToConnected ($"{causedBy.Name} is now godlike!");
       }
       return true;
     }

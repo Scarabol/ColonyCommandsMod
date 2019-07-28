@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -14,7 +14,7 @@ namespace ColonyCommands
       return chat.Equals ("/killplayer") || chat.StartsWith ("/killplayer ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       var m = Regex.Match (chattext, @"/killplayer (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
@@ -40,9 +40,9 @@ namespace ColonyCommands
       Players.OnDeath (targetPlayer);
       targetPlayer.SendHealthPacket ();
       if (targetPlayer == causedBy) {
-        Chat.SendToAll ($"Player {causedBy.Name} committed suicide");
+        Chat.SendToConnected ($"Player {causedBy.Name} committed suicide");
       } else {
-        Chat.SendToAll ($"Player {targetPlayer.Name} was killed by {causedBy.Name}");
+        Chat.SendToConnected ($"Player {targetPlayer.Name} was killed by {causedBy.Name}");
       }
       return true;
     }

@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using Permissions;
-using ChatCommands;
+using System.Collections.Generic;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -14,7 +14,7 @@ namespace ColonyCommands
       return chat.Equals ("/ban") || chat.StartsWith ("/ban ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "ban")) {
         return true;
@@ -32,7 +32,7 @@ namespace ColonyCommands
         return true;
       }
       Chat.Send (targetPlayer, "<color=red>You were banned from the server</color>");
-      Chat.SendToAll ($"{targetPlayer.Name} is banned by {causedBy.Name}");
+      Chat.SendToConnected ($"{targetPlayer.Name} is banned by {causedBy.Name}");
       BlackAndWhitelisting.AddBlackList (targetPlayer.ID.steamID.m_SteamID);
       BlackAndWhitelisting.Reload();
       Players.Disconnect (targetPlayer);

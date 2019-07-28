@@ -1,45 +1,57 @@
-﻿using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
+﻿using System.Collections.Generic;
+using Pipliz;
+using Chatting;
+using Chatting.Commands;
+using BlockEntities.Implementations;
 
 namespace ColonyCommands
 {
-  public class BannerNameChatCommand : IChatCommand
-  {
-    public bool IsCommand (string chat)
-    {
-      return chat.Equals ("/bannername");
-    }
+	public class BannerNameChatCommand : IChatCommand
+	{
+		public bool IsCommand(string chat)
+		{
+			return chat.Equals("/bannername");
+		}
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
-    {
-      UnityEngine.Vector3 position = causedBy.Position;
-      Banner closestBanner = null;
-      int shortestDistance = -1;
-      for (var c = 0; c < BannerTracker.GetCount(); c++) {
-        Banner banner;
-        if (BannerTracker.TryGetAtIndex(c, out banner)) {
-          if (banner.Owner == causedBy) {
-            continue;
-          }
-          Vector3Int bannerLocation = banner.KeyLocation;
-          double distX = position.x - bannerLocation.x;
-          double distZ = position.z - bannerLocation.z;
-          int distance = (int)System.Math.Sqrt(System.Math.Pow(distX, 2) + System.Math.Pow(distZ, 2));
-          if (shortestDistance == -1 || distance < shortestDistance) {
-            shortestDistance = distance;
-            closestBanner = banner;
-          }
-        }
-      }
+		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
+		{
+			BannerTracker.Banner closestBanner = null;
+			int shortestDistance = -1;
+			foreach (Colony checkColony in ServerManager.ColonyTracker.ColoniesByID.Values) {
+				bool isOwner = false;
+				foreach (Players.Player owner in checkColony.Owners) {
+					if (owner == causedBy) {
+						isOwner = true;
+						break;
+					}
+				}
+				if (isOwner) {
+					continue;
+				}
 
-      if (closestBanner != null) {
-        var ownerName = closestBanner.Owner.Name;
-        if (ownerName != null) {
-          Chat.Send (causedBy, $"Closest banner at {closestBanner.KeyLocation} is owned by {ownerName}. {shortestDistance} blocks away");
-        }
-      }
-      return true;
-    }
-  }
+				foreach (BannerTracker.Banner checkBanner in checkColony.Banners) {
+					int distX = (int)(causedBy.Position.x - checkBanner.Position.x);
+					int distZ = (int)(causedBy.Position.z - checkBanner.Position.z);
+					int distance = (int)System.Math.Sqrt(System.Math.Pow(distX, 2) + System.Math.Pow(distZ, 2));
+					if (shortestDistance == -1 || distance < shortestDistance) {
+						shortestDistance = distance;
+						closestBanner = checkBanner;
+					}
+				}
+			}
+
+			if (closestBanner != null) {
+				string owners = "";
+				foreach (Players.Player owner in closestBanner.Colony.Owners) {
+					if (!owners.Equals("")) {
+						owners += ", ";
+					}
+					owners += owner.Name;
+				}
+				Chat.Send(causedBy, $"Closest banner is at {closestBanner.Position.x},{closestBanner.Position.z}. {shortestDistance} blocks away. It belongs to a colony owned by {owners}");
+			}
+			return true;
+		}
+	}
 }
+

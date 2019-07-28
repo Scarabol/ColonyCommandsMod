@@ -3,11 +3,10 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
+using Chatting;
+using Chatting.Commands;
 using Pipliz.JSON;
 using Pipliz.Threading;
-using ChatCommands;
-using Permissions;
 
 namespace ColonyCommands
 {
@@ -28,7 +27,7 @@ namespace ColonyCommands
       return chat.Equals ("/announcements") || chat.StartsWith ("/announcements ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (chattext.Equals ("/announcements") || chattext.Equals ("/announcements list")) {
         ListCommand (causedBy);

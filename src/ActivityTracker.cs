@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Pipliz;
 using Pipliz.JSON;
 
@@ -27,7 +28,7 @@ namespace ColonyCommands
     public static void OnPlayerConnectedLate (Players.Player player)
     {
       var now = DateTime.Now.ToString ();
-      var stats = GetOrCreateStats (player.IDString);
+      var stats = GetOrCreateStats (player.ID.ToStringReadable());
       stats.lastSeen = now;
     }
 
@@ -35,7 +36,7 @@ namespace ColonyCommands
     public static void OnPlayerDisconnected (Players.Player player)
     {
       var now = DateTime.Now;
-      var stats = GetOrCreateStats (player.IDString);
+      var stats = GetOrCreateStats (player.ID.ToStringReadable());
       stats.secondsPlayed += (long)now.Subtract (DateTime.Parse (stats.lastSeen)).TotalSeconds;
       stats.lastSeen = now.ToString ();
     }
@@ -46,15 +47,15 @@ namespace ColonyCommands
       var now = DateTime.Now;
       for (var c = 0; c < Players.CountConnected; c++) {
         var player = Players.GetConnectedByIndex (c);
-        var stats = GetOrCreateStats (player.IDString);
+        var stats = GetOrCreateStats (player.ID.ToStringReadable());
         stats.secondsPlayed += (long)now.Subtract (DateTime.Parse (stats.lastSeen)).TotalSeconds;
         stats.lastSeen = now.ToString ();
       }
       Save ();
     }
 
-    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnQuitLate, "scarabol.commands.activitytracker.onquitlate")]
-    public static void OnQuitLate ()
+    [ModLoader.ModCallback (ModLoader.EModCallbackType.OnQuit, "scarabol.commands.activitytracker.onquit")]
+    public static void OnQuit()
     {
       Save ();
     }
@@ -121,8 +122,8 @@ namespace ColonyCommands
     public static Dictionary<Players.Player, int> GetInactivePlayers(int days, int max = 0)
     {
       var result = new Dictionary<Players.Player, int>();
-      foreach (var player in Players.PlayerDatabase.ValuesAsList) {
-        StatsDataEntry stats = GetOrCreateStats(player.IDString);
+      foreach (var player in Players.PlayerDatabase.Values) {
+        StatsDataEntry stats = GetOrCreateStats(player.ID.ToStringReadable());
         double inactiveDays = DateTime.Now.Subtract(DateTime.Parse(stats.lastSeen)).TotalDays;
         if (inactiveDays >= days && (max == 0 || inactiveDays <= max)) {
           result.Add(player, (int)inactiveDays);

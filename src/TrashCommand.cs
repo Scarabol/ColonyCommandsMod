@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -17,7 +16,7 @@ namespace ColonyCommands
       return chat.Equals ("/trash") || chat.StartsWith ("/trash ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       var m = Regex.Match (chattext, @"/trash (?<material>.+) (?<amount>\d+)");
       if (!m.Success) {
@@ -36,10 +35,15 @@ namespace ColonyCommands
         return true;
       }
 
+      Colony colony = causedBy.ActiveColony;
+	  if (colony == null) {
+		Chat.Send(causedBy, "You have to be near an active colony to use this command");
+		return true;
+	  }
+
       // delete from the player's inventory first
       int totalRemoved = 0;
-      Inventory playerInventory;
-      if (Inventory.TryGetInventory(causedBy, out playerInventory)) {
+      Inventory playerInventory = causedBy.Inventory;
         foreach (var item in playerInventory.Items) {
           if (item.Type == itemType) {
             int todoRemove = System.Math.Min(removeAmount, item.Amount);
@@ -49,10 +53,9 @@ namespace ColonyCommands
             }
           }
         }
-      }
 
       // then delete from the stockpile
-      Stockpile playerStockpile = Stockpile.GetStockPile(causedBy);
+      Stockpile playerStockpile = colony.Stockpile;
       if (playerStockpile == null) {
         Chat.Send(causedBy, "Could not get stockpile");
       } else {
@@ -66,7 +69,7 @@ namespace ColonyCommands
       }
 
       if (totalRemoved > 0) {
-        causedBy.ShouldSave = true;
+        // causedBy.ShouldSave = true;
       }
 
       return true;

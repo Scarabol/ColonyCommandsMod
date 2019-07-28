@@ -44,8 +44,8 @@ namespace ColonyCommands
       var m = Regex.Match(identifier, @"#(?<hash>\d{8})");
       int givenHash;
       if (m.Success && int.TryParse(m.Groups["hash"].Value, out givenHash)) {
-        foreach (Players.Player player in Players.PlayerDatabase.ValuesAsList) {
-          if (!player.IsConnected && !includeOffline) {
+        foreach (Players.Player player in Players.PlayerDatabase.Values) {
+          if (!includeOffline && player.ConnectionState != Players.EConnectionState.Connected) {
             continue;
           }
           if (player.ID.steamID.GetHashCode() == givenHash) {
@@ -68,8 +68,8 @@ namespace ColonyCommands
       // try to find by string closest match
       Players.Player closestMatch = null;
       int closestDist = int.MaxValue;
-      foreach (var player in Players.PlayerDatabase.ValuesAsList) {
-        if (!player.IsConnected && !includeOffline) {
+      foreach (var player in Players.PlayerDatabase.Values) {
+		  if (!includeOffline && player.ConnectionState != Players.EConnectionState.Connected) {
           continue;
         }
         if (player.Name != null) {

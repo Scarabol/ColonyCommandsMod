@@ -1,10 +1,9 @@
 ﻿using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
+using Chatting;
+using Chatting.Commands;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Permissions;
 
 namespace ColonyCommands
 {
@@ -25,7 +24,7 @@ namespace ColonyCommands
       return chat.Equals ("/help") || chat.StartsWith("/help ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       var m = Regex.Match(chattext, @"/help (?<section>.+)");
       string cmdList;

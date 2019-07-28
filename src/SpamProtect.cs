@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -40,7 +39,7 @@ namespace ColonyCommands
       return chat.Equals ("/mute") || chat.StartsWith ("/mute ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       MuteList.Update ();
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "mute")) {
@@ -80,7 +79,7 @@ namespace ColonyCommands
       return chat.Equals ("/unmute") || chat.StartsWith ("/unmute ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       MuteList.Update ();
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "mute")) {
@@ -111,7 +110,7 @@ namespace ColonyCommands
       return true;
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       MuteList.Update ();
       if (MuteList.MutedMinutes.ContainsKey (causedBy)) {

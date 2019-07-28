@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Pipliz;
-using Pipliz.Chatting;
 using Pipliz.Threading;
-using Server.TerrainGeneration;
-using ChatCommands;
-using ChatCommands.Implementations;
+using TerrainGeneration;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -30,7 +29,7 @@ namespace ColonyCommands
       return chat.Equals ("/stuck");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (causedBy == null || causedBy.ID == NetworkID.Server) {
         return true;
@@ -44,7 +43,7 @@ namespace ColonyCommands
       ThreadManager.InvokeOnMainThread (delegate () {
         long actualId;
         if (RescueOperations.TryGetValue (causedBy, out actualId) && actualId == rescueId) {
-          Teleport.TeleportTo (causedBy, TerrainGenerator.UsedGenerator.GetSpawnLocation (causedBy));
+          Teleport.TeleportTo (causedBy, ServerManager.TerrainGenerator.GetDefaultSpawnLocation().Vector);
           Chat.Send (causedBy, "Thank you for your patience. Have a nice day!");
         }
       }, 60.0f);

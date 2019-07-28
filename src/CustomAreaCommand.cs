@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+using Chatting;
+using Chatting.Commands;
 using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-
 
 namespace ColonyCommands
 {
@@ -12,9 +12,9 @@ namespace ColonyCommands
 			return chat.Equals("/customarea");
 		}
 
-		public bool TryDoCommand(Players.Player causedBy, string chattext)
+		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
-			Vector3Int playerPos = new Vector3Int(causedBy.Position);
+			Pipliz.Vector3Int playerPos = new Vector3Int(causedBy.Position);
 			CustomProtectionArea closestArea = null;
 			int shortestDistance = int.MaxValue;
 			foreach (CustomProtectionArea area in AntiGrief.CustomAreas) {

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 using NPC;
 
 namespace ColonyCommands
@@ -16,7 +15,7 @@ namespace ColonyCommands
       return chat.Equals ("/killnpcs") || chat.StartsWith ("/killnpcs ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       var m = Regex.Match (chattext, @"/killnpcs (?<targetplayername>['].+[']|[^ ]+)");
       if (!m.Success) {
@@ -39,7 +38,8 @@ namespace ColonyCommands
         return true;
       }
 
-      var cachedFollowers = new List<NPCBase> (Colony.Get (targetPlayer).Followers);
+	  // TODO
+      var cachedFollowers = new List<NPCBase>(targetPlayer.ActiveColony.Followers);
       foreach (var npc in cachedFollowers) {
         npc.OnDeath ();
       }

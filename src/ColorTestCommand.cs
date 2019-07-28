@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
+using System.Collections.Generic;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -13,7 +14,7 @@ namespace ColonyCommands
 			return (chat.Equals("/colortest") || chat.StartsWith("/colortest "));
 		}
 
-		public bool TryDoCommand(Players.Player causedBy, string chattext)
+		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
 
 			var m = Regex.Match(chattext, @"/colortest (?<color>[^ ]+)");

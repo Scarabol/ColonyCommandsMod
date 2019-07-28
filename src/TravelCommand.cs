@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using Pipliz;
-using Pipliz.Chatting;
 using Pipliz.JSON;
-using ChatCommands;
-using Permissions;
-using ChatCommands.Implementations;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -24,7 +22,7 @@ namespace ColonyCommands
       return chat.Equals ("/travel");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       foreach (var TravelPath in WaypointManager.travelPaths) {
         if (Pipliz.Math.ManhattanDistance (causedBy.VoxelPosition, TravelPath.Key) < 3) {
@@ -44,7 +42,7 @@ namespace ColonyCommands
       return chat.Equals ("/travelhere");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;
@@ -62,7 +60,7 @@ namespace ColonyCommands
       return chat.Equals ("/travelthere");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;
@@ -87,7 +85,7 @@ namespace ColonyCommands
       return chat.Equals ("/travelremove");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "travelpaths")) {
         return true;

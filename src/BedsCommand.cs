@@ -1,11 +1,11 @@
-﻿using Pipliz.Chatting;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using Permissions;
 using Pipliz;
-using ChatCommands;
-using BlockTypes.Builtin;
+using Chatting;
+using Chatting.Commands;
+using BlockTypes;
+using BlockEntities.Implementations;
 
 namespace ColonyCommands
 {
@@ -14,10 +14,10 @@ namespace ColonyCommands
 	{
 
 		public static List<ushort> bedBlocks = new List<ushort>{
-			BuiltinBlocks.BedZN, BuiltinBlocks.BedXP,
-			BuiltinBlocks.BedZP, BuiltinBlocks.BedXN,
-			BuiltinBlocks.BedEndZN, BuiltinBlocks.BedEndXP,
-			BuiltinBlocks.BedEndZP, BuiltinBlocks.BedEndXN
+			BuiltinBlocks.Indices.bedzn, BuiltinBlocks.Indices.bedxp,
+			BuiltinBlocks.Indices.bedzp, BuiltinBlocks.Indices.bedxn,
+			BuiltinBlocks.Indices.bedendzn, BuiltinBlocks.Indices.bedendxp,
+			BuiltinBlocks.Indices.bedendzp, BuiltinBlocks.Indices.bedendxn
 		};
 
 		public bool IsCommand(string chat)
@@ -25,7 +25,7 @@ namespace ColonyCommands
 			return (chat.Equals("/beds") || chat.StartsWith("/beds "));
 		}
 
-		public bool TryDoCommand(Players.Player causedBy, string chattext)
+		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
 			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "beds")) {
 				return true;
@@ -42,22 +42,27 @@ namespace ColonyCommands
 				return true;
 			}
 
-			Banner banner = BannerTracker.Get(causedBy);
+			Colony colony = causedBy.ActiveColony;
+			if (colony == null) {
+				Chat.Send(causedBy, "You need to be at an active colony to spawn beds");
+				return true;
+			}
+			BannerTracker.Banner banner = colony.GetClosestBanner(causedBy.VoxelPosition);
 			if (banner == null) {
-				Chat.Send(causedBy, "You need to place a banner to spawn beds");
+				Chat.Send(causedBy, "No banners found for the active colony");
 				return true;
 			}
 
 			Chat.Send(causedBy, $"Placing {amount} beds around you");
 			int radius = 3;
-			Vector3Int pos = banner.KeyLocation.Add(-radius + 1, 0, -radius);
+			Vector3Int pos = banner.Position.Add(-radius + 1, 0, -radius);
 			int counterX = -radius + 1, counterZ = -radius;
 			int bedUsed = 0;
 			int stepX = 1, stepZ = 0;
 			while (amount > 0) {
 				ushort blockType;
-				if (World.TryGetTypeAt(pos, out blockType) && blockType == BuiltinBlocks.Air
-					&& ServerManager.TryChangeBlock(pos, bedBlocks[bedUsed], causedBy)) {
+				if (World.TryGetTypeAt(pos, out blockType) && blockType == BuiltinBlocks.Indices.air
+					&& ServerManager.TryChangeBlock(pos, bedBlocks[bedUsed], causedBy) == EServerChangeBlockResult.Success) {
 					--amount;
 				}
 				if (counterX == -radius && counterZ == -radius) {

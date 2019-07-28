@@ -3,11 +3,10 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
+using Chatting;
+using Chatting.Commands;
 using Pipliz.JSON;
-using ChatCommands;
-using Permissions;
-using Server.TerrainGeneration;
+using TerrainGeneration;
 
 namespace ColonyCommands
 {
@@ -19,7 +18,7 @@ namespace ColonyCommands
       return chat.Equals ("/antigrief") || chat.StartsWith ("/antigrief ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       var matched = Regex.Match (chattext, @"/antigrief (?<accesslevel>[^ ]+) ((?<playername>['].+[']|[^ ]+)|((?<rangex>\d+) (?<rangez>\d+))|((?<rangexn>\d+) (?<rangexp>\d+) (?<rangezn>\d+) (?<rangezp>\d+)))$");
       if (!matched.Success) {

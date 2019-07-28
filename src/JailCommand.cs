@@ -1,8 +1,8 @@
-﻿using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+﻿using Chatting;
+using Chatting.Commands;
 using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace ColonyCommands
 {
@@ -15,7 +15,7 @@ namespace ColonyCommands
       return (chat.Equals("/jail") || chat.StartsWith("/jail "));
     }
 
-    public bool TryDoCommand(Players.Player causedBy, string chattext)
+    public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "jail")) {
         return true;

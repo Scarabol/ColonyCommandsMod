@@ -1,8 +1,8 @@
-﻿using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Pipliz;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -13,7 +13,7 @@ namespace ColonyCommands
 			return chat.Equals("/areashow") || chat.StartsWith("/areashow ");
 		}
 
-		public bool TryDoCommand(Players.Player causedBy, string chattext)
+		public bool TryDoCommand(Players.Player causedBy, string chattext, List<string> splits)
 		{
 			// if parameter action given toggle all areas shown
 			Match m = Regex.Match(chattext, @"/areashow ?(?<action>.+)?");

@@ -1,8 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using Pipliz.Chatting;
-using ChatCommands;
-using Permissions;
-using ChatCommands.Implementations;
+using System.Collections.Generic;
+using Chatting;
+using Chatting.Commands;
 
 namespace ColonyCommands
 {
@@ -15,7 +14,7 @@ namespace ColonyCommands
       return chat.Equals ("/warp") || chat.StartsWith ("/warp ");
     }
 
-    public bool TryDoCommand (Players.Player causedBy, string chattext)
+    public bool TryDoCommand (Players.Player causedBy, string chattext, List<string> splits)
     {
       if (!PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.player") &&
           !PermissionsManager.HasPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.self")) {
