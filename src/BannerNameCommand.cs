@@ -14,7 +14,7 @@ namespace ColonyCommands
 				return false;
 			}
 			BannerTracker.Banner closestBanner = null;
-			int shortestDistance = -1;
+			int shortestDistance = int.MaxValue;
 			foreach (Colony checkColony in ServerManager.ColonyTracker.ColoniesByID.Values) {
 				bool isOwner = false;
 				foreach (Players.Player owner in checkColony.Owners) {
@@ -31,7 +31,7 @@ namespace ColonyCommands
 					int distX = (int)(causedBy.Position.x - checkBanner.Position.x);
 					int distZ = (int)(causedBy.Position.z - checkBanner.Position.z);
 					int distance = (int)System.Math.Sqrt(System.Math.Pow(distX, 2) + System.Math.Pow(distZ, 2));
-					if (shortestDistance == -1 || distance < shortestDistance) {
+					if (distance < shortestDistance) {
 						shortestDistance = distance;
 						closestBanner = checkBanner;
 					}
@@ -46,7 +46,7 @@ namespace ColonyCommands
 					}
 					owners += owner.Name;
 				}
-				Chat.Send(causedBy, $"Closest banner is at {closestBanner.Position.x},{closestBanner.Position.z}. {shortestDistance} blocks away. It belongs to a colony owned by {owners}");
+				Chat.Send(causedBy, $"Closest banner is at {closestBanner.Position.x},{closestBanner.Position.z}. {shortestDistance} blocks away. It belongs to colony {closestBanner.Colony.Name} owned by {owners}");
 			}
 			return true;
 		}

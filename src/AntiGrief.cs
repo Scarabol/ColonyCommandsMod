@@ -11,6 +11,7 @@ using TerrainGeneration;
 using BlockEntities.Implementations;
 using UnityEngine;
 using Jobs;
+using Shared.Networking;
 
 namespace ColonyCommands {
 
@@ -112,7 +113,7 @@ namespace ColonyCommands {
 			CommandManager.RegisterCommand(new TravelHereChatCommand());
 			CommandManager.RegisterCommand(new TravelThereChatCommand());
 			CommandManager.RegisterCommand(new TravelRemoveChatCommand());
-			// CommandManager.RegisterCommand(new WarpBannerChatCommand());
+			CommandManager.RegisterCommand(new WarpBannerChatCommand());
 			CommandManager.RegisterCommand(new WarpChatCommand());
 			CommandManager.RegisterCommand(new WarpPlaceChatCommand());
 			CommandManager.RegisterCommand(new WarpSpawnChatCommand());
@@ -132,6 +133,7 @@ namespace ColonyCommands {
 			CommandManager.RegisterCommand(new ColorTestCommand());
 			CommandManager.RegisterCommand(new SpawnNpcCommand());
 			CommandManager.RegisterCommand(new BedsCommand());
+			CommandManager.RegisterCommand(new PurgeBannerCommand());
 			return;
 		}
 
@@ -146,6 +148,11 @@ namespace ColonyCommands {
 				return;
 			}
 			Pipliz.Vector3Int playerPos = userData.Position;
+
+			// allow staff members
+			if (PermissionsManager.HasPermission(causedBy, PERMISSION_SUPER)) {
+				return;
+			}
 
 			// check spawn area
 			int ox = playerPos.x - ServerManager.TerrainGenerator.GetDefaultSpawnLocation().x;
@@ -449,6 +456,19 @@ namespace ColonyCommands {
 		}
 
 	} // class
+
+	// Helper function to save some lines of code
+	public static class Helper
+	{
+		public static void TeleportPlayer(Players.Player target, Vector3 position)
+		{
+			using (ByteBuilder byteBuilder = ByteBuilder.Get()) {
+				byteBuilder.Write(ClientMessageType.ReceivePosition);
+				byteBuilder.Write(position);
+				NetworkWrapper.Send(byteBuilder, target);
+			}
+		}
+	}
 
 } // namespace
 

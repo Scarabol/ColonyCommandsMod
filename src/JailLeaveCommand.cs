@@ -19,7 +19,7 @@ namespace ColonyCommands
 		}
       Vector3 oldPos;
       if (JailManager.visitorPreviousPos.TryGetValue(causedBy, out oldPos)) {
-        Teleport.TeleportTo(causedBy, oldPos);
+        Helper.TeleportPlayer(causedBy, oldPos);
       } else {
         Chat.Send(causedBy, "Found no old position record, looks like you have to walk");
       }
