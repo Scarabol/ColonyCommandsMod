@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Pipliz;
 using Pipliz.JSON;
+using Shared.Networking;
 using Chatting;
 using TerrainGeneration;
 using UnityEngine;
@@ -100,7 +101,12 @@ namespace ColonyCommands {
         return;
       }
 
-	  target.Position = jailPosition;
+		// target.Position = jailPosition;
+		using (ByteBuilder byteBuilder = ByteBuilder.Get()) {
+			byteBuilder.Write(ClientMessageType.ReceivePosition);
+			byteBuilder.Write(jailPosition);
+			NetworkWrapper.Send(byteBuilder, target);
+		}
 
       List<string> permissions = new List<string>();
       foreach (string permission in permissionList) {
@@ -380,7 +386,12 @@ namespace ColonyCommands {
       }
       uint distance = (uint) Vector3.Distance(causedBy.Position, jailPosition);
       if (distance > jailRange) {
-        causedBy.Position = jailPosition;
+        // causedBy.Position = jailPosition;
+		using (ByteBuilder byteBuilder = ByteBuilder.Get()) {
+			byteBuilder.Write(ClientMessageType.ReceivePosition);
+			byteBuilder.Write(jailPosition);
+			NetworkWrapper.Send(byteBuilder, causedBy);
+		}
 
         ++record.escapeAttempts;
         if (GRACE_ESCAPE_ATTEMPTS == 0 || record.escapeAttempts < GRACE_ESCAPE_ATTEMPTS) {
