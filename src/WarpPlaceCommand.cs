@@ -43,11 +43,11 @@ namespace ColonyCommands
           return true;
         }
       } else {
+		TerrainGenerator gen = (TerrainGenerator)ServerManager.TerrainGenerator;
         vz = vy;
-        // TODO vy = TerrainGenerator.UsedGenerator.GetHeight (vx, vz);
-		vy = 65;
+		vy = (float)(gen.QueryData((int)vx, (int)vz).Height + 1);
       }
-      causedBy.Position = new UnityEngine.Vector3(vx, vy, vz);
+	Helper.TeleportPlayer(causedBy, new UnityEngine.Vector3(vx, vy, vz));
       return true;
     }
   }
