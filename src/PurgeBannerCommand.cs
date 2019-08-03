@@ -51,6 +51,21 @@ namespace ColonyCommands
 				}
 			}
 
+			// command: /purgebanner all <range> (Purge ALL colonies within range
+			if (splits.Count == 3 && splits[1].Equals("all")) {
+				if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "purgebanner")) {
+					return true;
+				}
+				int range = 0;
+				if (!int.TryParse(splits[2], out range)) {
+					Chat.Send(causedBy, "Syntax: /purgebanner all <range>");
+					return true;
+				}
+				int counter = PurgeAllColonies(causedBy, range);
+				Chat.Send(causedBy, $"Deleted {counter} colonies within range");
+				return true;
+			}
+
 			if (colony.Banners.Length > 1) {
 				ServerManager.ClientCommands.DeleteBannerTo(causedBy, colony, banner.Position);
 				Chat.Send(causedBy, $"Deleted banner at {banner.Position.x},{banner.Position.z}. Colony still has more banners");
@@ -91,6 +106,33 @@ namespace ColonyCommands
 
 			Chat.Send(causedBy, $"Deleted all colonies of {target.Name} and revoked ownership from shared colonies");
 			return true;
+		}
+
+		// purge all colonies within a given range
+		public int PurgeAllColonies(Players.Player causedBy, int range)
+		{
+			List<Colony> colonies = new List<Colony>();
+			foreach (Colony checkColony in ServerManager.ColonyTracker.ColoniesByID.Values) {
+				foreach (BannerTracker.Banner checkBanner in checkColony.Banners) {
+					int distX = (int)(causedBy.Position.x - checkBanner.Position.x);
+					int distZ = (int)(causedBy.Position.z - checkBanner.Position.z);
+					int distance = (int)System.Math.Sqrt(System.Math.Pow(distX, 2) + System.Math.Pow(distZ, 2));
+					if (distance < range) {
+						colonies.Add(checkColony);
+					}
+				}
+			}
+
+			// second delete loop since delete within a foreach in unsafe
+			int counter = 0;
+			foreach (Colony colony in colonies) {
+				while (colony.Banners.Length > 1) {
+					ServerManager.ClientCommands.DeleteBannerTo(causedBy, colony, colony.Banners[0].Position);
+				}
+				ServerManager.ClientCommands.DeleteColonyAndBanner(causedBy, colony, colony.Banners[0].Position);
+			}
+
+			return counter;
 		}
 
 	}
