@@ -16,21 +16,23 @@ namespace ColonyCommands
 			if (!splits[0].Equals("/warpbanner")) {
 				return false;
 			}
-			if (!PermissionsManager.CheckAndWarnPermission (causedBy, AntiGrief.MOD_PREFIX + "warp.banner")) {
-				return true;
-			}
-			var m = Regex.Match (chattext, @"/warpbanner (?<targetplayername>['].+[']|[^ ]+)( (?<teleportplayername>['].+[']|[^ ]+))?");
-			if (!m.Success) {
-				Chat.Send (causedBy, "Command didn't match, use /warpbanner [targetplayername] or /warpbanner [targetplayername] [teleportplayername]");
+			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "warp.banner.self")) {
 				return true;
 			}
 
-			Players.Player targetPlayer;
-			string error;
-			if (!PlayerHelper.TryGetPlayer(m.Groups["targetplayername"].Value, out targetPlayer, out error)) {
-				Chat.Send(causedBy, $"Could not find target player '{targetPlayer.Name}': {error}");
-				return true;
+			Players.Player targetPlayer = causedBy;
+			var m = Regex.Match(chattext, @"/warpbanner (?<targetplayer>['].+[']|[^ ]+)");
+			if (m.Success) {
+				if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "warp.banner")) {
+					return true;
+				}
+				string error;
+				if (!PlayerHelper.TryGetPlayer(m.Groups["targetplayer"].Value, out targetPlayer, out error)) {
+					Chat.Send(causedBy, $"Could not find target: {error}");
+					return true;
+				}
 			}
+
 			BannerTracker.Banner targetBanner = null;
 			int num = int.MaxValue;
 			Colony[] colonies = targetPlayer.Colonies;
@@ -47,16 +49,9 @@ namespace ColonyCommands
 				return true;
 			}
 
-			Players.Player TeleportPlayer = causedBy;
-			string TeleportPlayerName = m.Groups["teleportplayername"].Value;
-			if (TeleportPlayerName.Length > 0) {
-				if (!PlayerHelper.TryGetPlayer(TeleportPlayerName, out TeleportPlayer, out error)) {
-					Chat.Send(causedBy, $"Could not find teleport player '{TeleportPlayerName}': {error}");
-					return true;
-				}
-			}
-			Helper.TeleportPlayer(TeleportPlayer, targetBanner.Position.Vector);
+			Helper.TeleportPlayer(targetPlayer, targetBanner.Position.Vector);
 			return true;
 		}
 	}
 }
+

@@ -73,8 +73,23 @@ namespace ColonyCommands
 		}
 
 		// purge all colonies of a given player (or remove him/her in case of multiple owners)
-		public bool PurgePlayerFromColonies(Players.Player causedBy, string targetPlayerName)
+		public bool PurgePlayerFromColonies(Players.Player causedBy, string targetName)
 		{
+			Players.Player target;
+			string error;
+			if (!PlayerHelper.TryGetPlayer(targetName, out target, out error)) {
+				Chat.Send(causedBy, $"Could not find target: {error}");
+				return true;
+			}
+			foreach (Colony colony in target.Colonies) {
+				if (colony.Owners.Length == 1) {
+					ServerManager.ClientCommands.DeleteColonyAndBanner(causedBy, colony, colony.Banners[0].Position);
+				} else {
+					colony.RemoveOwner(target);
+				}
+			}
+
+			Chat.Send(causedBy, $"Deleted all colonies of {target.Name} and revoked ownership from shared colonies");
 			return true;
 		}
 
