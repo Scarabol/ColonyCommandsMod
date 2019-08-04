@@ -1,6 +1,4 @@
-# Colony Commands Mod by Scarabol/Adrenalynn
-
-**The mod is now continued by adrenalynn**
+# Colony Commands by Adrenalynn (continued from Scarabol's mod)
 
 **Special thanks to Tjohei for most of the ideas and feature requests.**
 
@@ -12,7 +10,7 @@ This mods adds an anti-griefing mechanism to the server.
 Regular players can't change 50 blocks around the spawn point and 50 blocks around other player banners.
 Both values can be adjusted.
 Furthermore players are auto-**jailed** if they kill more than 2 foreign colonists, auto-**kicked** if killing more than 5 and auto-**banned** if they kill more than 6 foreign colonists.
-Those values can be configured in the savegame folder, set them to 0 to disable the feature.
+Those values can be configured in the config file, set them to 0 to disable the feature.
 
 Players are also able to whitelist friends by writing **/antigrief banner [friendly-player-name]** in chat. 
 
@@ -33,10 +31,6 @@ Use **/top time** to view a top ranking with the most time played.
 
 This mods adds a welcome message and automatic announcements to the game.
 See *announcements.example.json* and place it in your savegame folder, like */gamedata/savegames/mysavegamename/announcements.json* to activate them.
-
-## Events
-
-This mod adds a simple event system. Players with **mods.scarabol.commands.events** permission can start an event with **/eventstart** at any position. Then all players are allowed to join using **/eventjoin** or leave the event with **/eventleave**. On join the players are warped to the event position. On leave players are warped back to their original position before the event. Same applies if an event is stopped using **/eventstop**. Stopping an event also requires the **mods.scarabol.commands.events** permission. There can only be one event at a time.
 
 ## Colonists Cap
 
@@ -110,19 +104,6 @@ A lot of the commands require the name of a player as target. Names of players c
 
 **/command &lt;steamid&gt;** if all of the above fails one can use the full steamid also
 
-## Hiding player from scoring
-
-The /top command provides player scores (number of items, colonists, score, etc). For some servers it might be useful to hide staff from the scores. This can be done by adding the player names to the protection-ranges.json file (per world):
-<code>"UnscoredPlayers" : [ "player1", "player2", "player3" ]</code>
-
-## Production tracking
-
-Production tracking allows to track the production of items per day or multiple days. Every day in the morning the player will receive a status messages showing the total amounts.
-
-**/production add|list|remove {item} [interval]**<br>
-Use **add** to track production for a item, the interval defaults to 1 day but you can also request a multiple day interval<br>
-Use **list** to show all tracked items and **remove** to stop tracking for an item.
-
 ## Further Commands
 
 <dl>
@@ -133,8 +114,6 @@ The other variant of this command is <b>/help admin</b> which list all admin com
 <dd>Requires no permission<br>Tells you the name of the owner of the closest banner.</dd>
 <dt>/online</dt>
 <dd>Requires no permission<br>Lists all online player names.<br><b>/online id</b> lists the players including a 8 digit hash which can be used instead of the player name for all commands</dd>
-<dt>/top [score|food|colonists|time|itemtypename]</dt>
-<dd>Requires no permission<br>Shows a top 10 ranking for the given category or item type</dd>
 <dt>/serverpop</dt>
 <dd>Requires no permission<br>Shows current server population.</dd>
 <dt>/stuck</dt>
@@ -167,8 +146,6 @@ The other variant of this command is <b>/help admin</b> which list all admin com
 <dd>Requires permission: <b>mods.scarabol.commands.kick</b><br>Kicks a player from the server.</dd>
 <dt>/drain</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.drain</b><br>Drys out a small lake or puddle with up to 5k blocks.</dd>
-<dt>/cleanbanners</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.cleanbanners</b><br>Removes all banners from banner-tracker, which have no banner block in the world. Useful after server crashes.</dd>
 <dt>/killplayer [playername]</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.killplayer</b><br>Kills the player with the given playername.<br>
 To allow players killing themselfes permission <b>mods.scarabol.commands.killplayer.self</b> can be given.</dd>
@@ -183,19 +160,20 @@ To allow players killing their own colonists permission <b>mods.scarabol.command
 <dd>Requires permission: <b>mods.scarabol.commands.trashplayer</b><br>Removes the given amount and type of items from the given players stockpile and inventory. The playername and itemname can be set to 'all', which is also the default value for amount.<br><b>Note: For safety reasons you can't use /trashplayer all all all</b></dd>
 <dt>/areashow</dt>
 <dd>Checks if the player is inside a custom protection area and will print its coordinates. If not inside an area it will print the closest area nearby instead</dd>
-<dt>/deletejobs [playername]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.deletejobs</b><br>
-Deletes all jobs for the given player. Blocks will not be refunded. All jobs will be deleted in the background, for large numbers of jobs the command will take a while. If the Banner is already removed the player needs to stay in the area, otherwise the chunks will get unloaded and jobs can no longer be deleted. The command will send an error message if that happens and can be started again.<br>
-To allow players deleting their own jobs the permission <b>mods.scarabol.commands.deletejobs.self</b> can be given.</dd>
-<dt>/deletejobspeed [blocks]</dt>
-<dd>Requires permission: <b>mods.scarabol.commands.deletespeedjobs</b><br>
-Per default /deletejobs will delete up to 4 blocks per second. With this command the deletion speed can be adjusted. 8 or maybe even 16 blocks per second can work, depending on server hardware. Larger values will most likely not increase the effective speed anymore.</dd>
 <dt>/spawnnpc {number}</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.npcandbeds</b><br>
 Spawn given number of colonists. Intended for admin/test use, spawning will not cost food and no beds required.</dd>
 <dt>/beds {number}</dt>
 <dd>Requires permission: <b>mods.scarabol.commands.npcandbeds</b><br>
 Create given number of beds around your banner. Intended for admin/test use, beds will be placed in a rectangular spiral form around your banner</dd>
+<dt>/purgebanner</dt>
+<dd>Requires permission: <b>mods.scarabol.purgebanner</b><br>
+For admin staff only. Remove the banner closest to you, if it is the last banner of a colony the colony gets deleted.</dd>
+<dd><b>/purgebanner colony</b>purge a whole colony at once</dd>
+<dd><b>/purgebanner [playername]</b>remove all banners/colonyaccess for a player.</dd>
+<dt>/purgebanner all [range]</dt>
+<dd>Requires permission: <b>mods.scarabol.purgeallbanner</b><br>
+Purge <b>all</b> banners within the given range. This command can be dangerous</dd>
 </dl>
 
 ## Installation
