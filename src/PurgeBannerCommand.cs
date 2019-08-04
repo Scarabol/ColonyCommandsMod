@@ -13,7 +13,7 @@ namespace ColonyCommands
 			if (!splits[0].Equals("/purgebanner")) {
 				return false;
 			}
-			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.PERMISSION_SUPER)) {
+			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "purgebanner")) {
 				return true;
 			}
 
@@ -53,7 +53,7 @@ namespace ColonyCommands
 
 			// command: /purgebanner all <range> (Purge ALL colonies within range
 			if (splits.Count == 3 && splits[1].Equals("all")) {
-				if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "purgebanner")) {
+				if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "purgeallbanner")) {
 					return true;
 				}
 				int range = 0;

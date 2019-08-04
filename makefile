@@ -10,7 +10,7 @@ gamedir = /local/games/Steam/steamapps/common/Colony\ Survival
 $(dllname): src/*.cs
 	mcs /target:library -nostdlib -r:$(gamedir)/colonyserver_Data/Managed/Assembly-CSharp.dll,$(gamedir)/colonyserver_Data/Managed/UnityEngine.CoreModule.dll,$(gamedir)/colonyserver_Data/Managed/mscorlib.dll,$(gamedir)/colonyserver_Data/Managed/System.dll,$(gamedir)/colonyserver_Data/Managed/System.Core.dll,$(gamedir)/colonyserver_Data/Managed/Steamworks.NET.dll -out:"$(dllname)" -sdk:4 src/*.cs
 
-$(zipname): $(dllname)
+$(zipname): $(dllname) $(zip_files_extra)
 	$(RM) $(zipname)
 	mkdir -p $(build_dir)
 	cp modInfo.json LICENSE README.md $(dllname) $(zip_files_extra) $(build_dir)/
@@ -32,4 +32,13 @@ zip: $(zipname)
 install: build zip
 	$(RM) -r $(gamedir)/gamedata/mods/$(build_dir)
 	unzip $(zipname) -d $(gamedir)/gamedata/mods
+
+checkjson:
+	find . -type f -name "*.json" | while read f; do echo $$f; json_pp <$$f >/dev/null; done
+
+serverlog:
+	less $(gamedir)/logs/server/$$(ls -1rt $(gamedir)/logs/server | tail -1)
+
+clientlog:
+	less $(gamedir)/logs/client/$$(ls -1rt $(gamedir)/logs/client | tail -1)
 

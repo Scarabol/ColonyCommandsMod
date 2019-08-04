@@ -9,6 +9,12 @@
 		"0.7.0"
 	],
 	"patchnotes": [
+		{ "version": "0.7.2", "notes": [
+				"all /warp and /jail commands now work properly",
+				"admin staff is unaffected by antigrief",
+				"new command /purgebanner to clean banners/colonies"
+			]
+		},
 		{ "version": "0.7.1", "notes": [
 				"updated to game version 0.7"
 			]

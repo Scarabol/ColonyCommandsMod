@@ -20,7 +20,7 @@ namespace ColonyCommands
       }
       var m = Regex.Match (chattext, @"/warpplace (?<px>-?\d+) (?<py>-?\d+)( (?<pz>-?\d+))?");
       if (!m.Success) {
-        Chat.Send (causedBy, "Command didn't match, use /warpplace [x] [y] [z] or /warpplace [x] [z]");
+        Chat.Send(causedBy, "Syntax: /warpplace [x] [y] [z] or /warpplace [x] [z]");
         return true;
       }
       var xCoord = m.Groups ["px"].Value;
