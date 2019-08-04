@@ -134,6 +134,8 @@ namespace ColonyCommands {
 			CommandManager.RegisterCommand(new SpawnNpcCommand());
 			CommandManager.RegisterCommand(new BedsCommand());
 			CommandManager.RegisterCommand(new PurgeBannerCommand());
+			CommandManager.RegisterCommand(new MuteChatCommand());
+			CommandManager.RegisterCommand(new UnmuteChatCommand());
 			return;
 		}
 
