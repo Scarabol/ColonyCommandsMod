@@ -2,13 +2,17 @@
 {
 	"name" : "colony.commands",
 	"namepretty" : "Colony Commands",
-	"version" : "0.7.2",
+	"version" : "0.7.3",
 	"dllpath" : "ColonyCommands.dll",
 	"enabled" : true,
 	"compatibleversions" : [
 		"0.7.0"
 	],
 	"patchnotes": [
+		{ "version": "0.7.3", "notes": [
+				"fixed /mute handling"
+			]
+		},
 		{ "version": "0.7.2", "notes": [
 				"all /warp and /jail commands now work properly",
 				"admin staff is unaffected by antigrief",
