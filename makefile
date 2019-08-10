@@ -1,4 +1,4 @@
-# important variables
+# variables
 modname = ColonyCommands
 zipname = $(modname)-$(version).zip
 dllname = $(modname).dll
@@ -17,7 +17,7 @@ $(zipname): $(dllname) $(zip_files_extra)
 	zip -r $(zipname) $(build_dir)
 	$(RM) -r $(build_dir)
 
-.PHONY: build default clean all zip install
+.PHONY: build default clean all zip install serverlog clientlog
 build: $(dllname)
 
 default: build
