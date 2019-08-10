@@ -2,7 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Reflection;
 using Pipliz;
 using Chatting;
 using Chatting.Commands;
@@ -10,7 +9,6 @@ using Pipliz.JSON;
 using TerrainGeneration;
 using BlockEntities.Implementations;
 using UnityEngine;
-using Jobs;
 using Shared.Networking;
 
 namespace ColonyCommands {
@@ -39,31 +37,6 @@ namespace ColonyCommands {
 		static int NpcKillsBanThreshold;
 		static Dictionary<Players.Player, int> KillCounter = new Dictionary<Players.Player, int> ();
 
-		// static Dictionary<Players.Player, List<IAreaJob>> allAreaJobs = typeof(AreaJobTracker).GetField("playerTrackedJobs",
-		// 	BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) as Dictionary<Players.Player, List<IAreaJob>>;
-
-		// [ModLoader.ModCallback(ModLoader.EModCallbackType.OnSendAreaHighlights, NAMESPACE + ".OnSendAreaHighlights")]
-		// public static void OnSendAreaHighlights(Players.Player causedBy, List<AreaJobTracker.AreaHighlight> jobs, List<ushort> activeTypes)
-		// {
-		// 	if (!AreaShowManager.ShowAll(causedBy)) {
-		// 		return;
-		// 	}
-
-		// 	Vector3 playerPos = causedBy.Position;
-		// 	foreach (KeyValuePair<Players.Player, List<IAreaJob>> kvp in allAreaJobs) {
-		// 		foreach (IAreaJob job in kvp.Value) {
-		// 			Vector3 center = new Vector3((job.Maximum.x + job.Minimum.x) / 2,
-		// 				(job.Maximum.y + job.Minimum.y) / 2,
-		// 				(job.Maximum.z + job.Minimum.z) / 2);
-		// 			if (Vector3.Distance(playerPos, center) < ServerManager.HostingSettings.MaxDrawDistance) {
-		// 				jobs.Add(new AreaJobTracker.AreaHighlight(job.Minimum, job.Maximum, job.AreaTypeMesh, job.AreaType));
-		// 			}
-		// 		}
-		// 	}
-
-		// 	return;
-		// }
-
 		static string ConfigFilepath {
 			get {
 				return Path.Combine (Path.Combine ("gamedata", "savegames"), Path.Combine (ServerManager.WorldName, "antigrief-config.json"));
@@ -73,12 +46,12 @@ namespace ColonyCommands {
 		// used only by the /top command to hide players from the scoring
 		public static List<Players.Player> UnscoredPlayers = new List<Players.Player>();
 
-		// [ModLoader.ModCallback(ModLoader.EModCallbackType.OnAssemblyLoaded, NAMESPACE + ".OnAssemblyLoaded")]
-		// public static void OnAssemblyLoaded(string path)
-		// {
-			// MOD_DIRECTORY = Path.GetDirectoryName(path);
-			// Log.Write("Loaded ColonyCommands (Anti-Grief)");
-		// }
+		[ModLoader.ModCallback(ModLoader.EModCallbackType.OnAssemblyLoaded, NAMESPACE + ".OnAssemblyLoaded")]
+		public static void OnAssemblyLoaded(string path)
+		{
+			MOD_DIRECTORY = Path.GetDirectoryName(path);
+			Log.Write("Loaded ColonyCommands (Anti-Grief)");
+		}
 
 		[ModLoader.ModCallback(ModLoader.EModCallbackType.AfterItemTypesDefined, NAMESPACE + ".RegisterTypes")]
 		public static void AfterItemTypesDefined()
@@ -244,6 +217,7 @@ namespace ColonyCommands {
 		{
 			Load();
 			JailManager.Load();
+			WaypointManager.Load();
 			// StatisticManager.Load();
 			// StatisticManager.TrackItems();
 		}

@@ -13,22 +13,21 @@ namespace ColonyCommands
 			if (!splits[0].Equals("/areashow")) {
 				return false;
 			}
+			if (!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "areashow")) {
+				return true;
+			}
 
 			// if parameter action given toggle all areas shown
 			Match m = Regex.Match(chattext, @"/areashow ?(?<action>.+)?");
 			string action = m.Groups["action"].Value;
-			if ((action.Equals("add") || action.Equals("remove")) &&
-				!PermissionsManager.CheckAndWarnPermission(causedBy, AntiGrief.MOD_PREFIX + "areashow")) {
-				return true;
-			}
 			if (action.Equals("add")) {
 				if (AreaShowManager.Add(causedBy)) {
-					Chat.Send(causedBy, "You now see area job highlights of all players");
+					Chat.Send(causedBy, "You now see area jobs of all players");
 				}
 				return true;
 			} else if (action.Equals("remove")) {
 				if (AreaShowManager.Remove(causedBy)) {
-					Chat.Send(causedBy, "You no longer see area job highlights of all players");
+					Chat.Send(causedBy, "You no longer see area jobs of all players");
 				}
 				return true;
 			}
@@ -39,3 +38,4 @@ namespace ColonyCommands
 		}
 	}
 }
+
