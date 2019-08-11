@@ -94,7 +94,7 @@ namespace ColonyCommands
 			Players.Player target;
 			string error;
 			if (!PlayerHelper.TryGetPlayer(targetName, out target, out error)) {
-				Chat.Send(causedBy, $"Could not find target: {error}");
+				Chat.Send(causedBy, $"Could not find {targetName}: {error}");
 				return;
 			}
 			foreach (Colony colony in target.Colonies) {
@@ -114,6 +114,10 @@ namespace ColonyCommands
 		{
 			List<Colony> colonies = new List<Colony>();
 			foreach (Colony checkColony in ServerManager.ColonyTracker.ColoniesByID.Values) {
+				if (checkColony.Banners.Length == 0) {
+					Log.Write($"colony id={checkColony.ColonyID} has no banners");
+					continue;
+				}
 				BannerTracker.Banner closestBanner = checkColony.GetClosestBanner(causedBy.VoxelPosition);
 				if (Pipliz.Math.ManhattanDistance(closestBanner.Position, causedBy.VoxelPosition) <= range) {
 					colonies.Add(checkColony);
@@ -126,6 +130,7 @@ namespace ColonyCommands
 				while (colony.Banners.Length > 1) {
 					ServerManager.ClientCommands.DeleteBannerTo(causedBy, colony, colony.Banners[0].Position);
 				}
+				Chat.Send(causedBy, $"Purging {colony.Name}");
 				ServerManager.ClientCommands.DeleteColonyAndBanner(causedBy, colony, colony.Banners[0].Position);
 				counter++;
 			}
