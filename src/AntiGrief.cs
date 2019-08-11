@@ -78,7 +78,7 @@ namespace ColonyCommands {
 			// CommandManager.RegisterCommand(new PurgeAllChatCommand());
 			CommandManager.RegisterCommand(new ServerPopCommand());
 			CommandManager.RegisterCommand(new StuckChatCommand());
-			// CommandManager.RegisterCommand(new TopChatCommand());
+			CommandManager.RegisterCommand(new TopChatCommand());
 			CommandManager.RegisterCommand(new TradeChatCommand());
 			CommandManager.RegisterCommand(new TrashChatCommand());
 			// CommandManager.RegisterCommand(new TrashPlayerChatCommand());
