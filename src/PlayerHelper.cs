@@ -105,6 +105,52 @@ namespace ColonyCommands
 			error = "player not found";
 			return false;
 		}
+
+		// try find colony by name match
+		public static bool TryGetColony(string name, out Colony colony, out string error)
+		{
+			error = "";
+			colony = null;
+			if (name.StartsWith("'")) {
+				if (name.EndsWith("'")) {
+					name = name.Substring(1, name.Length - 2);
+				} else {
+					error = "missing ' at end";
+					return false;
+				}
+			}
+
+			// try by exact name first
+			foreach (Colony checkColony in ServerManager.ColonyTracker.ColoniesByID.Values) {
+				if (string.Equals(name, checkColony.Name, StringComparison.InvariantCultureIgnoreCase)) {
+					colony = checkColony;
+					return true;
+				}
+			}
+
+			// try to find by string closest match
+			Colony closestMatch = null;
+			int closestDist = 5;
+			foreach (Colony checkColony in ServerManager.ColonyTracker.ColoniesByID.Values) {
+				if (checkColony.Name == null || checkColony.Name.Equals("")) {
+					continue;
+				}
+				int levDist = LevenshteinDistance.Compute(name.ToLower(), checkColony.Name.ToLower());
+				if (levDist < closestDist) {
+					closestDist = levDist;
+					closestMatch = checkColony;
+				} else if (levDist == closestDist) {
+					closestMatch = null;
+				}
+			}
+			if (closestMatch != null) {
+				colony = closestMatch;
+				return true;
+			}
+
+			error = "colony not found";
+			return false;
+		}
 	}
 
 	// src: https://www.dotnetperls.com/levenshtein
